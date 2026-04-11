@@ -23,7 +23,7 @@ export default function Sidebar() {
       <div className="flex items-center gap-2 px-3 mb-6">
         <div className="w-2 h-2 rounded-full bg-[#6C3DF4]"></div>
         <span className="text-xl font-bold">Fidelio</span>
-      </div>
+      </Link>
 
       <div className="bg-[#6C3DF4]/10 border border-[#6C3DF4]/20 rounded-xl px-3 py-2 mb-6">
         <p className="text-sm font-bold">Il mio negozio</p>
