@@ -11,6 +11,7 @@ const navItems = [
   { href: '/dashboard/campaigns', icon: '📧', label: 'Campagne' },
   { href: '/dashboard/analytics', icon: '📈', label: 'Analytics' },
   { href: '/dashboard/qr', icon: '📱', label: 'QR Code' },
+  { href: '/dashboard/scanner', icon: '📷', label: 'Timbra Cliente' },
   { href: '/dashboard/giftcards', icon: '🎀', label: 'Carte Regalo' },
   { href: '/dashboard/settings', icon: '⚙️', label: 'Impostazioni' },
   { href: '/dashboard/upgrade', icon: '⚡', label: 'Upgrade Piano' },
