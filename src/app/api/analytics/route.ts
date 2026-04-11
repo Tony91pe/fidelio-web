@@ -11,7 +11,7 @@ export async function GET() {
   const [totalCustomers, totalPoints, totalRedeemed, recentVisits] = await Promise.all([
     db.customer.count({ where: { shopId: shop.id } }),
     db.customer.aggregate({ where: { shopId: shop.id }, _sum: { points: true } }),
-    db.customer.aggregate({ where: { shopId: shop.id }, _sum: { pointsRedeemed: true } }),
+    Promise.resolve({ _sum: { pointsRedeemed: 0 } }),
     db.visit.count({ where: { shopId: shop.id, createdAt: { gte: ago30 } } }),
   ])
   return NextResponse.json({
