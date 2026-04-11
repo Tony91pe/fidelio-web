@@ -37,6 +37,7 @@ model Customer {
   id          String    @id @default(cuid())
   email       String
   name        String
+  code        String   @unique @default(cuid())
   phone       String?
   birthday    DateTime?
   points      Int       @default(0)
