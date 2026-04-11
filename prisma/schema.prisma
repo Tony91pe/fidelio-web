@@ -102,6 +102,7 @@ model GiftCard {
 id String @id @default(cuid())
 code String @unique
 points Int
+description String?
 used Boolean @default(false)
 usedAt DateTime?
 shopId String
