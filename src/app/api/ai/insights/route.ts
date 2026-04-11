@@ -18,7 +18,7 @@ const prompt = 'Sei un consulente marketing per negozi italiani. ' +
 'Dai 3 consigli pratici in italiano. Rispondi SOLO in JSON: ' +
 '[{"titolo":"...","descrizione":"...","azione":"..."}]'
 try {
-const { text } = await generateText({ model: openai('gpt-4o-mini'), prompt, maxTokens: 400 })
+const { text } = await generateText({ model: openai('gpt-4o-mini'), prompt, max_tokens: 400 })
 const clean = text.replace(/```json|```/g,'').trim()
 return NextResponse.json({ insights: JSON.parse(clean) })
 } catch {
