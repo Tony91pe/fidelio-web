@@ -17,6 +17,7 @@
     "@prisma/client": "^5.22.0",
     "@react-email/components": "^1.0.11",
     "@stripe/stripe-js": "^9.0.1",
+    "@zxing/library": "^0.21.3",
     "ai": "^6.0.157",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
