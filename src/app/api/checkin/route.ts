@@ -23,7 +23,7 @@ data: { points: WELCOME, customerId: customer.id, shopId, note: 'Benvenuto!' }
 })
 return NextResponse.json({ pointsEarned: WELCOME, isNew: true })
 }
-mport { sendWelcomeEmail } from '@/lib/email'
+import { sendWelcomeEmail } from '@/lib/email'
 // Aggiungi dopo db.visit.create nella sezione nuovo cliente:
 try {
 await sendWelcomeEmail(email, name, shop.name, WELCOME)
