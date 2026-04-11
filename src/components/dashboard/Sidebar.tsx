@@ -2,6 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
+import { useState } from 'react'
 
 const navItems = [
   { href: '/dashboard', icon: '📊', label: 'Dashboard' },
@@ -16,16 +17,26 @@ const navItems = [
   { href: '/admin', icon: '🛡️', label: 'Admin' },
 ]
 
-const mobileItems = [
+const mobileMain = [
   { href: '/dashboard', icon: '📊', label: 'Home' },
   { href: '/dashboard/customers', icon: '👥', label: 'Clienti' },
   { href: '/dashboard/qr', icon: '📱', label: 'QR' },
-  { href: '/dashboard/analytics', icon: '📈', label: 'Analytics' },
+  { href: '/dashboard/analytics', icon: '📈', label: 'Stats' },
+]
+
+const mobileExtra = [
+  { href: '/dashboard/rewards', icon: '🎁', label: 'Premi' },
+  { href: '/dashboard/campaigns', icon: '📧', label: 'Campagne' },
+  { href: '/dashboard/giftcards', icon: '🎀', label: 'Carte Regalo' },
   { href: '/dashboard/settings', icon: '⚙️', label: 'Impostazioni' },
+  { href: '/dashboard/upgrade', icon: '⚡', label: 'Upgrade' },
+  { href: '/admin', icon: '🛡️', label: 'Admin' },
 ]
 
 export default function Sidebar() {
   const pathname = usePathname()
+  const [menuOpen, setMenuOpen] = useState(false)
+
   return (
     <>
       {/* Sidebar desktop */}
@@ -55,9 +66,31 @@ export default function Sidebar() {
         </div>
       </aside>
 
+      {/* Menu "Altro" mobile */}
+      {menuOpen && (
+        <div className="md:hidden fixed inset-0 z-40" onClick={() => setMenuOpen(false)}>
+          <div className="absolute inset-0 bg-black/60" />
+          <div className="absolute bottom-16 left-0 right-0 bg-[#1a1a2e] border-t border-white/10 rounded-t-2xl p-4"
+            onClick={e => e.stopPropagation()}>
+            <div className="w-10 h-1 bg-white/20 rounded-full mx-auto mb-4" />
+            <div className="grid grid-cols-3 gap-3">
+              {mobileExtra.map(item => (
+                <Link key={item.href} href={item.href} onClick={() => setMenuOpen(false)}
+                  className={`flex flex-col items-center gap-2 p-3 rounded-xl text-xs font-medium ${
+                    pathname === item.href ? 'bg-[#6C3DF4]/20 text-white' : 'text-white/60 bg-white/5'
+                  }`}>
+                  <span className="text-2xl">{item.icon}</span>
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Navbar mobile in basso */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[#0F0F1A] border-t border-white/10 flex justify-around items-center px-2 py-2">
-        {mobileItems.map((item) => (
+        {mobileMain.map((item) => (
           <Link key={item.href} href={item.href}
             className={`flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-xs ${
               pathname === item.href ? 'text-[#6C3DF4]' : 'text-white/40'
@@ -66,6 +99,11 @@ export default function Sidebar() {
             {item.label}
           </Link>
         ))}
+        <button onClick={() => setMenuOpen(!menuOpen)}
+          className="flex flex-col items-center gap-1 px-3 py-1 rounded-xl text-xs text-white/40">
+          <span className="text-xl">☰</span>
+          Altro
+        </button>
       </nav>
     </>
   )
