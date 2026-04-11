@@ -21,6 +21,8 @@ model Shop {
   website     String?
   plan        Plan     @default(STARTER)
   stripeId    String?
+  suspended   Boolean  @default(false)
+  planExpiresAt DateTime?
   ownerId     String
   customers   Customer[]
   rewards     Reward[]
