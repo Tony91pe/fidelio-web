@@ -1,11 +1,11 @@
 import Link from 'next/link'
 const features = [
-{ icon:'■', title:'QR Code in 10 minuti', desc:'Il cliente scansiona e si registra in 10 secondi.' },
-{ icon:'■', title:'Punti e Premi', desc:'Programma punti personalizzato con premi esclusivi.' },
-{ icon:'■', title:'Email Automatiche', desc:'Winback, compleanno, punti. Tutto automatico.' },
-{ icon:'■', title:'AI Insights', desc:"L'AI ti dice chi sta per smettere di venire." },
-{ icon:'■', title:'Analytics Reali', desc:'Vedi chi sono i clienti e quando vengono.' },
-{ icon:'■', title:'Carte Regalo', desc:'Carte regalo digitali con codici univoci.' },
+{ icon:'📱', title:'QR Code in 10 minuti', desc:'Il cliente scansiona e si registra in 10 secondi.' },
+{ icon:'⭐', title:'Punti e Premi', desc:'Programma punti personalizzato con premi esclusivi.' },
+{ icon:'✉️', title:'Email Automatiche', desc:'Winback, compleanno, punti. Tutto automatico.' },
+{ icon:'🤖', title:'AI Insights', desc:"L'AI ti dice chi sta per smettere di venire." },
+{ icon:'📊', title:'Analytics Reali', desc:'Vedi chi sono i clienti e quando vengono.' },
+{ icon:'🎁', title:'Carte Regalo', desc:'Carte regalo digitali con codici univoci.' },
 ]
 const plans = [
 { name:'Starter', price:'0', period:'per sempre',
