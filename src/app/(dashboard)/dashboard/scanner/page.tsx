@@ -16,7 +16,7 @@ export default function ScannerPage() {
     const reader = new BrowserQRCodeReader()
     readerRef.current = reader
     if (videoRef.current) {
-      reader.decodeFromVideoDevice(undefined, videoRef.current, async (res, err) => {
+      reader.decodeFromVideoDevice(null, videoRef.current, async (res, err) => {
         if (res) {
           const text = res.getText()
           if (text.startsWith('FID-') || text.startsWith('fidelio-customer:')) {
