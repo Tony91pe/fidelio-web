@@ -2,7 +2,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 
 const navItems = [
   { href: '/dashboard', icon: '📊', label: 'Dashboard' },
@@ -36,6 +36,8 @@ const mobileExtra = [
 export default function Sidebar() {
   const pathname = usePathname()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [plan, setPlan] = useState("STARTER")
+  useEffect(() => { fetch("/api/shop/plan").then(r=>r.json()).then(d=>setPlan(d.plan)) }, [])
 
   return (
     <>
@@ -47,7 +49,7 @@ export default function Sidebar() {
         </Link>
         <div className="bg-[#6C3DF4]/10 border border-[#6C3DF4]/20 rounded-xl px-3 py-2 mb-6">
           <p className="text-sm font-bold">Il mio negozio</p>
-          <p className="text-xs text-[#A78BFA]">Piano Starter</p>
+          <p className="text-xs text-[#A78BFA]">Piano {plan}</p>
         </div>
         <nav className="flex flex-col gap-1 flex-1">
           {navItems.map((item) => (
