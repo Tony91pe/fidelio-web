@@ -23,6 +23,12 @@ model Shop {
   stripeId    String?
   suspended   Boolean  @default(false)
   planExpiresAt DateTime?
+  pointsSystem  String   @default("per_visit")
+  pointsPerVisit Int     @default(10)
+  pointsPerEuro  Float   @default(1.0)
+  rewardThreshold Int    @default(100)
+  rewardDescription String @default("Premio")
+  welcomePoints  Int     @default(50)
   ownerId     String
   customers   Customer[]
   rewards     Reward[]

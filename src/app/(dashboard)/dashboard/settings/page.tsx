@@ -4,41 +4,28 @@ import { useState, useEffect } from 'react'
 type ShopSettings = {
   id: string
   name: string
-  email: string
-  phone?: string
+  phone: string
+  pointsSystem: string
+  pointsPerVisit: number
+  pointsPerEuro: number
+  rewardThreshold: number
+  rewardDescription: string
+  welcomePoints: number
 }
 
 const inp: React.CSSProperties = {
-  background:'rgba(255,255,255,0.07)',
-  border:'1px solid rgba(255,255,255,0.12)',
-  borderRadius:'10px',
-  padding:'10px 14px',
-  color:'white',
-  width:'100%',
-  outline:'none',
-  fontSize:'14px',
-  marginBottom:'8px'
+  background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.12)',
+  borderRadius:'10px',padding:'10px 14px',color:'white',width:'100%',outline:'none',fontSize:'14px',marginBottom:'8px'
 }
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<ShopSettings | null>(null)
   const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    async function fetchSettings() {
-      try {
-        const res = await fetch('/api/shop/settings')
-        if (!res.ok) throw new Error('Failed to fetch settings')
-        const data = await res.json()
-        setSettings(data)
-      } catch (err) {
-        console.error('Error loading settings:', err)
-      } finally {
-        setLoading(false)
-      }
-    }
-    fetchSettings()
+    fetch('/api/shop/settings').then(r => r.json()).then(setSettings).finally(() => setLoading(false))
   }, [])
 
   async function handleSave(e: React.FormEvent) {
@@ -46,91 +33,90 @@ export default function SettingsPage() {
     if (!settings) return
     setSaving(true)
     try {
-      const res = await fetch('/api/shop/settings', {
+      await fetch('/api/shop/settings', {
         method: 'PUT',
         headers: {'Content-Type': 'application/json'},
         body: JSON.stringify(settings),
       })
-      if (!res.ok) throw new Error('Failed to save settings')
-      console.log('Impostazioni salvate')
-    } catch (err) {
-      console.error('Error saving settings:', err)
-    } finally {
-      setSaving(false)
-    }
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } finally { setSaving(false) }
   }
 
-  if (loading) {
-    return <div style={{textAlign:'center', padding:'2rem', color:'rgba(255,255,255,0.5)'}}>Caricamento...</div>
-  }
-
-  if (!settings) {
-    return <div style={{textAlign:'center', padding:'2rem', color:'rgba(255,255,255,0.5)'}}>Errore nel caricamento</div>
-  }
+  if (loading) return <div style={{textAlign:'center',padding:'2rem',color:'rgba(255,255,255,0.5)'}}>Caricamento...</div>
+  if (!settings) return <div style={{textAlign:'center',padding:'2rem',color:'rgba(255,255,255,0.5)'}}>Errore nel caricamento</div>
 
   return (
     <div>
-      <div style={{marginBottom:'2rem'}}>
-        <h1 style={{fontSize:'1.5rem', fontWeight:'700'}}>Impostazioni</h1>
-        <p style={{color:'rgba(255,255,255,0.4)'}}>Gestisci le impostazioni del tuo negozio</p>
-      </div>
+      <h1 style={{fontSize:'1.5rem',fontWeight:'700',marginBottom:'0.5rem'}}>Impostazioni</h1>
+      <p style={{color:'rgba(255,255,255,0.4)',marginBottom:'2rem'}}>Configura il tuo negozio e il sistema punti</p>
 
-      <form onSubmit={handleSave} style={{
-        background:'rgba(255,255,255,0.04)',
-        border:'1px solid rgba(255,255,255,0.08)',
-        borderRadius:'16px',
-        padding:'2rem',
-        maxWidth:'500px'
-      }}>
-        <label style={{display:'block', marginBottom:'1rem'}}>
-          <span style={{display:'block', fontSize:'0.9rem', fontWeight:'600', marginBottom:'0.5rem'}}>Nome negozio</span>
-          <input
-            type="text"
-            style={inp}
-            value={settings.name}
-            onChange={e => setSettings({...settings, name: e.target.value})}
-            required
-          />
-        </label>
+      <form onSubmit={handleSave} style={{display:'flex',flexDirection:'column',gap:'1.5rem',maxWidth:'600px'}}>
 
-        <label style={{display:'block', marginBottom:'1rem'}}>
-          <span style={{display:'block', fontSize:'0.9rem', fontWeight:'600', marginBottom:'0.5rem'}}>Email</span>
-          <input
-            type="email"
-            style={inp}
-            value={settings.email}
-            onChange={e => setSettings({...settings, email: e.target.value})}
-            required
-          />
-        </label>
+        {/* Info negozio */}
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'1.5rem'}}>
+          <h3 style={{fontWeight:'700',marginBottom:'1rem'}}>Info negozio</h3>
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Nome negozio</label>
+          <input style={inp} value={settings.name} onChange={e => setSettings({...settings, name: e.target.value})} required />
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Telefono</label>
+          <input style={inp} value={settings.phone || ''} onChange={e => setSettings({...settings, phone: e.target.value})} />
+        </div>
 
-        <label style={{display:'block', marginBottom:'1.5rem'}}>
-          <span style={{display:'block', fontSize:'0.9rem', fontWeight:'600', marginBottom:'0.5rem'}}>Telefono</span>
-          <input
-            type="tel"
-            style={inp}
-            value={settings.phone || ''}
-            onChange={e => setSettings({...settings, phone: e.target.value})}
-          />
-        </label>
+        {/* Sistema punti */}
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'1.5rem'}}>
+          <h3 style={{fontWeight:'700',marginBottom:'1rem'}}>Sistema punti</h3>
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.5rem'}}>Come assegni i punti?</label>
+          <div style={{display:'flex',flexDirection:'column',gap:'0.5rem',marginBottom:'1rem'}}>
+            {[
+              {value:'per_visit', label:'Punti per visita', desc:'Ogni visita = X punti fissi'},
+              {value:'per_euro', label:'Punti per euro speso', desc:'1 punto ogni X euro di spesa'},
+              {value:'combined', label:'Combinato', desc:'Punti fissi + punti per spesa'},
+            ].map(opt => (
+              <div key={opt.value} onClick={() => setSettings({...settings, pointsSystem: opt.value})}
+                style={{background:settings.pointsSystem===opt.value?'rgba(108,61,244,0.2)':'rgba(255,255,255,0.03)',
+                border:`1px solid ${settings.pointsSystem===opt.value?'rgba(108,61,244,0.4)':'rgba(255,255,255,0.08)'}`,
+                borderRadius:'10px',padding:'0.75rem 1rem',cursor:'pointer'}}>
+                <div style={{fontWeight:'600',fontSize:'0.9rem'}}>{opt.label}</div>
+                <div style={{fontSize:'0.8rem',color:'rgba(255,255,255,0.5)'}}>{opt.desc}</div>
+              </div>
+            ))}
+          </div>
 
-        <button
-          type="submit"
-          disabled={saving}
-          style={{
-            width:'100%',
-            background:'#6C3DF4',
-            color:'white',
-            padding:'12px',
-            borderRadius:'10px',
-            fontWeight:'600',
-            border:'none',
-            cursor:'pointer',
-            opacity: saving ? 0.7 : 1,
-            transition:'opacity 0.2s'
-          }}
-        >
-          {saving ? 'Salvataggio...' : 'Salva impostazioni'}
+          {(settings.pointsSystem === 'per_visit' || settings.pointsSystem === 'combined') && (
+            <>
+              <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Punti per visita</label>
+              <input style={inp} type="number" min="1" value={settings.pointsPerVisit}
+                onChange={e => setSettings({...settings, pointsPerVisit: parseInt(e.target.value)})} />
+            </>
+          )}
+
+          {(settings.pointsSystem === 'per_euro' || settings.pointsSystem === 'combined') && (
+            <>
+              <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Punti per euro speso</label>
+              <input style={inp} type="number" min="0.1" step="0.1" value={settings.pointsPerEuro}
+                onChange={e => setSettings({...settings, pointsPerEuro: parseFloat(e.target.value)})} />
+            </>
+          )}
+        </div>
+
+        {/* Premio */}
+        <div style={{background:'rgba(255,255,255,0.04)',border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'1.5rem'}}>
+          <h3 style={{fontWeight:'700',marginBottom:'1rem'}}>Premio</h3>
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Punti necessari per il premio</label>
+          <input style={inp} type="number" min="1" value={settings.rewardThreshold}
+            onChange={e => setSettings({...settings, rewardThreshold: parseInt(e.target.value)})} />
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Descrizione premio</label>
+          <input style={inp} placeholder="Es. Caffè gratis, 10% di sconto..." value={settings.rewardDescription}
+            onChange={e => setSettings({...settings, rewardDescription: e.target.value})} />
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Punti di benvenuto</label>
+          <input style={inp} type="number" min="0" value={settings.welcomePoints}
+            onChange={e => setSettings({...settings, welcomePoints: parseInt(e.target.value)})} />
+        </div>
+
+        <button type="submit" disabled={saving}
+          style={{background:'#6C3DF4',color:'white',padding:'14px',borderRadius:'12px',fontWeight:'700',
+          border:'none',cursor:'pointer',opacity:saving?0.7:1,fontSize:'15px'}}>
+          {saving ? 'Salvataggio...' : saved ? '✓ Salvato!' : 'Salva impostazioni'}
         </button>
       </form>
     </div>
