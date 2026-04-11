@@ -5,4 +5,4 @@ const shops = await db.shop.findMany({
 select: { id:true, name:true, category:true, city:true, address:true }
 })
 return NextResponse.json(shops)
-}S
+}
