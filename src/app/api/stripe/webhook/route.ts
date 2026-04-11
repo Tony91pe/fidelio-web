@@ -17,6 +17,7 @@ export async function POST(req: Request) {
     const session = event.data.object
     const metadata = (session as any).metadata
     const { shopId, plan } = metadata
+    console.log('[webhook] shopId:', shopId, 'plan:', plan)
     await db.shop.update({
       where: { id: shopId },
       data: {
