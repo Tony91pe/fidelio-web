@@ -20,7 +20,7 @@ export default function Sidebar() {
 
   return (
     <aside className="w-60 min-h-screen bg-white/3 border-r border-white/6 flex flex-col p-4">
-      <div className="flex items-center gap-2 px-3 mb-6">
+      <Link href="/" className="flex items-center gap-2 px-3 mb-6">
         <div className="w-2 h-2 rounded-full bg-[#6C3DF4]"></div>
         <span className="text-xl font-bold">Fidelio</span>
       </Link>
