@@ -88,7 +88,7 @@ border:'1px solid rgba(255,255,255,0.08)',borderRadius:'16px',padding:'1.5rem'}}
 <h2 style={{textAlign:'center',fontSize:'2.2rem',fontWeight:'800',marginBottom:'3rem'}}>
 Prezzi semplici
 </h2>
-<div style={{display:'grid',gridTemplateColumns:'repeat(3,1fr)',gap:'1.2rem'}}>
+<div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(250px,1fr))',gap:'1.2rem'}}>
 {plans.map(p => (
 <div key={p.name} style={{
 background:p.featured?'rgba(108,61,244,0.15)':'rgba(255,255,255,0.04)',
