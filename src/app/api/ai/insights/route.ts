@@ -15,7 +15,7 @@ export async function GET() {
   const atRisk = await db.customer.count({ where: { shopId: shop.id, lastVisitAt: { lt: ago30 } } })
   const prompt = 'Sei un consulente marketing per negozi italiani. Negozio: ' + shop.name + ' categoria: ' + shop.category + '. Dati: clienti totali ' + total + ', attivi 30gg ' + active + ', a rischio ' + atRisk + '. Dai 3 consigli pratici in italiano. Rispondi SOLO in JSON: [{"titolo":"...","descrizione":"...","azione":"..."}]'
   try {
-    const { text } = await generateText({ model: openai('gpt-4o-mini'), prompt, maxTokens: 400 })
+    const { text } = await generateText({ model: openai('gpt-4o-mini'), prompt })
     const clean = text.replace(/```json|```/g,'').trim()
     return NextResponse.json({ insights: JSON.parse(clean) })
   } catch {
