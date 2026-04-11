@@ -13,9 +13,15 @@ async function handleSend(e: React.FormEvent) {
 e.preventDefault()
 if (!confirm('Inviare la campagna?')) return
 setSending(true)
-const res = await fetch('/api/campaigns', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject,body,segment})})
-setResult(await res.json())
-setSending(false)
+try {
+  const res = await fetch('/api/campaigns', {method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({subject,body,segment})})
+  if (!res.ok) throw new Error('Failed to send campaign')
+  setResult(await res.json())
+} catch (err) {
+  console.error('Error sending campaign:', err)
+} finally {
+  setSending(false)
+}
 }
 return (
 <div>
@@ -32,7 +38,7 @@ return (
 <form onSubmit={handleSend}>
 <h3 style={{fontWeight:'700',marginBottom:'0.8rem',fontSize:'0.95rem'}}>3. Componi</h3>
 <input style={inp} placeholder="Oggetto email" value={subject} onChange={e=>setSubject(e.target.value)} required />
-<textarea style={{...inp,height:'150px',resize:'vertical'} as any} placeholder="Testo email..." value={body} onChange={e=>setBody(e.target.value)} required />
+<textarea style={{...inp,height:'150px',resize:'vertical'}} placeholder="Testo email..." value={body} onChange={e=>setBody(e.target.value)} required />
 <button type="submit" disabled={sending} style={{width:'100%',background:'#6C3DF4',color:'white',padding:'12px',borderRadius:'10px',fontWeight:'600',border:'none',cursor:'pointer',opacity:sending?0.7:1}}>{sending?'Invio...':'Invia campagna'}</button>
 </form>
 </div>

@@ -1,8 +1,10 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { randomBytes } from 'crypto'
+
 function generateCode() {
-return Math.random().toString(36).substring(2,8).toUpperCase()
+  return randomBytes(6).toString('hex').toUpperCase()
 }
 export async function POST(req: Request) {
 const { userId } = await auth()

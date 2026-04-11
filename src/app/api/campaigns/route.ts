@@ -1,9 +1,9 @@
 import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
-import { Resend } from 'resend'
+import { getResendClient } from '@/lib/email'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+const resend = getResendClient()
 
 export async function POST(req: Request) {
   const { userId } = await auth()
@@ -25,7 +25,9 @@ export async function POST(req: Request) {
         html: '<div style="font-family:sans-serif;padding:2rem"><p>Ciao ' + c.name + '!</p><div>' + body + '</div><p style="color:#555;font-size:0.85rem;margin-top:2rem">Hai ' + c.points + ' punti da usare.</p></div>',
       })
       sent++
-    } catch {}
+    } catch (error) {
+      console.error(`Failed to send email to ${c.email}:`, error)
+    }
   }
   return NextResponse.json({ sent, total: customers.length })
 }

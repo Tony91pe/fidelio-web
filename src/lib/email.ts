@@ -1,5 +1,10 @@
 import { Resend } from 'resend'
+
 const resend = new Resend(process.env.RESEND_API_KEY)
+
+export function getResendClient() {
+  return resend
+}
 
 export async function sendWelcomeEmail(to:string, customerName:string, shopName:string, points:number) {
   return await resend.emails.send({

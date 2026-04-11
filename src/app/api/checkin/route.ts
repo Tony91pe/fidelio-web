@@ -29,7 +29,9 @@ export async function POST(req: Request) {
 
   try {
     await sendWelcomeEmail(email, name, shop.name, WELCOME)
-  } catch {}
+  } catch (error) {
+    console.error(`Failed to send welcome email to ${email}:`, error)
+  }
 
   return NextResponse.json({ pointsEarned: WELCOME, isNew: true })
 }

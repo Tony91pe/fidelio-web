@@ -16,20 +16,32 @@ export default function RewardsPage() {
   const [form, setForm] = useState({ title:'', description:'', pointsCost:'100' })
 
   useEffect(() => {
-    fetch('/api/rewards').then(r => r.json()).then(setRewards)
+    fetch('/api/rewards')
+      .then(r => {
+        if (!r.ok) throw new Error('Failed to fetch rewards')
+        return r.json()
+      })
+      .then(setRewards)
+      .catch(err => console.error('Error loading rewards:', err))
   }, [])
 
   async function createReward(e: React.FormEvent) {
     e.preventDefault()
     setCreating(true)
-    const res = await fetch('/api/rewards', {
-      method:'POST', headers:{'Content-Type':'application/json'},
-      body:JSON.stringify({...form, pointsCost:parseInt(form.pointsCost)}),
-    })
-    setRewards([await res.json(), ...rewards])
-    setForm({ title:'', description:'', pointsCost:'100' })
-    setShowForm(false)
-    setCreating(false)
+    try {
+      const res = await fetch('/api/rewards', {
+        method:'POST', headers:{'Content-Type':'application/json'},
+        body:JSON.stringify({...form, pointsCost:parseInt(form.pointsCost)}),
+      })
+      if (!res.ok) throw new Error('Failed to create reward')
+      setRewards([await res.json(), ...rewards])
+      setForm({ title:'', description:'', pointsCost:'100' })
+      setShowForm(false)
+    } catch (err) {
+      console.error('Error creating reward:', err)
+    } finally {
+      setCreating(false)
+    }
   }
 
   return (

@@ -6,17 +6,29 @@ const [cards, setCards] = useState<GiftCard[]>([])
 const [points, setPoints] = useState('50')
 const [creating, setCreating] = useState(false)
 useEffect(() => {
-fetch('/api/giftcards').then(r => r.json()).then(setCards)
+fetch('/api/giftcards')
+  .then(r => {
+    if (!r.ok) throw new Error('Failed to fetch gift cards')
+    return r.json()
+  })
+  .then(setCards)
+  .catch(err => console.error('Error loading gift cards:', err))
 }, [])
 async function createCard() {
 setCreating(true)
-const res = await fetch('/api/giftcards', {
-method:'POST', headers:{'Content-Type':'application/json'},
-body:JSON.stringify({ points: parseInt(points) }),
-})
-const card = await res.json()
-setCards([card, ...cards])
-setCreating(false)
+try {
+  const res = await fetch('/api/giftcards', {
+    method:'POST', headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({ points: parseInt(points) }),
+  })
+  if (!res.ok) throw new Error('Failed to create gift card')
+  const card = await res.json()
+  setCards([card, ...cards])
+} catch (err) {
+  console.error('Error creating gift card:', err)
+} finally {
+  setCreating(false)
+}
 }
 return (
 <div>
@@ -53,7 +65,7 @@ border:'1px solid rgba(255,255,255,0.08)',borderRadius:'12px',
 padding:'1rem',display:'flex',alignItems:'center',
 justifyContent:'space-between',opacity:card.used?0.5:1}}>
 <div style={{display:'flex',alignItems:'center',gap:'1rem'}}>
-<span style={{fontSize:'1.5rem'}}>{card.used?'■':'■'}</span>
+<span style={{fontSize:'1.5rem'}}>{card.used?'✓':'🎁'}</span>
 <div>
 <div style={{fontFamily:'monospace',fontSize:'1.2rem',fontWeight:'700',
 letterSpacing:'0.1em',color:card.used?'rgba(255,255,255,0.4)':'#A78BFA'}}>
