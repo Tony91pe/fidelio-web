@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Shop {
+  id          String   @id @default(cuid())
+  name        String
+  category    String
+  description String?
+  logo        String?
+  address     String
+  city        String
+  lat         Float?
+  lng         Float?
+  phone       String?
+  website     String?
+  plan        Plan     @default(STARTER)
+  stripeId    String?
+  ownerId     String
+  customers   Customer[]
+  rewards     Reward[]
+  giftCards  GiftCard[]
+  campaigns   Campaign[]
+  visits      Visit[]
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+model Customer {
+  id          String    @id @default(cuid())
+  email       String
+  name        String
+  phone       String?
+  birthday    DateTime?
+  points      Int       @default(0)
+  totalVisits Int       @default(0)
+  lastVisitAt DateTime?
+  shopId      String
+  shop        Shop      @relation(fields: [shopId], references: [id])
+  visits      Visit[]
+  redemptions Redemption[]
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+
+  @@unique([email, shopId])
+}
+
+model Visit {
+  id         String   @id @default(cuid())
+  points     Int
+  amount     Float?
+  note       String?
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  shopId     String
+  shop       Shop     @relation(fields: [shopId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model Reward {
+  id          String       @id @default(cuid())
+  title       String
+  description String?
+  pointsCost  Int
+  active      Boolean      @default(true)
+  shopId      String
+  shop        Shop         @relation(fields: [shopId], references: [id])
+  redemptions Redemption[]
+  createdAt   DateTime     @default(now())
+}
+
+model Redemption {
+  id         String   @id @default(cuid())
+  points     Int
+  customerId String
+  customer   Customer @relation(fields: [customerId], references: [id])
+  rewardId   String
+  reward     Reward   @relation(fields: [rewardId], references: [id])
+  createdAt  DateTime @default(now())
+}
+
+model Campaign {
+  id        String         @id @default(cuid())
+  type      CampaignType
+  subject   String
+  body      String
+  status    CampaignStatus @default(DRAFT)
+  sentAt    DateTime?
+  shopId    String
+  shop      Shop           @relation(fields: [shopId], references: [id])
+  createdAt DateTime       @default(now())
+}
+
+model GiftCard {
+id String @id @default(cuid())
+code String @unique
+points Int
+used Boolean @default(false)
+usedAt DateTime?
+shopId String
+shop Shop @relation(fields: [shopId], references: [id])
+createdAt DateTime @default(now())
+}
+
+
+enum Plan {
+  STARTER
+  GROWTH
+  PRO
+}
+
+enum CampaignType {
+  WELCOME
+  BIRTHDAY
+  WINBACK
+  REWARD_AVAILABLE
+  MANUAL
+}
+
+enum CampaignStatus {
+  DRAFT
+  SCHEDULED
+  SENT
+}
