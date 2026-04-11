@@ -47,7 +47,7 @@ export default function AdminPage() {
   if (!data) return <div style={{minHeight:'100vh',background:'#0D0D1A',display:'flex',alignItems:'center',justifyContent:'center',color:'white'}}>Non autorizzato</div>
 
   return (
-    <div style={{minHeight:'100vh',background:'#0D0D1A',color:'white',padding:'2rem',maxWidth:'1200px',margin:'0 auto'}}>
+    <div style={{minHeight:'100vh',background:'#0D0D1A',color:'white',padding:'2rem',maxWidth:'100%'}}>
       <h1 style={{fontSize:'1.8rem',fontWeight:'800',marginBottom:'0.5rem'}}>🛡️ Pannello Admin</h1>
       <p style={{color:'rgba(255,255,255,0.4)',marginBottom:'2rem'}}>Gestione piattaforma Fidelio</p>
 
