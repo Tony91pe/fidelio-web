@@ -13,7 +13,13 @@ export async function GET(req: Request) {
 
   const rewards = await db.redemption.findMany({
     where: { customerId: { in: customerIds } },
-    include: { shop: { select: { name: true } } },
+    include: {
+      reward: {
+        include: {
+          shop: { select: { name: true } }
+        }
+      }
+    },
     orderBy: { createdAt: 'desc' },
     take: 50,
   })
@@ -21,8 +27,8 @@ export async function GET(req: Request) {
   return NextResponse.json(
     rewards.map((r) => ({
       id: r.id,
-      description: r.rewardDescription,
-      shopName: r.shop.name,
+      description: r.reward.description,
+      shopName: r.reward.shop.name,
       createdAt: r.createdAt,
     }))
   )
