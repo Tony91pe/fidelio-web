@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import jwt from 'jsonwebtoken'
-import { otpStore } from '../send-otp/route'
 
 const corsHeaders = {
   'Access-Control-Allow-Origin': '*',
@@ -22,14 +21,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Email e codice richiesti' }, { status: 400, headers: corsHeaders })
   }
 
-  const stored = otpStore.get(email)
+  const stored = await db.otpCode.findFirst({
+    where: { email },
+    orderBy: { createdAt: 'desc' }
+  })
 
   if (!stored) {
     return NextResponse.json({ error: 'Codice non trovato o scaduto' }, { status: 400, headers: corsHeaders })
   }
 
-  if (Date.now() > stored.expires) {
-    otpStore.delete(email)
+  if (new Date() > stored.expires) {
+    await db.otpCode.deleteMany({ where: { email } })
     return NextResponse.json({ error: 'Codice scaduto. Richiedi un nuovo codice.' }, { status: 400, headers: corsHeaders })
   }
 
@@ -37,7 +39,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Codice non valido' }, { status: 400, headers: corsHeaders })
   }
 
-  otpStore.delete(email)
+  await db.otpCode.deleteMany({ where: { email } })
 
   let customer = await db.customer.findFirst({ where: { email } })
 

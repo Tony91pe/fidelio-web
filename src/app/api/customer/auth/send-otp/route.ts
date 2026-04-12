@@ -4,20 +4,33 @@ import { Resend } from 'resend'
 
 const resend = new Resend(process.env.RESEND_API_KEY)
 
-const otpStore = new Map<string, { code: string; expires: number }>()
-export { otpStore }
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders })
+}
 
 export async function POST(req: Request) {
   const { email } = await req.json()
 
   if (!email || !email.includes('@')) {
-    return NextResponse.json({ error: 'Email non valida' }, { status: 400 })
+    return NextResponse.json({ error: 'Email non valida' }, { status: 400, headers: corsHeaders })
   }
 
   const code = Math.floor(100000 + Math.random() * 900000).toString()
-  const expires = Date.now() + 10 * 60 * 1000
+  const expires = new Date(Date.now() + 10 * 60 * 1000)
 
-  otpStore.set(email, { code, expires })
+  // Elimina vecchi codici per questa email
+  await db.otpCode.deleteMany({ where: { email } })
+
+  // Salva nuovo codice nel DB
+  await db.otpCode.create({
+    data: { email, code, expires }
+  })
 
   try {
     await resend.emails.send({
@@ -43,5 +56,5 @@ export async function POST(req: Request) {
     console.error('OTP email error:', err)
   }
 
-  return NextResponse.json({ ok: true })
+  return NextResponse.json({ ok: true }, { headers: corsHeaders })
 }

@@ -117,6 +117,16 @@ shop Shop @relation(fields: [shopId], references: [id])
 createdAt DateTime @default(now())
 }
 
+model OtpCode {
+  id        String   @id @default(cuid())
+  email     String
+  code      String
+  expires   DateTime
+  createdAt DateTime @default(now())
+
+  @@index([email])
+}
+
 
 enum Plan {
   STARTER
