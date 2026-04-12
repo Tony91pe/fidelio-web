@@ -6,7 +6,14 @@ type Shop = {
   plan: string; suspended: boolean; planExpiresAt: string | null
   createdAt: string; _count: { customers: number; visits: number }
 }
-type AdminData = { shops: Shop[]; totalCustomers: number; totalVisits: number }
+type PwaCustomer = {
+  id: string; email: string; name: string; code: string
+  points: number; totalVisits: number; createdAt: string
+}
+type AdminData = {
+  shops: Shop[]; totalCustomers: number; totalVisits: number
+  pwaCustomers: PwaCustomer[]; otpCodes: number
+}
 
 export default function AdminPage() {
   const [data, setData] = useState<AdminData | null>(null)
@@ -14,6 +21,7 @@ export default function AdminPage() {
   const [selected, setSelected] = useState<Shop | null>(null)
   const [giftMonths, setGiftMonths] = useState(1)
   const [working, setWorking] = useState(false)
+  const [tab, setTab] = useState<'shops' | 'pwa'>('shops')
 
   async function load() {
     const r = await fetch('/api/admin')
@@ -55,9 +63,11 @@ export default function AdminPage() {
         {[
           { label:'Negozi totali', value: data.shops.length, icon:'🏪' },
           { label:'Clienti totali', value: data.totalCustomers, icon:'👥' },
+          { label:'Clienti PWA', value: data.pwaCustomers.length, icon:'📱' },
           { label:'Visite totali', value: data.totalVisits, icon:'📊' },
           { label:'Piani paganti', value: data.shops.filter(s=>s.plan!=='STARTER').length, icon:'⚡' },
           { label:'Sospesi', value: data.shops.filter(s=>s.suspended).length, icon:'🔴' },
+          { label:'OTP attivi', value: data.otpCodes, icon:'🔑' },
         ].map((stat,i) => (
           <div key={i} style={s}>
             <div style={{fontSize:'1.5rem',marginBottom:'0.3rem'}}>{stat.icon}</div>
@@ -67,44 +77,95 @@ export default function AdminPage() {
         ))}
       </div>
 
-      <h2 style={{fontSize:'1.2rem',fontWeight:'700',marginBottom:'1rem'}}>Negozi registrati</h2>
-      <div style={{overflowX:'auto'}}>
-        <table style={{width:'100%',borderCollapse:'collapse',fontSize:'0.85rem'}}>
-          <thead>
-            <tr style={{borderBottom:'1px solid rgba(255,255,255,0.1)'}}>
-              {['Nome','Città','Piano','Scadenza','Clienti','Visite','Stato','Azioni'].map(h=>(
-                <th key={h} style={{textAlign:'left',padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.5)',fontWeight:'600'}}>{h}</th>
-              ))}
-            </tr>
-          </thead>
-          <tbody>
-            {data.shops.map(shop => (
-              <tr key={shop.id} style={{borderBottom:'1px solid rgba(255,255,255,0.05)',opacity:shop.suspended?0.5:1}}>
-                <td style={{padding:'0.75rem 0.5rem',fontWeight:'600'}}>{shop.name}</td>
-                <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{shop.city}</td>
-                <td style={{padding:'0.75rem 0.5rem'}}>
-                  <span style={{background:shop.plan==='STARTER'?'rgba(255,255,255,0.1)':shop.plan==='GROWTH'?'rgba(108,61,244,0.3)':'rgba(255,107,53,0.3)',padding:'2px 8px',borderRadius:'100px',fontSize:'0.75rem',fontWeight:'600'}}>
-                    {shop.plan}
-                  </span>
-                </td>
-                <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)',fontSize:'0.8rem'}}>
-                  {shop.planExpiresAt ? new Date(shop.planExpiresAt).toLocaleDateString('it-IT') : '—'}
-                </td>
-                <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{shop._count.customers}</td>
-                <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{shop._count.visits}</td>
-                <td style={{padding:'0.75rem 0.5rem'}}>
-                  <span style={{color:shop.suspended?'#FF6B6B':'#10B981',fontSize:'0.8rem',fontWeight:'600'}}>
-                    {shop.suspended ? '🔴 Sospeso' : '🟢 Attivo'}
-                  </span>
-                </td>
-                <td style={{padding:'0.75rem 0.5rem'}}>
-                  <button onClick={() => setSelected(shop)} style={btn('#6C3DF4')}>Gestisci</button>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+      {/* Tabs */}
+      <div style={{display:'flex',gap:'0.5rem',marginBottom:'1.5rem'}}>
+        {(['shops','pwa'] as const).map(t => (
+          <button key={t} onClick={() => setTab(t)} style={{
+            background: tab===t ? '#6C3DF4' : 'rgba(255,255,255,0.06)',
+            color:'white', border:'none', borderRadius:'10px',
+            padding:'8px 20px', cursor:'pointer', fontWeight:'600', fontSize:'14px'
+          }}>
+            {t === 'shops' ? '🏪 Negozi' : '📱 Clienti PWA'}
+          </button>
+        ))}
       </div>
+
+      {tab === 'shops' && (
+        <>
+          <h2 style={{fontSize:'1.2rem',fontWeight:'700',marginBottom:'1rem'}}>Negozi registrati</h2>
+          <div style={{overflowX:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:'0.85rem'}}>
+              <thead>
+                <tr style={{borderBottom:'1px solid rgba(255,255,255,0.1)'}}>
+                  {['Nome','Città','Piano','Scadenza','Clienti','Visite','Stato','Azioni'].map(h=>(
+                    <th key={h} style={{textAlign:'left',padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.5)',fontWeight:'600'}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {data.shops.map(shop => (
+                  <tr key={shop.id} style={{borderBottom:'1px solid rgba(255,255,255,0.05)',opacity:shop.suspended?0.5:1}}>
+                    <td style={{padding:'0.75rem 0.5rem',fontWeight:'600'}}>{shop.name}</td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{shop.city}</td>
+                    <td style={{padding:'0.75rem 0.5rem'}}>
+                      <span style={{background:shop.plan==='STARTER'?'rgba(255,255,255,0.1)':shop.plan==='GROWTH'?'rgba(108,61,244,0.3)':'rgba(255,107,53,0.3)',padding:'2px 8px',borderRadius:'100px',fontSize:'0.75rem',fontWeight:'600'}}>
+                        {shop.plan}
+                      </span>
+                    </td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)',fontSize:'0.8rem'}}>
+                      {shop.planExpiresAt ? new Date(shop.planExpiresAt).toLocaleDateString('it-IT') : '—'}
+                    </td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{shop._count.customers}</td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{shop._count.visits}</td>
+                    <td style={{padding:'0.75rem 0.5rem'}}>
+                      <span style={{color:shop.suspended?'#FF6B6B':'#10B981',fontSize:'0.8rem',fontWeight:'600'}}>
+                        {shop.suspended ? '🔴 Sospeso' : '🟢 Attivo'}
+                      </span>
+                    </td>
+                    <td style={{padding:'0.75rem 0.5rem'}}>
+                      <button onClick={() => setSelected(shop)} style={btn('#6C3DF4')}>Gestisci</button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
+
+      {tab === 'pwa' && (
+        <>
+          <h2 style={{fontSize:'1.2rem',fontWeight:'700',marginBottom:'0.5rem'}}>📱 Clienti PWA</h2>
+          <p style={{color:'rgba(255,255,255,0.4)',fontSize:'0.85rem',marginBottom:'1rem'}}>
+            {data.pwaCustomers.length} clienti registrati · {data.otpCodes} codici OTP attivi nel DB
+          </p>
+          <div style={{overflowX:'auto'}}>
+            <table style={{width:'100%',borderCollapse:'collapse',fontSize:'0.85rem'}}>
+              <thead>
+                <tr style={{borderBottom:'1px solid rgba(255,255,255,0.1)'}}>
+                  {['Nome','Email','Codice','Punti','Visite','Registrato'].map(h=>(
+                    <th key={h} style={{textAlign:'left',padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.5)',fontWeight:'600'}}>{h}</th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {data.pwaCustomers.map(c => (
+                  <tr key={c.id} style={{borderBottom:'1px solid rgba(255,255,255,0.05)'}}>
+                    <td style={{padding:'0.75rem 0.5rem',fontWeight:'600'}}>{c.name}</td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{c.email}</td>
+                    <td style={{padding:'0.75rem 0.5rem',fontFamily:'monospace',fontSize:'0.8rem',color:'#A78BFA'}}>{c.code}</td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{c.points}</td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)'}}>{c.totalVisits}</td>
+                    <td style={{padding:'0.75rem 0.5rem',color:'rgba(255,255,255,0.6)',fontSize:'0.8rem'}}>
+                      {new Date(c.createdAt).toLocaleDateString('it-IT')}
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </>
+      )}
 
       {selected && (
         <div style={{position:'fixed',inset:0,background:'rgba(0,0,0,0.8)',display:'flex',alignItems:'center',justifyContent:'center',zIndex:100,padding:'1rem'}}>
