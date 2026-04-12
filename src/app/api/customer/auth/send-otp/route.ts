@@ -34,7 +34,7 @@ export async function POST(req: Request) {
 
   try {
     await resend.emails.send({
-      from: 'Fidelio <noreply@fidelio.it>',
+      from: 'onboarding@resend.dev',
       to: email,
       subject: `Il tuo codice Fidelio: ${code}`,
       html: `
