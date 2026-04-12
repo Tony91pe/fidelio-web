@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders })
+}
+
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const email = searchParams.get('email')
-  if (!email) return NextResponse.json([])
+  if (!email) return NextResponse.json([], { headers: corsHeaders })
 
   const customers = await db.customer.findMany({
     where: { email },
@@ -28,5 +38,5 @@ export async function GET(req: Request) {
     }
   }))
 
-  return NextResponse.json(result)
+  return NextResponse.json(result, { headers: corsHeaders })
 }
