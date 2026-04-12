@@ -5,6 +5,10 @@ type ShopSettings = {
   id: string
   name: string
   phone: string
+  address: string
+  city: string
+  lat: number | null
+  lng: number | null
   pointsSystem: string
   pointsPerVisit: number
   pointsPerEuro: number
@@ -23,6 +27,7 @@ export default function SettingsPage() {
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
   const [loading, setLoading] = useState(true)
+  const [geocoding, setGeocoding] = useState(false)
 
   useEffect(() => {
     fetch('/api/shop/settings').then(r => r.json()).then(setSettings).finally(() => setLoading(false))
@@ -43,6 +48,21 @@ export default function SettingsPage() {
     } finally { setSaving(false) }
   }
 
+  async function handleGeocode() {
+    if (!settings?.address || !settings?.city) return
+    setGeocoding(true)
+    try {
+      const q = encodeURIComponent(`${settings.address}, ${settings.city}, Italy`)
+      const res = await fetch(`https://nominatim.openstreetmap.org/search?q=${q}&format=json&limit=1`, {
+        headers: { 'User-Agent': 'Fidelio/1.0' }
+      })
+      const data = await res.json()
+      if (data.length > 0) {
+        setSettings({...settings, lat: parseFloat(data[0].lat), lng: parseFloat(data[0].lon)})
+      }
+    } finally { setGeocoding(false) }
+  }
+
   if (loading) return <div style={{textAlign:'center',padding:'2rem',color:'rgba(255,255,255,0.5)'}}>Caricamento...</div>
   if (!settings) return <div style={{textAlign:'center',padding:'2rem',color:'rgba(255,255,255,0.5)'}}>Errore nel caricamento</div>
 
@@ -60,6 +80,39 @@ export default function SettingsPage() {
           <input style={inp} value={settings.name} onChange={e => setSettings({...settings, name: e.target.value})} required />
           <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Telefono</label>
           <input style={inp} value={settings.phone || ''} onChange={e => setSettings({...settings, phone: e.target.value})} />
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Indirizzo</label>
+          <input style={inp} value={settings.address || ''} onChange={e => setSettings({...settings, address: e.target.value})} />
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Città</label>
+          <input style={inp} value={settings.city || ''} onChange={e => setSettings({...settings, city: e.target.value})} />
+
+          <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.3rem'}}>Posizione sulla mappa</label>
+          <div style={{display:'flex',gap:'8px',marginBottom:'8px'}}>
+            <input
+              style={{...inp, marginBottom:0, flex:1}}
+              type="number" step="0.0001" placeholder="Latitudine (es. 42.4618)"
+              value={settings.lat || ''}
+              onChange={e => setSettings({...settings, lat: parseFloat(e.target.value) || null})}
+            />
+            <input
+              style={{...inp, marginBottom:0, flex:1}}
+              type="number" step="0.0001" placeholder="Longitudine (es. 14.2136)"
+              value={settings.lng || ''}
+              onChange={e => setSettings({...settings, lng: parseFloat(e.target.value) || null})}
+            />
+          </div>
+          <button
+            type="button"
+            onClick={handleGeocode}
+            disabled={geocoding}
+            style={{background:'rgba(108,61,244,0.2)',border:'1px solid rgba(108,61,244,0.4)',borderRadius:'10px',padding:'8px 16px',color:'#A78BFA',cursor:'pointer',fontSize:'13px',marginBottom:'8px',opacity:geocoding?0.6:1}}
+          >
+            {geocoding ? 'Rilevamento...' : '📍 Rileva automaticamente da indirizzo'}
+          </button>
+          {settings.lat && settings.lng && (
+            <p style={{fontSize:'0.75rem',color:'rgba(255,255,255,0.4)'}}>
+              ✓ Posizione impostata: {settings.lat.toFixed(4)}, {settings.lng.toFixed(4)}
+            </p>
+          )}
         </div>
 
         {/* Sistema punti */}
