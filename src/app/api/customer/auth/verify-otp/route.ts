@@ -3,28 +3,38 @@ import { db } from '@/lib/db'
 import jwt from 'jsonwebtoken'
 import { otpStore } from '../send-otp/route'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders })
+}
+
 const JWT_SECRET = process.env.JWT_SECRET || 'fidelio-secret-change-in-production'
 
 export async function POST(req: Request) {
   const { email, code } = await req.json()
 
   if (!email || !code) {
-    return NextResponse.json({ error: 'Email e codice richiesti' }, { status: 400 })
+    return NextResponse.json({ error: 'Email e codice richiesti' }, { status: 400, headers: corsHeaders })
   }
 
   const stored = otpStore.get(email)
 
   if (!stored) {
-    return NextResponse.json({ error: 'Codice non trovato o scaduto' }, { status: 400 })
+    return NextResponse.json({ error: 'Codice non trovato o scaduto' }, { status: 400, headers: corsHeaders })
   }
 
   if (Date.now() > stored.expires) {
     otpStore.delete(email)
-    return NextResponse.json({ error: 'Codice scaduto. Richiedi un nuovo codice.' }, { status: 400 })
+    return NextResponse.json({ error: 'Codice scaduto. Richiedi un nuovo codice.' }, { status: 400, headers: corsHeaders })
   }
 
   if (stored.code !== code) {
-    return NextResponse.json({ error: 'Codice non valido' }, { status: 400 })
+    return NextResponse.json({ error: 'Codice non valido' }, { status: 400, headers: corsHeaders })
   }
 
   otpStore.delete(email)
@@ -36,7 +46,7 @@ export async function POST(req: Request) {
     const firstShop = await db.shop.findFirst({ where: { suspended: false } })
 
     if (!firstShop) {
-      return NextResponse.json({ error: 'Nessun negozio disponibile' }, { status: 400 })
+      return NextResponse.json({ error: 'Nessun negozio disponibile' }, { status: 400, headers: corsHeaders })
     }
 
     customer = await db.customer.create({
@@ -67,5 +77,5 @@ export async function POST(req: Request) {
       totalVisits: customer.totalVisits,
       lastVisitAt: customer.lastVisitAt,
     },
-  })
+  }, { headers: corsHeaders })
 }
