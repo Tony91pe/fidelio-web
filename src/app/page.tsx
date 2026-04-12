@@ -1,6 +1,7 @@
 'use client'
 import Link from 'next/link'
 import { useEffect, useState } from 'react'
+import { useUser } from '@clerk/nextjs'
 
 const features = [
   { icon:'📱', title:'QR Code in 10 minuti', desc:'Il cliente scansiona e si registra in 10 secondi.' },
@@ -27,6 +28,10 @@ const MAX_FOUNDERS = 50
 
 export default function LandingPage() {
   const [shopCount, setShopCount] = useState<number | null>(null)
+  const { isSignedIn } = useUser()
+
+  const registerHref = isSignedIn ? '/dashboard' : '/register'
+  const loginHref = isSignedIn ? '/dashboard' : '/login'
 
   useEffect(() => {
     fetch('/api/app/shops')
@@ -50,12 +55,12 @@ export default function LandingPage() {
           Fidelio
         </Link>
         <div style={{display:'flex',gap:'1rem',alignItems:'center'}}>
-          <Link href="/login" style={{color:'rgba(255,255,255,0.6)',textDecoration:'none',fontSize:'0.9rem'}}>
-            Accedi
+          <Link href={loginHref} style={{color:'rgba(255,255,255,0.6)',textDecoration:'none',fontSize:'0.9rem'}}>
+            {isSignedIn ? 'Dashboard' : 'Accedi'}
           </Link>
-          <Link href="/register" style={{background:'#6C3DF4',color:'white',padding:'0.5rem 1.2rem',
+          <Link href={registerHref} style={{background:'#6C3DF4',color:'white',padding:'0.5rem 1.2rem',
             borderRadius:'100px',textDecoration:'none',fontSize:'0.9rem',fontWeight:'600'}}>
-            Prova gratis
+            {isSignedIn ? 'Vai alla dashboard' : 'Prova gratis'}
           </Link>
         </div>
       </nav>
@@ -78,10 +83,10 @@ export default function LandingPage() {
           QR code alla cassa, punti digitali, email automatiche e AI che sa quando i clienti stanno per smettere di venire.
         </p>
         <div style={{display:'flex',gap:'1rem',justifyContent:'center',flexWrap:'wrap'}}>
-          <Link href="/register" style={{background:'#6C3DF4',color:'white',
+          <Link href={registerHref} style={{background:'#6C3DF4',color:'white',
             padding:'0.9rem 2rem',borderRadius:'100px',textDecoration:'none',
             fontWeight:'700',fontSize:'1rem',boxShadow:'0 0 30px rgba(108,61,244,0.4)'}}>
-            Inizia gratis — nessuna carta
+            {isSignedIn ? 'Vai alla dashboard' : 'Inizia gratis — nessuna carta'}
           </Link>
         </div>
         <p style={{color:'rgba(255,255,255,0.3)',fontSize:'0.8rem',marginTop:'1rem'}}>
@@ -137,12 +142,12 @@ export default function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/register" style={{display:'block',
+              <Link href={isSignedIn ? '/dashboard/upgrade' : registerHref} style={{display:'block',
                 background:p.featured?'#6C3DF4':'transparent',color:'white',
                 padding:'0.7rem',borderRadius:'10px',textAlign:'center',
                 textDecoration:'none',fontWeight:'600',fontSize:'0.9rem',
                 border:p.featured?'none':'1px solid rgba(255,255,255,0.2)'}}>
-                {p.cta}
+                {isSignedIn ? 'Gestisci piano' : p.cta}
               </Link>
             </div>
           ))}
@@ -155,8 +160,6 @@ export default function LandingPage() {
         <h2 style={{fontSize:'2rem',fontWeight:'800',marginBottom:'0.5rem'}}>
           Sei tra i primi 50 negozi?
         </h2>
-
-        {/* Contatore dinamico */}
         <div style={{display:'inline-flex',alignItems:'center',gap:'0.75rem',
           background:'rgba(0,0,0,0.2)',borderRadius:'100px',padding:'0.4rem 1.2rem',
           marginBottom:'1rem'}}>
@@ -175,16 +178,15 @@ export default function LandingPage() {
              `${spotsLeft} post${spotsLeft === 1 ? 'o' : 'i'} rimast${spotsLeft === 1 ? 'o' : 'i'}`}
           </span>
         </div>
-
         <p style={{opacity:0.9,marginBottom:'2rem'}}>
           Piano Growth gratis per 6 mesi + badge Negozio Fondatore
         </p>
-        <Link href="/register" style={{background:'white',color:'#6C3DF4',
+        <Link href={registerHref} style={{background:'white',color:'#6C3DF4',
           padding:'0.9rem 2rem',borderRadius:'100px',textDecoration:'none',
           fontWeight:'700',fontSize:'1rem',
           opacity: spotsLeft === 0 ? 0.5 : 1,
           pointerEvents: spotsLeft === 0 ? 'none' : 'auto'}}>
-          {spotsLeft === 0 ? 'Posti esauriti' : 'Candidati come fondatore'}
+          {spotsLeft === 0 ? 'Posti esauriti' : isSignedIn ? 'Vai alla dashboard' : 'Candidati come fondatore'}
         </Link>
       </div>
 
