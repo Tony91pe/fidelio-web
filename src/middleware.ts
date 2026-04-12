@@ -1,5 +1,6 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
+import type { NextRequest } from 'next/server'
 
 const isPublicRoute = createRouteMatcher([
   '/',
@@ -13,7 +14,12 @@ const isPublicRoute = createRouteMatcher([
 ])
 
 export default clerkMiddleware(async (auth, request) => {
-  // Handle CORS preflight
+  if (!isPublicRoute(request)) {
+    await auth.protect()
+  }
+})
+
+export function middleware(request: NextRequest) {
   if (request.method === 'OPTIONS') {
     return new NextResponse(null, {
       status: 200,
@@ -24,22 +30,7 @@ export default clerkMiddleware(async (auth, request) => {
       },
     })
   }
-
-  const response = isPublicRoute(request)
-    ? NextResponse.next()
-    : await auth.protect()
-
-  // Add CORS headers to all API responses
-  if (request.nextUrl.pathname.startsWith('/api/')) {
-    const res = response || NextResponse.next()
-    res.headers.set('Access-Control-Allow-Origin', '*')
-    res.headers.set('Access-Control-Allow-Methods', 'GET, POST, PUT, DELETE, OPTIONS')
-    res.headers.set('Access-Control-Allow-Headers', 'Content-Type, Authorization')
-    return res
-  }
-
-  return response
-})
+}
 
 export const config = {
   matcher: [
