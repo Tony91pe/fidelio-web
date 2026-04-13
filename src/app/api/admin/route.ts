@@ -1,12 +1,19 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { Resend } from 'resend'
 
 const ADMIN_USER_ID = process.env.ADMIN_USER_ID
+const resend = new Resend(process.env.RESEND_API_KEY)
+
+async function requireAdmin() {
+  const { userId } = await auth()
+  if (!userId || userId !== ADMIN_USER_ID) return false
+  return true
+}
 
 export async function GET() {
-  const { userId } = await auth()
-  if (!userId || userId !== ADMIN_USER_ID) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+  if (!await requireAdmin()) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
 
   const [shops, totalCustomers, totalVisits, pwaCustomers, otpCodes] = await Promise.all([
     db.shop.findMany({
@@ -18,7 +25,7 @@ export async function GET() {
     db.customer.findMany({
       distinct: ['email'],
       orderBy: { createdAt: 'desc' },
-      take: 50,
+      take: 100,
       select: { id: true, email: true, name: true, code: true, points: true, totalVisits: true, createdAt: true }
     }),
     db.otpCode.count(),
@@ -27,9 +34,48 @@ export async function GET() {
   return NextResponse.json({ shops, totalCustomers, totalVisits, pwaCustomers, otpCodes })
 }
 
+export async function POST(req: Request) {
+  if (!await requireAdmin()) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+
+  const { action, target, subject, body } = await req.json()
+
+  if (action === 'sendEmail') {
+    const shops = await db.shop.findMany({ select: { ownerId: true, plan: true, approved: true } })
+
+    let filtered = shops
+    if (target === 'paying') filtered = shops.filter(s => s.plan !== 'STARTER')
+    if (target === 'pending') filtered = shops.filter(s => !s.approved)
+
+    const ownerIds = [...new Set(filtered.map(s => s.ownerId))]
+
+    const clerk = await clerkClient()
+    const emails: string[] = []
+    for (const userId of ownerIds) {
+      try {
+        const user = await clerk.users.getUser(userId)
+        const email = user.emailAddresses[0]?.emailAddress
+        if (email) emails.push(email)
+      } catch {}
+    }
+
+    if (emails.length > 0) {
+      await resend.emails.send({
+        from: 'Fidelio <noreply@fidelio.it>',
+        to: emails,
+        subject,
+        text: body,
+      })
+    }
+
+    return NextResponse.json({ ok: true, sent: emails.length })
+  }
+
+  return NextResponse.json({ error: 'Azione non valida' }, { status: 400 })
+}
+
 export async function PATCH(req: Request) {
-  const { userId } = await auth()
-  if (!userId || userId !== ADMIN_USER_ID) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+  if (!await requireAdmin()) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+
   const { shopId, action, plan, months } = await req.json()
 
   if (action === 'changePlan') {
@@ -58,8 +104,8 @@ export async function PATCH(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-  const { userId } = await auth()
-  if (!userId || userId !== ADMIN_USER_ID) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+  if (!await requireAdmin()) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+
   const { shopId } = await req.json()
   await db.visit.deleteMany({ where: { shopId } })
   await db.redemption.deleteMany({ where: { reward: { shopId } } })
