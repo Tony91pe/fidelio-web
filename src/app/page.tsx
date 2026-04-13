@@ -13,15 +13,15 @@ const features = [
 ]
 
 const plans = [
-  { name:'Starter', price:'0', period:'per sempre',
-    features:['Fino a 150 clienti','QR code e punti','Email benvenuto','Analytics base'],
+  { name:'STARTER', price:'19', period:'mese',
+    features:['Card digitale del cliente','QR del negozio','Raccolta punti semplice','Storico transazioni','Dashboard base','Fino a 3 premi attivi','Supporto via email'],
     cta:'Inizia gratis', featured:false },
-  { name:'Growth', price:'29', period:'al mese',
-    features:['Fino a 2.000 clienti','Tutte le email','AI suggerimenti','Analytics avanzate'],
-    cta:'30 giorni gratis', featured:true },
-  { name:'Pro', price:'79', period:'al mese',
-    features:['Clienti illimitati','AI avanzata','Export dati','5 negozi'],
-    cta:'Contattaci', featured:false },
+  { name:'GROWTH', price:'39', period:'mese',
+    features:['Tutto di STARTER','Premi illimitati','Automazioni base','Notifiche push ai clienti','Statistiche avanzate','Segmentazione clienti','QR dinamici anti-frode','Accesso multi-dispositivo','Supporto prioritario'],
+    cta:'Inizia', featured:true },
+  { name:'PRO', price:'79', period:'mese',
+    features:['Tutto di GROWTH','Automazioni avanzate','Campagne marketing integrate','Messaggi personalizzati','Ruoli e permessi staff','API','Analisi predittiva','Supporto premium'],
+    cta:'Inizia', featured:false },
 ]
 
 const MAX_FOUNDERS = 50
