@@ -198,7 +198,12 @@ export default function LandingPage() {
           Fidelio
         </Link>
         <p>La piattaforma di fidelizzazione per i negozi italiani</p>
-        <p style={{marginTop:'0.5rem'}}>© 2026 Fidelio. Tutti i diritti riservati.</p>
+        <div style={{display:'flex',gap:'1.5rem',justifyContent:'center',marginTop:'1rem',flexWrap:'wrap'}}>
+          <Link href="/privacy" style={{color:'rgba(255,255,255,0.4)',textDecoration:'none',fontSize:'0.8rem'}}>Privacy Policy</Link>
+          <Link href="/termini" style={{color:'rgba(255,255,255,0.4)',textDecoration:'none',fontSize:'0.8rem'}}>Termini di Servizio</Link>
+          <a href="mailto:info@fidelio.it" style={{color:'rgba(255,255,255,0.4)',textDecoration:'none',fontSize:'0.8rem'}}>Contatti</a>
+        </div>
+        <p style={{marginTop:'1rem'}}>© 2026 Fidelio. Tutti i diritti riservati.</p>
       </div>
 
     </div>
