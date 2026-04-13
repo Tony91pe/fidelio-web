@@ -1,4 +1,3 @@
-cat > src/app/\(dashboard\)/layout.tsx << 'EOF'
 'use client'
 import { useEffect, useState } from 'react'
 import Sidebar from '@/components/dashboard/Sidebar'
@@ -35,22 +34,12 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           </p>
           <div style={{background:'rgba(108,61,244,0.1)',border:'1px solid rgba(108,61,244,0.3)',borderRadius:'16px',padding:'1.5rem',marginBottom:'2rem'}}>
             <p style={{fontSize:'0.9rem',color:'rgba(255,255,255,0.7)'}}>
-              Riceverai una email a conferma dell'approvazione. Nel frattempo puoi contattarci a <a href="mailto:info@fidelio.it" style={{color:'#A78BFA'}}>info@fidelio.it</a>
+              Riceverai una email a conferma dell'approvazione. Nel frattempo puoi contattarci a{' '}
+              <a href="mailto:info@fidelio.it" style={{color:'#A78BFA'}}>info@fidelio.it</a>
             </p>
           </div>
           <a href="/" style={{color:'rgba(255,255,255,0.4)',fontSize:'0.9rem',textDecoration:'none'}}>← Torna alla home</a>
         </div>
-      </div>
-    )
-  }
-
-  if (status === 'no-shop') {
-    return (
-      <div className="flex min-h-screen bg-[#0F0F1A] text-white">
-        <Sidebar />
-        <main className="flex-1 p-4 md:p-8 overflow-y-auto pb-24 md:pb-8">
-          {children}
-        </main>
       </div>
     )
   }
@@ -64,4 +53,3 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     </div>
   )
 }
-EOF
