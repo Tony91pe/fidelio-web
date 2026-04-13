@@ -22,6 +22,7 @@ model Shop {
   plan        Plan     @default(STARTER)
   stripeId    String?
   suspended   Boolean  @default(false)
+  approved    Boolean  @default(false)
   planExpiresAt DateTime?
   pointsSystem  String   @default("per_visit")
   pointsPerVisit Int     @default(10)
