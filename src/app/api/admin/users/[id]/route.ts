@@ -1,70 +1,17 @@
-import { auth } from '@clerk/nextjs/server'
+import { auth, clerkClient } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-export async function GET(req: Request, { params }: { params: { id: string } }) {
+const ADMIN_USER_ID = process.env.ADMIN_USER_ID
+
+export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { userId } = await auth()
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
-
-  const { id } = params
-
+  if (!userId || userId !== ADMIN_USER_ID) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+  const { id } = await params
   const shop = await db.shop.findUnique({
     where: { id },
-    select: {
-      id: true,
-      name: true,
-      ownerId: true,
-      suspended: true,
-      approved: true,
-      createdAt: true,
-      updatedAt: true,
-      plan: true,
-      customers: { select: { id: true } },
-    },
+    select: { id: true, name: true, ownerId: true, suspended: true, approved: true, plan: true, createdAt: true, _count: { select: { customers: true } } }
   })
-
-  if (shop) {
-    return NextResponse.json({
-      id: shop.id,
-      type: 'MERCHANT',
-      name: shop.name,
-      ownerId: shop.ownerId,
-      suspended: shop.suspended,
-      approved: shop.approved,
-      createdAt: shop.createdAt,
-      updatedAt: shop.updatedAt,
-      plan: shop.plan,
-      customerCount: shop.customers.length,
-    })
-  }
-
-  const customer = await db.customer.findUnique({
-    where: { id },
-    select: {
-      id: true,
-      name: true,
-      email: true,
-      points: true,
-      totalVisits: true,
-      createdAt: true,
-      lastVisitAt: true,
-      shopId: true,
-    },
-  })
-
-  if (customer) {
-    return NextResponse.json({
-      id: customer.id,
-      type: 'CUSTOMER',
-      name: customer.name,
-      email: customer.email,
-      points: customer.points,
-      totalVisits: customer.totalVisits,
-      createdAt: customer.createdAt,
-      lastVisitAt: customer.lastVisitAt,
-      shopId: customer.shopId,
-    })
-  }
-
-  return NextResponse.json({ error: 'User not found' }, { status: 404 })
+  if (!shop) return NextResponse.json({ error: 'Non trovato' }, { status: 404 })
+  return NextResponse.json({ ...shop, type: 'shop', customerCount: shop._count.customers })
 }
