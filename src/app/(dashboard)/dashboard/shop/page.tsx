@@ -29,21 +29,36 @@ export default function CreateShopPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
   const [open, setOpen] = useState(false)
-  const [form, setForm] = useState({
-    name: '', category: '', address: '', city: '', phone: '',
-  })
+  const [logoFile, setLogoFile] = useState<File | null>(null)
+  const [logoPreview, setLogoPreview] = useState<string | null>(null)
+  const [form, setForm] = useState({ name: '', category: '', address: '', city: '', phone: '' })
 
   const selectedCat = categories.find(c => c.value === form.category)
+
+  function handleLogo(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+    setLogoFile(file)
+    setLogoPreview(URL.createObjectURL(file))
+  }
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.category) { alert('Seleziona una categoria'); return }
     setLoading(true)
     try {
+      let logoUrl: string | null = null
+      if (logoFile) {
+        const fd = new FormData()
+        fd.append('file', logoFile)
+        const r = await fetch('/api/upload', { method: 'POST', body: fd })
+        const d = await r.json()
+        logoUrl = d.url ?? null
+      }
       const res = await fetch('/api/shops', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(form),
+        body: JSON.stringify({ ...form, logo: logoUrl }),
       })
       if (res.ok) router.push('/dashboard')
     } finally {
@@ -57,6 +72,24 @@ export default function CreateShopPage() {
       <p className="text-white/50 mb-8">Configura il tuo profilo su Fidelio</p>
 
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+
+        {/* Logo upload */}
+        <div>
+          <label className="text-sm text-white/60 mb-1 block">Logo negozio</label>
+          <label style={{ cursor: 'pointer', display: 'block' }}>
+            <div style={{ ...inputStyle, display: 'flex', alignItems: 'center', gap: '1rem', padding: '10px 16px' }}>
+              {logoPreview
+                ? <img src={logoPreview} alt="logo" style={{ width: 48, height: 48, borderRadius: 8, objectFit: 'cover' }} />
+                : <div style={{ width: 48, height: 48, borderRadius: 8, background: 'rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 22 }}>🏪</div>
+              }
+              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: 14 }}>
+                {logoPreview ? 'Cambia logo' : 'Carica logo (opzionale)'}
+              </span>
+            </div>
+            <input type="file" accept="image/*" onChange={handleLogo} style={{ display: 'none' }} />
+          </label>
+        </div>
+
         <div>
           <label className="text-sm text-white/60 mb-1 block">Nome negozio *</label>
           <input style={inputStyle} placeholder="Es. Bar Roma"
@@ -65,32 +98,24 @@ export default function CreateShopPage() {
 
         <div style={{position:'relative'}}>
           <label className="text-sm text-white/60 mb-1 block">Categoria *</label>
-          <div
-            onClick={() => setOpen(!open)}
-            style={{...inputStyle, cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center'}}
-          >
+          <div onClick={() => setOpen(!open)}
+            style={{...inputStyle, cursor:'pointer', display:'flex', justifyContent:'space-between', alignItems:'center'}}>
             <span style={{color: selectedCat ? 'white' : 'rgba(255,255,255,0.3)'}}>
               {selectedCat ? selectedCat.label : 'Seleziona categoria'}
             </span>
             <span style={{color:'rgba(255,255,255,0.4)'}}>▾</span>
           </div>
           {open && (
-            <div style={{
-              position:'absolute', top:'calc(100% + 4px)', left:0, right:0, zIndex:50,
+            <div style={{position:'absolute', top:'calc(100% + 4px)', left:0, right:0, zIndex:50,
               background:'#1a1a2e', border:'1px solid rgba(255,255,255,0.12)',
-              borderRadius:'12px', overflow:'hidden', boxShadow:'0 10px 30px rgba(0,0,0,0.5)'
-            }}>
+              borderRadius:'12px', overflow:'hidden', boxShadow:'0 10px 30px rgba(0,0,0,0.5)'}}>
               {categories.map(c => (
-                <div
-                  key={c.value}
+                <div key={c.value}
                   onClick={() => { setForm({...form, category: c.value}); setOpen(false) }}
-                  style={{
-                    padding:'12px 16px', cursor:'pointer', color:'white', fontSize:'14px',
-                    background: form.category === c.value ? 'rgba(108,61,244,0.2)' : 'transparent',
-                  }}
+                  style={{padding:'12px 16px', cursor:'pointer', color:'white', fontSize:'14px',
+                    background: form.category === c.value ? 'rgba(108,61,244,0.2)' : 'transparent'}}
                   onMouseEnter={e => (e.currentTarget.style.background = 'rgba(255,255,255,0.05)')}
-                  onMouseLeave={e => (e.currentTarget.style.background = form.category === c.value ? 'rgba(108,61,244,0.2)' : 'transparent')}
-                >
+                  onMouseLeave={e => (e.currentTarget.style.background = form.category === c.value ? 'rgba(108,61,244,0.2)' : 'transparent')}>
                   {c.label}
                 </div>
               ))}
