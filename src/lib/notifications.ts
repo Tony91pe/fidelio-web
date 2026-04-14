@@ -27,7 +27,7 @@ export async function notifyUser(payload: NotificationPayload) {
 
   if (payload.type === 'push' || payload.type === 'both') {
     if (payload.customerId) {
-      await sendPushNotification(payload.customerId, payload.template, payload.data)
+      // TODO: push notification via customerId
     }
   }
 }
