@@ -1,5 +1,4 @@
-import { vercel } from '@vercel/blob'
-import sharp from 'sharp'
+import { put, del } from '@vercel/blob'
 import { randomBytes } from 'crypto'
 
 export async function uploadImage(file: File, shopId: string) {
@@ -10,21 +9,10 @@ export async function uploadImage(file: File, shopId: string) {
   if (!validTypes.includes(file.type)) throw new Error('Invalid file type')
 
   const buffer = await file.arrayBuffer()
-  let processed = Buffer.from(buffer)
-
-  try {
-    processed = await sharp(processed)
-      .resize(1024, 1024, { fit: 'inside', withoutEnlargement: true })
-      .webp({ quality: 80 })
-      .toBuffer()
-  } catch (e) {
-    processed = Buffer.from(buffer)
-  }
-
   const filename = `${shopId}/${Date.now()}-${randomBytes(4).toString('hex')}.webp`
 
   try {
-    const blob = await vercel.put(filename, processed, { access: 'public' })
+    const blob = await put(filename, buffer, { access: 'public' })
     return { url: blob.url, filename: blob.pathname }
   } catch (e) {
     console.error('Upload failed:', e)
@@ -34,7 +22,7 @@ export async function uploadImage(file: File, shopId: string) {
 
 export async function deleteImage(filename: string) {
   try {
-    await vercel.del(filename)
+    await del(filename)
   } catch (e) {
     console.error('Delete failed:', e)
   }
