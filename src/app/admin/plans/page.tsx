@@ -1,96 +1,75 @@
 'use client'
-
-import { useState, useEffect } from 'react'
-import { Button } from '@/components/ui/button'
-import { GiftPlanModal } from '@/components/admin/GiftPlanModal'
-
-interface Shop {
-  id: string
-  name: string
-  email: string
-  plan?: string
-}
+import { useEffect, useState } from 'react'
 
 export default function AdminPlans() {
-  const [shops, setShops] = useState<Shop[]>([])
-  const [selectedShop, setSelectedShop] = useState<Shop | null>(null)
-  const [giftModalOpen, setGiftModalOpen] = useState(false)
+  const [data, setData] = useState<any>(null)
+  const [working, setWorking] = useState(false)
+  const [giftMonths, setGiftMonths] = useState<Record<string, number>>({})
 
-  useEffect(() => {
-    fetchShops()
-  }, [])
-
-  const fetchShops = async () => {
-    const res = await fetch('/api/admin/users')
-    const data = await res.json()
-    setShops(data.users.filter((u: any) => u.type === 'MERCHANT'))
+  async function load() {
+    const r = await fetch('/api/admin')
+    if (r.ok) setData(await r.json())
   }
 
-  const changePlan = async (shopId: string, newPlan: string) => {
-    const res = await fetch('/api/admin/plans/change', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ shopId, newPlan }),
-    })
-    if (res.ok) {
-      fetchShops()
-    }
+  useEffect(() => { load() }, [])
+
+  async function changePlan(shopId: string, plan: string) {
+    setWorking(true)
+    await fetch('/api/admin', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shopId, action: 'changePlan', plan }) })
+    await load()
+    setWorking(false)
   }
 
-  const openGiftModal = (shop: Shop) => {
-    setSelectedShop(shop)
-    setGiftModalOpen(true)
+  async function giftPlan(shopId: string) {
+    setWorking(true)
+    const months = giftMonths[shopId] ?? 1
+    await fetch('/api/admin', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shopId, action: 'giftMonths', months }) })
+    await load()
+    setWorking(false)
   }
+
+  const PLAN_COLOR: Record<string, string> = { STARTER: '#6b7280', GROWTH: '#7c3aed', PRO: '#f97316' }
 
   return (
-    <div>
-      <h1 className="text-3xl font-bold mb-6">Plan Management</h1>
-
-      <table className="w-full border">
-        <thead>
-          <tr className="bg-gray-100">
-            <th className="p-2 text-left">Shop</th>
-            <th className="p-2 text-left">Plan</th>
-            <th className="p-2">Change Plan</th>
-            <th className="p-2">Gift Plan</th>
-          </tr>
-        </thead>
-        <tbody>
-          {shops.map((shop) => (
-            <tr key={shop.id} className="border-t">
-              <td className="p-2">{shop.name}</td>
-              <td className="p-2">{shop.plan || 'STARTER'}</td>
-              <td className="p-2 space-x-1">
-                {['STARTER', 'GROWTH', 'PRO'].map(plan => (
-                  <Button
-                    key={plan}
-                    size="sm"
-                    variant="outline"
-                    onClick={() => changePlan(shop.id, plan)}
-                  >
-                    {plan}
-                  </Button>
-                ))}
-              </td>
-              <td className="p-2">
-                <Button size="sm" onClick={() => openGiftModal(shop)}>
-                  Gift
-                </Button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-
-      {selectedShop && (
-        <GiftPlanModal
-          open={giftModalOpen}
-          onOpenChange={setGiftModalOpen}
-          shopId={selectedShop.id}
-          shopName={selectedShop.name}
-          onSuccess={fetchShops}
-        />
-      )}
+    <div style={{ background: '#0D0D1A', color: 'white', minHeight: '100vh', padding: '2rem', fontFamily: 'system-ui' }}>
+      <h1 style={{ fontSize: '1.5rem', fontWeight: 800, marginBottom: '0.5rem' }}>💰 Gestione Piani</h1>
+      <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginBottom: '1.5rem' }}>
+        STARTER €19 · GROWTH €39 · PRO €79
+      </p>
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+        {(data?.shops ?? []).map((shop: any) => (
+          <div key={shop.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '0.75rem', flexWrap: 'wrap', gap: '0.5rem' }}>
+              <div>
+                <p style={{ fontWeight: 600 }}>{shop.name}</p>
+                <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>{shop.city}</p>
+              </div>
+              <span style={{ background: `${PLAN_COLOR[shop.plan]}22`, color: PLAN_COLOR[shop.plan], border: `1px solid ${PLAN_COLOR[shop.plan]}44`, padding: '3px 12px', borderRadius: 100, fontSize: '0.75rem', fontWeight: 700 }}>
+                {shop.plan}
+                {shop.planExpiresAt && <span style={{ opacity: 0.7 }}> · scade {new Date(shop.planExpiresAt).toLocaleDateString('it-IT')}</span>}
+              </span>
+            </div>
+            <div style={{ display: 'flex', gap: '0.5rem', flexWrap: 'wrap', alignItems: 'center' }}>
+              {['STARTER', 'GROWTH', 'PRO'].map(p => (
+                <button key={p} disabled={working || shop.plan === p} onClick={() => changePlan(shop.id, p)}
+                  style={{ background: shop.plan === p ? PLAN_COLOR[p] : 'rgba(255,255,255,0.07)', border: `1px solid ${shop.plan === p ? PLAN_COLOR[p] : 'rgba(255,255,255,0.1)'}`, color: 'white', borderRadius: 8, padding: '5px 14px', cursor: shop.plan === p ? 'default' : 'pointer', fontSize: '0.78rem', fontWeight: 700, opacity: working ? 0.6 : 1 }}>
+                  {p}
+                </button>
+              ))}
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: 'auto' }}>
+                <input type="number" min={1} max={24} value={giftMonths[shop.id] ?? 1}
+                  onChange={e => setGiftMonths(prev => ({ ...prev, [shop.id]: Number(e.target.value) }))}
+                  style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '5px 10px', color: 'white', width: 60, outline: 'none', fontSize: '0.82rem', textAlign: 'center' }} />
+                <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>mesi</span>
+                <button disabled={working} onClick={() => giftPlan(shop.id)}
+                  style={{ background: 'rgba(16,185,129,0.2)', color: '#10b981', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600 }}>
+                  🎁 Regala Growth
+                </button>
+              </div>
+            </div>
+          </div>
+        ))}
+      </div>
     </div>
   )
 }
