@@ -70,10 +70,8 @@ export default function CreateShopPage() {
     <div className="max-w-lg mx-auto">
       <h1 className="text-2xl font-bold mb-2">Crea il tuo negozio</h1>
       <p className="text-white/50 mb-8">Configura il tuo profilo su Fidelio</p>
-
       <form onSubmit={handleSubmit} className="flex flex-col gap-4">
 
-        {/* Logo upload */}
         <div>
           <label className="text-sm text-white/60 mb-1 block">Logo negozio</label>
           <label style={{ cursor: 'pointer', display: 'block' }}>
