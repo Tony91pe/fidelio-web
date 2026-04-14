@@ -50,7 +50,7 @@ export async function getShopsInBoundingBox(bbox: BoundingBox, userLat: number, 
   const withDistance = shops.map((shop) => ({
     ...shop,
     distance: calculateDistance(userLat, userLng, shop.lat || 0, shop.lng || 0),
-  })).filter((shop) => shop.distance < 50)
+  })).filter((shop) => shop.lat !== null && shop.lng !== null && shop.distance < 50) as ShopWithDistance[]
 
   mapCache = { shops: withDistance, expiresAt: Date.now() + CACHE_TTL }
   return withDistance
