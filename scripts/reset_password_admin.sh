@@ -1,0 +1,17 @@
+#!/bin/bash
+set -e
+
+USER_ID=$1
+
+if [ -z "$USER_ID" ]; then
+  echo "Usage: $0 <user_id>"
+  exit 1
+fi
+
+echo "Admin: Resetting password for user $USER_ID..."
+
+curl -s -X POST http://localhost:3000/api/admin/password-reset \
+  -H "Content-Type: application/json" \
+  -d "{\"userId\":\"$USER_ID\"}" | jq .
+
+echo "✓ Password reset initiated"
