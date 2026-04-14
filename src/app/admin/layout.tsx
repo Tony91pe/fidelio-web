@@ -1,11 +1,6 @@
-import { redirect } from "next/navigation"
-import { auth } from "@clerk/nextjs/server"
 import Link from "next/link"
 
 export default async function AdminLayout({ children }: { children: React.ReactNode }) {
-  const { userId } = await auth()
-  if (!userId) redirect("/sign-in")
-
   const menuItems = [
     { href: "/admin/dashboard", label: "Dashboard", icon: "📊" },
     { href: "/admin/users", label: "Utenti", icon: "👥" },
@@ -30,15 +25,14 @@ export default async function AdminLayout({ children }: { children: React.ReactN
         </div>
         <nav style={{ padding: '0.75rem' }}>
           {menuItems.map(item => (
-            <Link key={item.href} href={item.href} style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem 0.75rem', borderRadius: 8, textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.1rem', transition: 'all 0.15s' }}
-              onMouseEnter={e => { (e.currentTarget as HTMLElement).style.background = 'rgba(255,255,255,0.06)'; (e.currentTarget as HTMLElement).style.color = 'white' }}
-              onMouseLeave={e => { (e.currentTarget as HTMLElement).style.background = 'transparent'; (e.currentTarget as HTMLElement).style.color = 'rgba(255,255,255,0.6)' }}>
+            <Link key={item.href} href={item.href}
+              style={{ display: 'flex', alignItems: 'center', gap: '0.6rem', padding: '0.6rem 0.75rem', borderRadius: 8, textDecoration: 'none', color: 'rgba(255,255,255,0.6)', fontSize: '0.85rem', fontWeight: 500, marginBottom: '0.1rem' }}>
               <span style={{ fontSize: 16 }}>{item.icon}</span>
               {item.label}
             </Link>
           ))}
         </nav>
-        <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.07)', marginTop: 'auto' }}>
+        <div style={{ padding: '1rem 1.5rem', borderTop: '1px solid rgba(255,255,255,0.07)' }}>
           <Link href="/admin" style={{ display: 'block', fontSize: '0.78rem', color: 'rgba(255,255,255,0.3)', textDecoration: 'none' }}>← Pannello principale</Link>
         </div>
       </div>
