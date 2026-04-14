@@ -159,3 +159,21 @@ enum CampaignStatus {
   SCHEDULED
   SENT
 }
+model Log {
+  id        String   @id @default(cuid())
+  eventType String
+  userId    String?
+  shopId    String?
+  customerId String?
+  action    String
+  metadata  Json?
+  ipAddress String?
+  userAgent String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([shopId])
+  @@index([userId])
+  @@index([createdAt])
+  @@index([eventType])
+}
