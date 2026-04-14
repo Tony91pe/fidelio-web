@@ -11,21 +11,6 @@ export interface QRData {
 export async function generateQRCode(data: QRData): Promise<string> {
   const payload = JSON.stringify(data.payload)
   const qrData = `${process.env.NEXT_PUBLIC_APP_URL}/qr/${data.code}?payload=${Buffer.from(payload).toString('base64')}`
-  
-  const dataUrl = await QRCode.toDataURL(qrData, {
-    errorCorrectionLevel: 'H',
-    type: 'image/png',
-    width: 300,
-    margin: 1,
-  })
-  
-  return dataUrl
-}
-
-export function generateQRCode(data: QRData): Promise<string> {
-  const payload = JSON.stringify(data.payload)
-  const qrData = `${process.env.NEXT_PUBLIC_APP_URL}/qr/${data.code}`
-  
   return QRCode.toDataURL(qrData, {
     errorCorrectionLevel: 'H',
     type: 'image/png',
@@ -43,11 +28,5 @@ export function generateSecureQRCode(): string {
 }
 
 export async function logQRScan(qrCode: string, shopId: string, metadata?: Record<string, any>) {
-  const scan = {
-    qrCode,
-    shopId,
-    scannedAt: new Date(),
-    metadata,
-  }
-  return scan
+  return { qrCode, shopId, scannedAt: new Date(), metadata }
 }
