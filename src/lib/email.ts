@@ -1,25 +1,60 @@
 import { Resend } from 'resend'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
-
 export function getResendClient() {
-  return resend
+  return new Resend(process.env.RESEND_API_KEY)
 }
 
-export async function sendWelcomeEmail(to:string, customerName:string, shopName:string, points:number) {
+export async function sendEmail({
+  to,
+  subject,
+  template,
+  data,
+}: {
+  to: string
+  subject: string
+  template: string
+  data: Record<string, any>
+}) {
+  const resend = getResendClient()
+  
+  const htmlContent = `
+    <h1>${data.title || subject}</h1>
+    <p>${data.message || ''}</p>
+  `
+
   return await resend.emails.send({
-    from: 'Fidelio <noreply@resend.dev>',
+    from: 'Fidelio <noreply@fidelio.com>',
     to,
-    subject: 'Benvenuto in ' + shopName + '! Hai ' + points + ' punti',
-    html: '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><div style="background:#6C3DF4;padding:2rem;text-align:center;border-radius:12px 12px 0 0"><h1 style="color:white;margin:0">' + shopName + '</h1></div><div style="background:white;padding:2rem;border-radius:0 0 12px 12px"><h2>Benvenuto, ' + customerName + '!</h2><p>Grazie per esserti registrato. Hai ricevuto <strong>' + points + ' punti</strong> di benvenuto!</p><p>Torna presto per accumulare altri punti e sbloccare premi esclusivi.</p></div></div>',
+    subject,
+    html: htmlContent,
   })
 }
 
-export async function sendWinbackEmail(to:string, customerName:string, shopName:string, points:number, days:number) {
+export async function sendWelcomeEmail(to: string, customerName: string, shopName: string, points: number) {
+  const resend = getResendClient()
+
   return await resend.emails.send({
-    from: 'Fidelio <noreply@resend.dev>',
+    from: 'Fidelio <noreply@fidelio.com>',
     to,
-    subject: 'Ci manchi! Hai ancora ' + points + ' punti da usare',
-    html: '<div style="font-family:sans-serif;max-width:600px;margin:0 auto"><div style="background:#FF6B35;padding:2rem;text-align:center;border-radius:12px 12px 0 0"><h1 style="color:white;margin:0">Ti manca ' + shopName + '?</h1></div><div style="background:white;padding:2rem;border-radius:0 0 12px 12px"><h2>Ciao ' + customerName + '!</h2><p>Sono passati ' + days + ' giorni dalla tua ultima visita. Hai ancora <strong>' + points + ' punti</strong>!</p></div></div>',
+    subject: `Welcome to ${shopName}!`,
+    html: `
+      <h1>Welcome ${customerName}!</h1>
+      <p>You just earned ${points} points at ${shopName}</p>
+    `,
+  })
+}
+
+export async function sendWinbackEmail(to: string, customerName: string, shopName: string, points: number, days: number) {
+  const resend = getResendClient()
+
+  return await resend.emails.send({
+    from: 'Fidelio <noreply@fidelio.com>',
+    to,
+    subject: `Come back to ${shopName}!`,
+    html: `
+      <h1>Hi ${customerName},</h1>
+      <p>You have ${points} points waiting for you at ${shopName}</p>
+      <p>You haven't visited in ${days} days - come back soon!</p>
+    `,
   })
 }
