@@ -9,7 +9,7 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       id: true, name: true, category: true, description: true, logo: true,
       address: true, city: true, phone: true, website: true, lat: true, lng: true,
       pointsPerVisit: true, rewardThreshold: true, rewardDescription: true,
-      rewards: { select: { id: true, name: true, pointsCost: true } },
+      rewards: { where: { active: true }, select: { id: true, title: true, pointsCost: true } },
     }
   })
   if (!shop) return NextResponse.json({ error: 'Non trovato' }, { status: 404 })
