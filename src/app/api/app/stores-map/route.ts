@@ -1,0 +1,28 @@
+import { NextResponse } from 'next/server'
+import { getShopsInBoundingBox } from '@/lib/mapService'
+
+export async function GET(request: Request) {
+  const { searchParams } = new URL(request.url)
+  const lat = parseFloat(searchParams.get('lat') || '0')
+  const lng = parseFloat(searchParams.get('lng') || '0')
+  const radius = parseInt(searchParams.get('radius') || '50')
+
+  if (!lat || !lng) {
+    return NextResponse.json({ error: 'Missing coordinates' }, { status: 400 })
+  }
+
+  const bbox = {
+    minLat: lat - 0.5,
+    maxLat: lat + 0.5,
+    minLng: lng - 0.5,
+    maxLng: lng + 0.5,
+  }
+
+  const shops = await getShopsInBoundingBox(bbox, lat, lng)
+  
+  return NextResponse.json({
+    shops: shops.filter(s => s.distance <= radius),
+    center: { lat, lng },
+    count: shops.length,
+  })
+}
