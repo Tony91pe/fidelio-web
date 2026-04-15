@@ -1,6 +1,12 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+const corsHeaders = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+}
+
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const shop = await db.shop.findUnique({
@@ -12,6 +18,6 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       rewards: { where: { active: true }, select: { id: true, title: true, pointsCost: true } },
     }
   })
-  if (!shop) return NextResponse.json({ error: 'Non trovato' }, { status: 404 })
-  return NextResponse.json(shop)
+  if (!shop) return NextResponse.json({ error: 'Non trovato' }, { status: 404 }, { headers: corsHeaders })
+  return NextResponse.json(shop, { headers: corsHeaders })
 }
