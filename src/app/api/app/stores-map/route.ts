@@ -14,7 +14,7 @@ export async function GET(request: Request) {
   const radius = parseInt(searchParams.get('radius') || '50')
 
   if (!lat || !lng) {
-    return NextResponse.json({ error: 'Missing coordinates' }, { status: 400 }, { headers: corsHeaders })
+    return NextResponse.json({ error: 'Missing coordinates' }, { status: 400, headers: corsHeaders })
   }
 
   const bbox = {

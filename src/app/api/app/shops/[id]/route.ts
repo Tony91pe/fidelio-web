@@ -18,6 +18,6 @@ export async function GET(_: Request, { params }: { params: Promise<{ id: string
       rewards: { where: { active: true }, select: { id: true, title: true, pointsCost: true } },
     }
   })
-  if (!shop) return NextResponse.json({ error: 'Non trovato' }, { status: 404 }, { headers: corsHeaders })
+  if (!shop) return NextResponse.json({ error: 'Non trovato' }, { status: 404, headers: corsHeaders })
   return NextResponse.json(shop, { headers: corsHeaders })
 }

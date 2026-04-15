@@ -10,11 +10,11 @@ const corsHeaders = {
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const email = searchParams.get('email')
-  if (!email) return NextResponse.json({ error: 'Email mancante' }, { status: 400 }, { headers: corsHeaders })
+  if (!email) return NextResponse.json({ error: 'Email mancante' }, { status: 400, headers: corsHeaders })
   const customer = await db.customer.findFirst({
     where: { email },
     select: { code: true, points: true, totalVisits: true, name: true }
   })
-  if (!customer) return NextResponse.json({ error: 'Cliente non trovato' }, { status: 404 }, { headers: corsHeaders })
+  if (!customer) return NextResponse.json({ error: 'Cliente non trovato' }, { status: 404, headers: corsHeaders })
   return NextResponse.json(customer, { headers: corsHeaders })
 }
