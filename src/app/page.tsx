@@ -72,7 +72,7 @@ export default function LandingPage() {
           border:'1px solid rgba(108,61,244,0.3)',padding:'0.3rem 1rem',
           borderRadius:'100px',fontSize:'0.8rem',color:'#A78BFA',
           fontWeight:'600',marginBottom:'1.5rem'}}>
-          La fedeltà digitale per i negozi italiani
+          La fedeltà digitale per il tuo negozio
         </div>
         <h1 style={{fontSize:'clamp(2.5rem,6vw,5rem)',fontWeight:'800',
           lineHeight:'1.1',marginBottom:'1.5rem',maxWidth:'800px',margin:'0 auto 1.5rem'}}>
@@ -80,7 +80,7 @@ export default function LandingPage() {
         </h1>
         <p style={{fontSize:'1.1rem',color:'rgba(255,255,255,0.6)',
           maxWidth:'550px',margin:'0 auto 2.5rem',lineHeight:'1.7'}}>
-          QR code alla cassa, punti digitali, email automatiche e AI che sa quando i clienti stanno per smettere di venire.
+          Punti digitali, QR code alla cassa, email automatiche e un’AI che ti aiuta a non perdere più clienti.
         </p>
         <div style={{display:'flex',gap:'1rem',justifyContent:'center',flexWrap:'wrap'}}>
           <Link href={registerHref} style={{background:'#6C3DF4',color:'white',

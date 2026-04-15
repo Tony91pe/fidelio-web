@@ -8,7 +8,7 @@ const geist = Geist({ subsets: ['latin'] })
 
 export const metadata: Metadata = {
   title: 'Fidelio — Fidelizza i tuoi clienti',
-  description: 'La piattaforma di fidelizzazione per i negozi italiani',
+  description: 'La Fedeltà digitale per il tuo Negozio',
   icons: {
     icon: '/favicon.svg',
     apple: '/favicon.svg',
