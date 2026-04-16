@@ -26,6 +26,7 @@ export async function GET(req: Request) {
       address: shop.address,
       city: shop.city,
       phone: shop.phone,
+      logo: shop.logo,
       rewardThreshold: shop.rewardThreshold,
       rewardDescription: shop.rewardDescription,
       pointsSystem: shop.pointsSystem,
