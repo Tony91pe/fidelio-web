@@ -24,12 +24,12 @@ export async function POST(req: Request) {
   const code = Math.floor(100000 + Math.random() * 900000).toString()
   const expires = new Date(Date.now() + 10 * 60 * 1000)
 
-  // Elimina vecchi codici per questa email
-  await db.otpCode.deleteMany({ where: { email } })
+  // Elimina vecchi codici cliente per questa email
+  await db.otpCode.deleteMany({ where: { email, type: 'customer' } })
 
   // Salva nuovo codice nel DB
   await db.otpCode.create({
-    data: { email, code, expires }
+    data: { email, code, expires, type: 'customer' }
   })
 
   try {

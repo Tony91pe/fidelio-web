@@ -19,18 +19,18 @@ export async function POST(req: Request) {
   if (!email || !code) {
     return NextResponse.json({ error: 'Email e codice richiesti' }, { status: 400, headers: corsHeaders })
   }
-  const stored = await db.otpCode.findFirst({ where: { email }, orderBy: { createdAt: 'desc' } })
+  const stored = await db.otpCode.findFirst({ where: { email, type: 'customer' }, orderBy: { createdAt: 'desc' } })
   if (!stored) {
     return NextResponse.json({ error: 'Codice non trovato o scaduto' }, { status: 400, headers: corsHeaders })
   }
   if (new Date() > stored.expires) {
-    await db.otpCode.deleteMany({ where: { email } })
+    await db.otpCode.deleteMany({ where: { email, type: 'customer' } })
     return NextResponse.json({ error: 'Codice scaduto. Richiedi un nuovo codice.' }, { status: 400, headers: corsHeaders })
   }
   if (stored.code !== code) {
     return NextResponse.json({ error: 'Codice non valido' }, { status: 400, headers: corsHeaders })
   }
-  await db.otpCode.deleteMany({ where: { email } })
+  await db.otpCode.deleteMany({ where: { email, type: 'customer' } })
 
   let customer = await db.customer.findFirst({ where: { email } })
   const isNewUser = !customer

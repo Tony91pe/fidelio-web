@@ -31,11 +31,13 @@ model Shop {
   rewardDescription String @default("Premio")
   welcomePoints  Int     @default(50)
   ownerId     String
+  ownerEmail  String?
   customers   Customer[]
   rewards     Reward[]
-  giftCards  GiftCard[]
+  giftCards   GiftCard[]
   campaigns   Campaign[]
   visits      Visit[]
+  offers      Offer[]
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
@@ -107,15 +109,30 @@ model Campaign {
 }
 
 model GiftCard {
-id String @id @default(cuid())
-code String @unique
-points Int
-description String?
-used Boolean @default(false)
-usedAt DateTime?
-shopId String
-shop Shop @relation(fields: [shopId], references: [id])
-createdAt DateTime @default(now())
+  id            String    @id @default(cuid())
+  code          String    @unique
+  points        Int
+  value         Float?
+  description   String?
+  customerEmail String?
+  customerName  String?
+  used          Boolean   @default(false)
+  usedAt        DateTime?
+  shopId        String
+  shop          Shop      @relation(fields: [shopId], references: [id])
+  createdAt     DateTime  @default(now())
+}
+
+model Offer {
+  id          String    @id @default(cuid())
+  title       String
+  description String
+  expiresAt   DateTime?
+  active      Boolean   @default(true)
+  shopId      String
+  shop        Shop      @relation(fields: [shopId], references: [id])
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
 }
 
 model OtpCode {
@@ -123,9 +140,11 @@ model OtpCode {
   email     String
   code      String
   expires   DateTime
+  type      String   @default("customer")
   createdAt DateTime @default(now())
 
   @@index([email])
+  @@index([email, type])
 }
 
 model PushSubscription {
