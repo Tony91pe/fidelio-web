@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//home/repair/progetti/fidelio-web/src/app/**)",
+      "Read(///wsl.localhost/Ubuntu/home/repair/progetti/fidelio-web/src/app/**)",
+      "Read(///wsl.localhost/Ubuntu/home/repair/progetti/**)",
+      "Bash(vercel --prod)"
+    ],
+    "additionalDirectories": [
+      "\\home\\repair\\progetti\\fidelio-web\\src\\app",
+      "\\\\wsl.localhost\\Ubuntu\\home\\repair\\progetti\\fidelio-web\\src\\app"
+    ]
+  }
+}

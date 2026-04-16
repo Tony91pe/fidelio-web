@@ -116,6 +116,7 @@ model GiftCard {
   description   String?
   customerEmail String?
   customerName  String?
+  remainingValue Float?
   used          Boolean   @default(false)
   usedAt        DateTime?
   shopId        String

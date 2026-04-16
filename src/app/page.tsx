@@ -4,14 +4,14 @@ import { useEffect, useState } from 'react'
 import { useUser } from '@clerk/nextjs'
 
 const features = [
-  { icon:'📱', title:'QR Code in 10 minuti', desc:'Il cliente scansiona e si registra in 10 secondi.' },
-  { icon:'⭐', title:'Punti e Premi', desc:'Programma punti personalizzato con premi esclusivi.' },
-  { icon:'✉️', title:'Email Automatiche', desc:'Winback, compleanno, punti. Tutto automatico.' },
-  { icon:'🤖', title:'AI Insights', desc:"L'AI ti dice chi sta per smettere di venire." },
-  { icon:'📊', title:'Analytics Reali', desc:'Vedi chi sono i clienti e quando vengono.' },
+  { icon:'📱', title:'QR Code', desc:'Registrati e Ottieni il qr code del tuo negozio in 10 minuti. Ai tuoi clienti basterà scansionarlo per fidelizzarsi ' },
+  { icon:'⭐', title:'Punti e Premi', desc:'crea il tuo programma punti personalizzato con premi esclusivi' },
   { icon:'🎁', title:'Carte Regalo', desc:'Carte regalo digitali con codici univoci.' },
+  { icon:'🤖📊', title:'AI Insights & Analytics', desc:"L'AI controlla le visite e ti aiuta a non perdere clienti. Vedi chi sono i tuoi clienti, quando vengono e quanto spendono." },
+  { icon:'✉️', title:'Email Automatiche', desc:'Winback, compleanno, punti. Tutto automatico.' },
+  { icon:'📲', title:'App per Negozio e Cliente', desc:'Il negozio gestisce tutto dalla dashboard. Il cliente accumula punti e riscatta premi direttamente dal suo smartphone.' },
 ]
-
+ 
 const plans = [
   { name:'STARTER', price:'19', period:'mese',
     features:['Card digitale del cliente','QR del negozio','Raccolta punti semplice','Storico transazioni','Dashboard base','Fino a 3 premi attivi','Supporto via email'],
@@ -90,7 +90,7 @@ export default function LandingPage() {
           </Link>
         </div>
         <p style={{color:'rgba(255,255,255,0.3)',fontSize:'0.8rem',marginTop:'1rem'}}>
-          Setup in 10 minuti. Nessuna competenza tecnica.
+          Setup in 10 minuti. Nessuna competenza tecnica richiesta.
         </p>
       </div>
 
@@ -114,7 +114,7 @@ export default function LandingPage() {
       {/* Prezzi */}
       <div id="prezzi" style={{maxWidth:'900px',margin:'0 auto',padding:'5rem 2rem'}}>
         <h2 style={{textAlign:'center',fontSize:'2.2rem',fontWeight:'800',marginBottom:'3rem'}}>
-          Prezzi semplici
+          Scegli il Pacchetto che fa per Te
         </h2>
         <div style={{display:'grid',gridTemplateColumns:'repeat(auto-fit,minmax(250px,1fr))',gap:'1.2rem'}}>
           {plans.map(p => (
@@ -197,7 +197,7 @@ export default function LandingPage() {
         <Link href="/" style={{fontSize:'1.2rem',fontWeight:'700',marginBottom:'0.5rem',color:'white',textDecoration:'none',display:'block'}}>
           Fidelio
         </Link>
-        <p>La piattaforma di fidelizzazione per i negozi italiani</p>
+        <p>La Fedeltà digitale per il tuo Negozio</p>
         <div style={{display:'flex',gap:'1.5rem',justifyContent:'center',marginTop:'1rem',flexWrap:'wrap'}}>
           <Link href="/privacy" style={{color:'rgba(255,255,255,0.4)',textDecoration:'none',fontSize:'0.8rem'}}>Privacy Policy</Link>
           <Link href="/termini" style={{color:'rgba(255,255,255,0.4)',textDecoration:'none',fontSize:'0.8rem'}}>Termini di Servizio</Link>
