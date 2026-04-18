@@ -2,6 +2,7 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { sendPushNotification } from '@/lib/push'
+import { logEvent } from '@/lib/logging'
 
 export async function POST(req: Request) {
   const { userId } = await auth()
@@ -51,6 +52,15 @@ export async function POST(req: Request) {
       icon: '/icons/icon-192x192.png',
     })
   }
+
+  await logEvent({
+    eventType: 'CHECKIN',
+    userId,
+    shopId: shop.id,
+    customerId: customer.id,
+    action: `Timbro: +${points} punti a ${customer.name ?? customer.email}`,
+    metadata: { points, totalPoints: customer.points + points, amount: amount || null },
+  })
 
   return NextResponse.json({ ok: true, pointsAdded: points })
 }

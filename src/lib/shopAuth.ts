@@ -2,8 +2,6 @@ import jwt from 'jsonwebtoken'
 import { db } from '@/lib/db'
 import { NextResponse } from 'next/server'
 
-const JWT_SECRET = process.env.JWT_SECRET || 'fidelio-secret-change-in-production'
-
 export interface ShopJwtPayload {
   shopId: string
   email: string
@@ -19,6 +17,11 @@ export async function getShopFromRequest(req: Request): Promise<
   | { shop: NonNullable<Awaited<ReturnType<typeof db.shop.findFirst>>>; payload: ShopJwtPayload; error?: never }
   | { error: NextResponse; shop?: never; payload?: never }
 > {
+  const JWT_SECRET = process.env.JWT_SECRET
+  if (!JWT_SECRET) {
+    return { error: NextResponse.json({ error: 'Configurazione server mancante' }, { status: 500, headers: corsHeaders }) }
+  }
+
   const token = req.headers.get('Authorization')?.replace('Bearer ', '')
   if (!token) {
     return { error: NextResponse.json({ error: 'Non autorizzato' }, { status: 401, headers: corsHeaders }) }

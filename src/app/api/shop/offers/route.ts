@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { getShopFromRequest, corsHeaders } from '@/lib/shopAuth'
+import { hasFeature } from '@/lib/planFeatures'
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200, headers: corsHeaders })
@@ -11,6 +12,10 @@ export async function GET(req: Request) {
   if (result.error) return result.error
 
   const { shop } = result
+
+  if (!hasFeature(shop.plan, 'offers')) {
+    return NextResponse.json([], { headers: corsHeaders })
+  }
 
   const offers = await db.offer.findMany({
     where: { shopId: shop.id },
@@ -34,6 +39,10 @@ export async function POST(req: Request) {
 
   const { shop } = result
   const { title, description, expiresAt } = await req.json()
+
+  if (!hasFeature(shop.plan, 'offers')) {
+    return NextResponse.json({ error: 'Le offerte richiedono il piano Growth o superiore.', planRequired: 'GROWTH', currentPlan: shop.plan }, { status: 403, headers: corsHeaders })
+  }
 
   if (!title?.trim()) {
     return NextResponse.json({ error: 'Titolo richiesto' }, { status: 400, headers: corsHeaders })

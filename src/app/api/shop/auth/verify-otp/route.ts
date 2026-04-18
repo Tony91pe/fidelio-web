@@ -61,6 +61,7 @@ export async function POST(req: Request) {
       city: shop.city,
       phone: shop.phone,
       logo: shop.logo,
+      plan: shop.plan,
       rewardThreshold: shop.rewardThreshold,
       rewardDescription: shop.rewardDescription,
       pointsSystem: shop.pointsSystem,

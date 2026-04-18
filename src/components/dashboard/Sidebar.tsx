@@ -4,35 +4,55 @@ import { usePathname } from 'next/navigation'
 import { UserButton } from '@clerk/nextjs'
 import { useState, useEffect } from 'react'
 
-const navItems = [
+type NavItem = { href: string; icon: string; label: string; minPlan?: 'GROWTH' | 'PRO' }
+
+const navItems: NavItem[] = [
   { href: '/dashboard', icon: '📊', label: 'Dashboard' },
   { href: '/dashboard/customers', icon: '👥', label: 'Clienti' },
   { href: '/dashboard/rewards', icon: '🎁', label: 'Premi' },
-  { href: '/dashboard/campaigns', icon: '📧', label: 'Campagne' },
-  { href: '/dashboard/analytics', icon: '📈', label: 'Analytics' },
-  { href: '/dashboard/qr', icon: '📱', label: 'QR Code' },
   { href: '/dashboard/scanner', icon: '📷', label: 'Timbra Cliente' },
-  { href: '/dashboard/giftcards', icon: '🎀', label: 'Carte Regalo' },
+  { href: '/dashboard/qr', icon: '📱', label: 'QR Code' },
+  { href: '/dashboard/analytics', icon: '📈', label: 'Analytics', minPlan: 'GROWTH' },
+  { href: '/dashboard/giftcards', icon: '🎀', label: 'Carte Regalo', minPlan: 'GROWTH' },
+  { href: '/dashboard/offers', icon: '🔥', label: 'Offerte', minPlan: 'GROWTH' },
+  { href: '/dashboard/staff', icon: '👤', label: 'Staff', minPlan: 'GROWTH' },
+  { href: '/dashboard/automations', icon: '🤖', label: 'Automazioni', minPlan: 'GROWTH' },
+  { href: '/dashboard/campaigns', icon: '📧', label: 'Campagne', minPlan: 'PRO' },
+  { href: '/dashboard/multistore', icon: '🏢', label: 'Multi-sede', minPlan: 'PRO' },
+  { href: '/dashboard/export', icon: '📥', label: 'Reportistica', minPlan: 'PRO' },
+  { href: '/dashboard/api', icon: '🔑', label: 'API Access', minPlan: 'PRO' },
   { href: '/dashboard/settings', icon: '⚙️', label: 'Impostazioni' },
   { href: '/dashboard/upgrade', icon: '⚡', label: 'Upgrade Piano' },
-  { href: '/admin', icon: '🛡️', label: 'Admin' },
 ]
 
-const mobileMain = [
+const mobileMain: NavItem[] = [
   { href: '/dashboard', icon: '📊', label: 'Home' },
   { href: '/dashboard/customers', icon: '👥', label: 'Clienti' },
-  { href: '/dashboard/qr', icon: '📱', label: 'QR' },
-  { href: '/dashboard/analytics', icon: '📈', label: 'Stats' },
+  { href: '/dashboard/scanner', icon: '📷', label: 'Timbra' },
+  { href: '/dashboard/analytics', icon: '📈', label: 'Stats', minPlan: 'GROWTH' },
 ]
 
-const mobileExtra = [
+const mobileExtra: NavItem[] = [
   { href: '/dashboard/rewards', icon: '🎁', label: 'Premi' },
-  { href: '/dashboard/campaigns', icon: '📧', label: 'Campagne' },
-  { href: '/dashboard/giftcards', icon: '🎀', label: 'Carte Regalo' },
+  { href: '/dashboard/qr', icon: '📱', label: 'QR Code' },
+  { href: '/dashboard/giftcards', icon: '🎀', label: 'Gift Card', minPlan: 'GROWTH' },
+  { href: '/dashboard/offers', icon: '🔥', label: 'Offerte', minPlan: 'GROWTH' },
+  { href: '/dashboard/staff', icon: '👤', label: 'Staff', minPlan: 'GROWTH' },
+  { href: '/dashboard/automations', icon: '🤖', label: 'Automazioni', minPlan: 'GROWTH' },
+  { href: '/dashboard/campaigns', icon: '📧', label: 'Campagne', minPlan: 'PRO' },
+  { href: '/dashboard/multistore', icon: '🏢', label: 'Multi-sede', minPlan: 'PRO' },
+  { href: '/dashboard/export', icon: '📥', label: 'Reportistica', minPlan: 'PRO' },
+  { href: '/dashboard/api', icon: '🔑', label: 'API', minPlan: 'PRO' },
   { href: '/dashboard/settings', icon: '⚙️', label: 'Impostazioni' },
   { href: '/dashboard/upgrade', icon: '⚡', label: 'Upgrade' },
-  { href: '/admin', icon: '🛡️', label: 'Admin' },
 ]
+
+function isLocked(item: NavItem, plan: string): boolean {
+  if (!item.minPlan) return false
+  if (item.minPlan === 'GROWTH' && (plan === 'GROWTH' || plan === 'PRO')) return false
+  if (item.minPlan === 'PRO' && plan === 'PRO') return false
+  return true
+}
 
 export default function Sidebar() {
   const pathname = usePathname()
@@ -44,8 +64,8 @@ export default function Sidebar() {
     <>
       {/* Sidebar desktop */}
       <aside className="hidden md:flex w-60 min-h-screen bg-white/3 border-r border-white/6 flex-col p-4">
-        <Link href="/" className="flex items-center gap-2 px-3 mb-6">
-          <div className="w-2 h-2 rounded-full bg-[#6C3DF4]"></div>
+        <Link href="/" className="flex items-center gap-2.5 px-3 mb-6">
+          <div className="w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0" style={{ background: 'linear-gradient(135deg, #7C3AED, #3B82F6)', boxShadow: '0 4px 12px rgba(124,58,237,0.4)' }}>F</div>
           <span className="text-xl font-bold">Fidelio</span>
         </Link>
         <div className="bg-[#6C3DF4]/10 border border-[#6C3DF4]/20 rounded-xl px-3 py-2 mb-6">
@@ -53,15 +73,23 @@ export default function Sidebar() {
           <p className="text-xs text-[#A78BFA]">Piano {plan}</p>
         </div>
         <nav className="flex flex-col gap-1 flex-1">
-          {navItems.map((item) => (
-            <Link key={item.href} href={item.href}
-              className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
-                pathname === item.href ? 'bg-[#6C3DF4]/15 text-white' : 'text-white/50 hover:text-white hover:bg-white/5'
-              }`}>
-              <span>{item.icon}</span>
-              {item.label}
-            </Link>
-          ))}
+          {navItems.map((item) => {
+            const locked = isLocked(item, plan)
+            return (
+              <Link key={item.href} href={item.href}
+                className={`flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium transition-all ${
+                  pathname === item.href ? 'bg-[#6C3DF4]/15 text-white' : locked ? 'text-white/25' : 'text-white/50 hover:text-white hover:bg-white/5'
+                }`}>
+                <span>{item.icon}</span>
+                <span className="flex-1">{item.label}</span>
+                {locked && (
+                  <span className="text-[10px] font-bold px-1.5 py-0.5 rounded-md" style={{ background: item.minPlan === 'PRO' ? 'rgba(249,115,22,0.15)' : 'rgba(124,58,237,0.15)', color: item.minPlan === 'PRO' ? '#f97316' : '#7c3aed' }}>
+                    {item.minPlan}
+                  </span>
+                )}
+              </Link>
+            )
+          })}
         </nav>
         <div className="flex items-center gap-3 px-3 py-2 mt-4 border-t border-white/6 pt-4">
           <UserButton />

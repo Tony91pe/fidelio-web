@@ -4,7 +4,11 @@ import { db } from '@/lib/db'
 
 export async function GET() {
   const { userId } = await auth()
-  if (!userId) return NextResponse.json({ plan: 'STARTER' })
+  if (!userId) return NextResponse.json({ plan: 'STARTER', planExpiresAt: null })
   const shop = await db.shop.findFirst({ where: { ownerId: userId } })
-  return NextResponse.json({ plan: shop?.plan ?? 'STARTER' })
+  return NextResponse.json({
+    plan: shop?.plan ?? 'STARTER',
+    planExpiresAt: shop?.planExpiresAt ?? null,
+    isFounder: shop?.isFounder ?? false,
+  })
 }

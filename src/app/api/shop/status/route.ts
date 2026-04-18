@@ -9,6 +9,8 @@ export async function GET() {
     const shop = await db.shop.findFirst({ where: { ownerId: userId } })
     if (!shop) return NextResponse.json({ status: 'no-shop' })
     if (!shop.approved) return NextResponse.json({ status: 'pending' })
+    const hasPayment = !!shop.stripeId || (!!shop.planExpiresAt && new Date(shop.planExpiresAt) > new Date())
+    if (!hasPayment) return NextResponse.json({ status: 'unpaid', plan: shop.plan })
     return NextResponse.json({ status: 'approved' })
   } catch (e: any) {
     return NextResponse.json({ error: e.message }, { status: 500 })

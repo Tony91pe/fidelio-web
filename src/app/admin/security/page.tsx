@@ -31,7 +31,7 @@ export default function AdminSecurity() {
         {[
           { label: 'Rate limiting API', status: true },
           { label: 'Protezione brute force', status: true },
-          { label: 'Verifica firma webhook Stripe', status: true },
+          { label: 'Verifica firma webhook Paddle', status: true },
           { label: 'HTTPS enforced', status: true },
           { label: 'Auth middleware attivo', status: true },
         ].map(item => (

@@ -31,7 +31,7 @@ export default function CreateShopPage() {
   const [open, setOpen] = useState(false)
   const [logoFile, setLogoFile] = useState<File | null>(null)
   const [logoPreview, setLogoPreview] = useState<string | null>(null)
-  const [form, setForm] = useState({ name: '', category: '', address: '', city: '', phone: '' })
+  const [form, setForm] = useState({ name: '', category: '', street: '', civicNumber: '', city: '', phone: '', ownerEmail: '' })
 
   const selectedCat = categories.find(c => c.value === form.category)
 
@@ -45,6 +45,7 @@ export default function CreateShopPage() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     if (!form.category) { alert('Seleziona una categoria'); return }
+    if (!form.ownerEmail.trim()) { alert('Inserisci la tua email di contatto'); return }
     setLoading(true)
     try {
       let logoUrl: string | null = null
@@ -55,12 +56,22 @@ export default function CreateShopPage() {
         const d = await r.json()
         logoUrl = d.url ?? null
       }
+      const { street, civicNumber, ...rest } = form
       const res = await fetch('/api/shops', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, logo: logoUrl }),
+        body: JSON.stringify({
+          ...rest,
+          logo: logoUrl,
+          address: `${street}, ${civicNumber}`.trim().replace(/,\s*$/, ''),
+        }),
       })
-      if (res.ok) router.push('/dashboard')
+      if (!res.ok) {
+        const err = await res.json()
+        alert(err.error ?? 'Errore durante la creazione')
+        return
+      }
+      router.push('/dashboard')
     } finally {
       setLoading(false)
     }
@@ -122,15 +133,27 @@ export default function CreateShopPage() {
         </div>
 
         <div>
+          <label className="text-sm text-white/60 mb-1 block">Email di contatto *</label>
+          <input style={inputStyle} type="email" placeholder="Es. info@mionegozio.it"
+            value={form.ownerEmail} onChange={e => setForm({...form, ownerEmail: e.target.value})} required />
+          <p style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.3)', marginTop: '0.3rem' }}>Usata per notifiche e comunicazioni importanti</p>
+        </div>
+
+        <div>
           <label className="text-sm text-white/60 mb-1 block">Città *</label>
           <input style={inputStyle} placeholder="Es. Roma"
             value={form.city} onChange={e => setForm({...form, city: e.target.value})} required />
         </div>
 
         <div>
-          <label className="text-sm text-white/60 mb-1 block">Indirizzo *</label>
-          <input style={inputStyle} placeholder="Es. Via Roma 1"
-            value={form.address} onChange={e => setForm({...form, address: e.target.value})} required />
+          <label className="text-sm text-white/60 mb-1 block">Via / Piazza *</label>
+          <input style={inputStyle} placeholder="Es. Via Roma"
+            value={form.street} onChange={e => setForm({...form, street: e.target.value})} required />
+        </div>
+        <div>
+          <label className="text-sm text-white/60 mb-1 block">Numero civico *</label>
+          <input style={inputStyle} placeholder="Es. 12"
+            value={form.civicNumber} onChange={e => setForm({...form, civicNumber: e.target.value})} required />
         </div>
 
         <div>

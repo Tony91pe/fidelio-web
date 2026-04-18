@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { randomBytes } from 'crypto'
 import { getShopFromRequest, corsHeaders } from '@/lib/shopAuth'
+import { hasFeature } from '@/lib/planFeatures'
 
 export async function OPTIONS() {
   return new NextResponse(null, { status: 200, headers: corsHeaders })
@@ -12,6 +13,10 @@ export async function GET(req: Request) {
   if (result.error) return result.error
 
   const { shop } = result
+
+  if (!hasFeature(shop.plan, 'giftCards')) {
+    return NextResponse.json([], { headers: corsHeaders })
+  }
 
   const cards = await db.giftCard.findMany({
     where: { shopId: shop.id },
@@ -36,6 +41,10 @@ export async function POST(req: Request) {
   if (result.error) return result.error
 
   const { shop } = result
+  if (!hasFeature(shop.plan, 'giftCards')) {
+    return NextResponse.json({ error: 'Le gift card richiedono il piano Growth o superiore.', planRequired: 'GROWTH', currentPlan: shop.plan }, { status: 403, headers: corsHeaders })
+  }
+
   const { value, description, customerEmail } = await req.json()
 
   if (!value || value <= 0) {

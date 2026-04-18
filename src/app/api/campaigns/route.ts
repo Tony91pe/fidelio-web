@@ -9,6 +9,9 @@ export async function POST(req: Request) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
   const shop = await db.shop.findFirst({ where: { ownerId: userId } })
+  if (shop && shop.plan !== 'PRO') {
+    return NextResponse.json({ error: 'Le campagne email richiedono il piano Pro.', planRequired: 'PRO', currentPlan: shop.plan }, { status: 403 })
+  }
   if (!shop) return NextResponse.json({ error: 'Negozio non trovato' }, { status: 404 })
   const { subject, body, segment } = await req.json()
   const ago30 = new Date(Date.now()-30*24*60*60*1000)

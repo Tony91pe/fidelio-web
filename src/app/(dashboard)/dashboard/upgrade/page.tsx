@@ -26,13 +26,9 @@ export default function UpgradePage() {
   const [loading, setLoading] = useState<string | null>(null)
 
   async function handleUpgrade(planId: string) {
-    if (planId === 'starter') {
-      window.location.href = '/dashboard'
-      return
-    }
     setLoading(planId)
     try {
-      const res = await fetch('/api/stripe/checkout', {
+      const res = await fetch('/api/paddle/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: planId }),
@@ -85,7 +81,7 @@ export default function UpgradePage() {
                 color:'white', padding:'12px', borderRadius:'12px', fontWeight:'700',
                 border: plan.id !== 'growth' ? '1px solid rgba(255,255,255,0.2)' : 'none',
                 cursor:'pointer', opacity: loading === plan.id ? 0.7 : 1, fontSize:'0.9rem'}}>
-              {loading === plan.id ? 'Reindirizzamento...' : plan.id === 'starter' ? 'Inizia gratis' : `Passa a ${plan.name}`}
+              {loading === plan.id ? 'Reindirizzamento...' : `Abbonati a ${plan.name}`}
             </button>
           </div>
         ))}

@@ -15,12 +15,16 @@ type ShopSettings = {
   rewardThreshold: number
   rewardDescription: string
   welcomePoints: number
+  primaryColor: string
+  plan: string
 }
 
 const inp: React.CSSProperties = {
   background:'rgba(255,255,255,0.07)',border:'1px solid rgba(255,255,255,0.12)',
   borderRadius:'10px',padding:'10px 14px',color:'white',width:'100%',outline:'none',fontSize:'14px',marginBottom:'8px'
 }
+
+const PRESET_COLORS = ['#7C3AED','#3B82F6','#10B981','#F59E0B','#EF4444','#EC4899','#F97316','#06B6D4','#6366F1','#14B8A6']
 
 export default function SettingsPage() {
   const [settings, setSettings] = useState<ShopSettings | null>(null)
@@ -65,6 +69,8 @@ export default function SettingsPage() {
 
   if (loading) return <div style={{textAlign:'center',padding:'2rem',color:'rgba(255,255,255,0.5)'}}>Caricamento...</div>
   if (!settings) return <div style={{textAlign:'center',padding:'2rem',color:'rgba(255,255,255,0.5)'}}>Errore nel caricamento</div>
+
+  const isGrowth = settings.plan === 'GROWTH' || settings.plan === 'PRO'
 
   return (
     <div>
@@ -112,6 +118,35 @@ export default function SettingsPage() {
             <p style={{fontSize:'0.75rem',color:'rgba(255,255,255,0.4)'}}>
               ✓ Posizione impostata: {settings.lat.toFixed(4)}, {settings.lng.toFixed(4)}
             </p>
+          )}
+        </div>
+
+        {/* Branding colori — GROWTH+ */}
+        <div style={{background:'rgba(255,255,255,0.04)',border:`1px solid ${isGrowth ? 'rgba(255,255,255,0.08)' : 'rgba(255,255,255,0.04)'}`,borderRadius:'16px',padding:'1.5rem',opacity:isGrowth?1:0.5}}>
+          <div style={{display:'flex',alignItems:'center',justifyContent:'space-between',marginBottom:'1rem'}}>
+            <h3 style={{fontWeight:'700'}}>Branding personalizzato</h3>
+            {!isGrowth && <span style={{fontSize:'0.75rem',fontWeight:700,background:'rgba(124,58,237,0.15)',color:'#a78bfa',padding:'3px 10px',borderRadius:100}}>GROWTH</span>}
+          </div>
+          {isGrowth ? (
+            <>
+              <label style={{display:'block',fontSize:'0.85rem',color:'rgba(255,255,255,0.6)',marginBottom:'0.5rem'}}>Colore principale</label>
+              <div style={{display:'flex',gap:'8px',flexWrap:'wrap',marginBottom:'12px'}}>
+                {PRESET_COLORS.map(c => (
+                  <button key={c} type="button" onClick={() => setSettings({...settings, primaryColor: c})}
+                    style={{width:32,height:32,borderRadius:'50%',background:c,border:settings.primaryColor===c?'3px solid white':'3px solid transparent',cursor:'pointer',outline:'none'}} />
+                ))}
+              </div>
+              <div style={{display:'flex',gap:'8px',alignItems:'center'}}>
+                <input type="color" value={settings.primaryColor || '#7C3AED'}
+                  onChange={e => setSettings({...settings, primaryColor: e.target.value})}
+                  style={{width:40,height:40,borderRadius:8,border:'none',cursor:'pointer',background:'transparent'}} />
+                <input style={{...inp,marginBottom:0,flex:1}} value={settings.primaryColor || '#7C3AED'}
+                  onChange={e => setSettings({...settings, primaryColor: e.target.value})} placeholder="#7C3AED" />
+                <div style={{width:40,height:40,borderRadius:8,background:settings.primaryColor||'#7C3AED',flexShrink:0}} />
+              </div>
+            </>
+          ) : (
+            <p style={{fontSize:'0.85rem',color:'rgba(255,255,255,0.3)'}}>Personalizza logo e colori del tuo negozio. Disponibile dal piano Growth.</p>
           )}
         </div>
 

@@ -1,20 +1,17 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
+import { getCustomerFromRequest, corsHeaders } from '@/lib/customerAuth'
 
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders })
 }
 
 export async function GET(req: Request) {
-  const { searchParams } = new URL(req.url)
-  const email = searchParams.get('email')
-  if (!email) return NextResponse.json({ error: 'Email mancante' }, { status: 400, headers: corsHeaders })
-  const customer = await db.customer.findFirst({
-    where: { email },
-    select: { code: true, points: true, totalVisits: true, name: true }
-  })
-  if (!customer) return NextResponse.json({ error: 'Cliente non trovato' }, { status: 404, headers: corsHeaders })
-  return NextResponse.json(customer, { headers: corsHeaders })
+  const result = await getCustomerFromRequest(req)
+  if (result.error) return result.error
+
+  const { customer } = result
+  return NextResponse.json(
+    { code: customer.code, points: customer.points, totalVisits: customer.totalVisits, name: customer.name },
+    { headers: corsHeaders }
+  )
 }

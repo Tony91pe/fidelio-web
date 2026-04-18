@@ -16,7 +16,7 @@ const inputStyle = {
 export default function NewCustomerPage() {
   const router = useRouter()
   const [loading, setLoading] = useState(false)
-  const [form, setForm] = useState({ name: '', email: '', phone: '' })
+  const [form, setForm] = useState({ name: '', email: '', phone: '', birthday: '' })
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -53,6 +53,11 @@ export default function NewCustomerPage() {
           <label className="text-sm text-white/60 mb-1 block">Telefono</label>
           <input style={inputStyle} placeholder="Es. 333 1234567"
             value={form.phone} onChange={e => setForm({...form, phone: e.target.value})} />
+        </div>
+        <div>
+          <label className="text-sm text-white/60 mb-1 block">Data di nascita</label>
+          <input style={{...inputStyle, colorScheme:'dark'}} type="date"
+            value={form.birthday} onChange={e => setForm({...form, birthday: e.target.value})} />
         </div>
 
         <div style={{display:'flex', gap:'1rem', marginTop:'8px'}}>

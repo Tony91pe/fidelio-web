@@ -156,10 +156,10 @@ export default function AdminPage() {
 
       <div style={{ borderBottom: '1px solid rgba(255,255,255,0.06)', padding: '1.25rem 2rem', display: 'flex', alignItems: 'center', justifyContent: 'space-between', background: 'rgba(255,255,255,0.02)', backdropFilter: 'blur(10px)', position: 'sticky', top: 0, zIndex: 50 }}>
         <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-          <div style={{ width: 32, height: 32, background: 'linear-gradient(135deg, #7c3aed, #a855f7)', borderRadius: 8, display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 16 }}>🛡️</div>
+          <div style={{ width: 36, height: 36, background: 'linear-gradient(135deg, #7C3AED, #3B82F6)', borderRadius: 10, display: 'flex', alignItems: 'center', justifyContent: 'center', fontWeight: 900, fontSize: 18, flexShrink: 0, boxShadow: '0 4px 14px rgba(124,58,237,0.45)' }}>F</div>
           <div>
-            <h1 style={{ fontSize: '1rem', fontWeight: 700, letterSpacing: '-0.02em' }}>Admin Console</h1>
-            <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', fontFamily: 'DM Mono, monospace' }}>fidelio · platform</p>
+            <h1 style={{ fontSize: '1rem', fontWeight: 800, letterSpacing: '-0.02em' }}>Fidelio</h1>
+            <p style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.35)', fontFamily: 'DM Mono, monospace', letterSpacing: '0.05em' }}>ADMIN CONSOLE</p>
           </div>
         </div>
         <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center' }}>

@@ -5,6 +5,7 @@ export default function AdminPlans() {
   const [data, setData] = useState<any>(null)
   const [working, setWorking] = useState(false)
   const [giftMonths, setGiftMonths] = useState<Record<string, number>>({})
+  const [giftPlanMap, setGiftPlanMap] = useState<Record<string, string>>({})
 
   async function load() {
     const r = await fetch('/api/admin')
@@ -20,10 +21,11 @@ export default function AdminPlans() {
     setWorking(false)
   }
 
-  async function giftPlan(shopId: string) {
+  async function handleGift(shopId: string) {
     setWorking(true)
     const months = giftMonths[shopId] ?? 1
-    await fetch('/api/admin', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shopId, action: 'giftMonths', months }) })
+    const plan = giftPlanMap[shopId] ?? 'GROWTH'
+    await fetch('/api/admin', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ shopId, action: 'giftMonths', months, plan }) })
     await load()
     setWorking(false)
   }
@@ -56,14 +58,23 @@ export default function AdminPlans() {
                   {p}
                 </button>
               ))}
-              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: 'auto' }}>
+              <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginLeft: 'auto', flexWrap: 'wrap' }}>
+                <select
+                  value={giftPlanMap[shop.id] ?? 'GROWTH'}
+                  onChange={e => setGiftPlanMap(prev => ({ ...prev, [shop.id]: e.target.value }))}
+                  style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '5px 10px', color: 'white', outline: 'none', fontSize: '0.82rem', cursor: 'pointer' }}
+                >
+                  <option value="STARTER">STARTER</option>
+                  <option value="GROWTH">GROWTH</option>
+                  <option value="PRO">PRO</option>
+                </select>
                 <input type="number" min={1} max={24} value={giftMonths[shop.id] ?? 1}
                   onChange={e => setGiftMonths(prev => ({ ...prev, [shop.id]: Number(e.target.value) }))}
                   style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.12)', borderRadius: 8, padding: '5px 10px', color: 'white', width: 60, outline: 'none', fontSize: '0.82rem', textAlign: 'center' }} />
                 <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)' }}>mesi</span>
-                <button disabled={working} onClick={() => giftPlan(shop.id)}
+                <button disabled={working} onClick={() => handleGift(shop.id)}
                   style={{ background: 'rgba(16,185,129,0.2)', color: '#10b981', border: '1px solid rgba(16,185,129,0.3)', borderRadius: 8, padding: '5px 12px', cursor: 'pointer', fontSize: '0.78rem', fontWeight: 600 }}>
-                  🎁 Regala Growth
+                  🎁 Regala
                 </button>
               </div>
             </div>

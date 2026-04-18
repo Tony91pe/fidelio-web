@@ -2,9 +2,13 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
+const ADMIN_USER_ID = process.env.ADMIN_USER_ID
+
 export async function GET(req: Request) {
   const { userId } = await auth()
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!userId || userId !== ADMIN_USER_ID) {
+    return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+  }
 
   const { searchParams } = new URL(req.url)
   const search = searchParams.get('search') || ''
@@ -24,24 +28,8 @@ export async function GET(req: Request) {
 
   return NextResponse.json({
     users: [
-      ...shops.map(s => ({
-        id: s.id,
-        type: 'MERCHANT',
-        name: s.name,
-        email: s.ownerId,
-        suspended: s.suspended,
-        createdAt: s.createdAt,
-        lastActivityAt: s.updatedAt,
-      })),
-      ...customers.map(c => ({
-        id: c.id,
-        type: 'CUSTOMER',
-        name: c.name,
-        email: c.email,
-        suspended: false,
-        createdAt: c.createdAt,
-        lastActivityAt: c.lastVisitAt,
-      })),
+      ...shops.map(s => ({ id: s.id, type: 'MERCHANT', name: s.name, email: s.ownerId, suspended: s.suspended, createdAt: s.createdAt, lastActivityAt: s.updatedAt })),
+      ...customers.map(c => ({ id: c.id, type: 'CUSTOMER', name: c.name, email: c.email, suspended: false, createdAt: c.createdAt, lastActivityAt: c.lastVisitAt })),
     ],
     count: shops.length + customers.length,
   })

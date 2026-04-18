@@ -4,12 +4,15 @@ import { db } from '@/lib/db'
 import { upgradeDowngradePlan } from '@/lib/planManagement'
 import { logEvent } from '@/lib/logging'
 
+const ADMIN_USER_ID = process.env.ADMIN_USER_ID
+
 export async function POST(req: Request) {
   const { userId } = await auth()
-  if (!userId) return NextResponse.json({ error: 'Unauthorized' }, { status: 401 })
+  if (!userId || userId !== ADMIN_USER_ID) {
+    return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+  }
 
-  const body = await req.json()
-  const { shopId, newPlan } = body
+  const { shopId, newPlan } = await req.json()
 
   try {
     const result = await upgradeDowngradePlan(shopId, newPlan)

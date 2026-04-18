@@ -15,6 +15,7 @@ export default function CheckinForm({ shopId, shopName }: { shopId:string; shopN
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
+  const [birthday, setBirthday] = useState('')
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -22,7 +23,7 @@ export default function CheckinForm({ shopId, shopName }: { shopId:string; shopN
     try {
       const res = await fetch('/api/checkin', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ name, email, shopId }),
+        body:JSON.stringify({ name, email, birthday, shopId }),
       })
       const data = await res.json()
       if (res.ok) {
@@ -55,6 +56,10 @@ export default function CheckinForm({ shopId, shopName }: { shopId:string; shopN
     <form onSubmit={handleSubmit} style={{background:'rgba(255,255,255,0.05)',borderRadius:'20px',padding:'2rem',border:'1px solid rgba(255,255,255,0.1)'}}>
       <input style={inp} placeholder="Il tuo nome" value={name} onChange={e => setName(e.target.value)} required />
       <input style={inp} type="email" placeholder="La tua email" value={email} onChange={e => setEmail(e.target.value)} required />
+      <div style={{position:'relative',marginBottom:'12px'}}>
+        <label style={{position:'absolute',top:'-8px',left:'12px',fontSize:'11px',color:'rgba(255,255,255,0.5)',background:'transparent',pointerEvents:'none'}}>Data di nascita</label>
+        <input style={{...inp,marginBottom:0,colorScheme:'dark'}} type="date" value={birthday} onChange={e => setBirthday(e.target.value)} required />
+      </div>
       <button type="submit" disabled={loading}
         style={{width:'100%',background:'#6C3DF4',color:'white',padding:'16px',borderRadius:'12px',fontWeight:'700',border:'none',cursor:'pointer',fontSize:'16px',opacity:loading?0.7:1}}>
         {loading ? 'Registrazione...' : 'Inizia ad accumulare punti'}

@@ -7,6 +7,22 @@
     {
       "path": "/api/cron/birthday-emails",
       "schedule": "0 9 * * *"
+    },
+    {
+      "path": "/api/cron/winback-emails",
+      "schedule": "0 10 * * *"
+    },
+    {
+      "path": "/api/cron/expiry-warnings",
+      "schedule": "0 8 * * *"
+    },
+    {
+      "path": "/api/cron/onboarding-emails",
+      "schedule": "0 11 * * *"
+    },
+    {
+      "path": "/api/cron/expire-points",
+      "schedule": "0 3 * * *"
     }
   ]
 }
