@@ -10,8 +10,8 @@ export function FounderCounter() {
   useEffect(() => {
     fetch('/api/shop/apply-founder')
       .then(r => r.json())
-      .then(data => setSpotsLeft(data.spotsLeft ?? 0))
-      .catch(() => setSpotsLeft(0))
+      .then(data => setSpotsLeft(typeof data.spotsLeft === 'number' ? data.spotsLeft : null))
+      .catch(() => setSpotsLeft(null))
   }, [])
 
   return (
@@ -36,8 +36,23 @@ export function FounderCounter() {
         </span>
       </div>
       <p style={{ opacity: 0.9, marginBottom: '2rem' }}>
-        Piano Growth gratis per 6 mesi + badge Negozio Fondatore
+        Piano Growth gratis per 6 mesi + badge Negozio Fondatore esclusivo
       </p>
+
+      {/* Badge preview */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '0.75rem', marginBottom: '2rem' }}>
+        <img
+          src="/badge-fondatore.svg"
+          alt="Badge Negozio Fondatore Fidelio"
+          width={130}
+          height={130}
+          style={{ filter: 'drop-shadow(0 0 24px rgba(167,139,250,0.6))', borderRadius: '50%' }}
+        />
+        <p style={{ opacity: 0.7, fontSize: '0.82rem', margin: 0 }}>
+          Il badge esclusivo che riceverai per il tuo negozio
+        </p>
+      </div>
+
       <Link href={spotsLeft === 0 ? '#' : '/fondatore'} style={{
         background: 'white', color: '#6C3DF4',
         padding: '0.9rem 2rem', borderRadius: '100px', textDecoration: 'none',

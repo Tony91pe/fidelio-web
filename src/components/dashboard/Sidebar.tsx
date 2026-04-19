@@ -91,9 +91,15 @@ export default function Sidebar() {
             )
           })}
         </nav>
-        <div className="flex items-center gap-3 px-3 py-2 mt-4 border-t border-white/6 pt-4">
-          <UserButton />
-          <span className="text-sm text-white/50">Account</span>
+        <div className="mt-4 border-t border-white/6 pt-4 flex flex-col gap-1">
+          <Link href="/docs" target="_blank" className="flex items-center gap-3 px-3 py-2 rounded-xl text-sm font-medium text-white/40 hover:text-white/70 hover:bg-white/5 transition-all">
+            <span>📄</span>
+            <span>Docs API</span>
+          </Link>
+          <div className="flex items-center gap-3 px-3 py-2">
+            <UserButton />
+            <span className="text-sm text-white/50">Account</span>
+          </div>
         </div>
       </aside>
 

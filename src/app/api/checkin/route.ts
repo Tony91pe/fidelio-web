@@ -9,8 +9,22 @@ function generateCustomerCode(): string {
   return code
 }
 
+const EMAIL_RE = /^[^\s@]{1,64}@[^\s@]{1,255}\.[^\s@]{2,}$/
+
 export async function POST(req: Request) {
-  const { name, email, birthday, shopId } = await req.json()
+  let body: { name?: unknown; email?: unknown; birthday?: unknown; shopId?: unknown }
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'Richiesta non valida' }, { status: 400 }) }
+
+  const { name, email, birthday, shopId } = body
+  if (typeof name !== 'string' || !name.trim() || name.length > 100)
+    return NextResponse.json({ error: 'Nome non valido' }, { status: 400 })
+  if (typeof email !== 'string' || !EMAIL_RE.test(email) || email.length > 200)
+    return NextResponse.json({ error: 'Email non valida' }, { status: 400 })
+  if (typeof shopId !== 'string' || !shopId.trim())
+    return NextResponse.json({ error: 'Negozio non valido' }, { status: 400 })
+  if (birthday !== undefined && birthday !== null && (typeof birthday !== 'string' || isNaN(Date.parse(birthday as string))))
+    return NextResponse.json({ error: 'Data di nascita non valida' }, { status: 400 })
+
   const shop = await db.shop.findUnique({ where: { id: shopId } })
   if (!shop) return NextResponse.json({ error: 'Negozio non trovato' }, { status: 404 })
   const WELCOME = shop.welcomePoints ?? 50

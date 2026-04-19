@@ -2,7 +2,7 @@
 import { useEffect, useState } from 'react'
 
 function isUnpaid(shop: any): boolean {
-  const hasPaddle = !!shop.stripeId
+  const hasPaddle = !!shop.paddleCustomerId
   const hasActiveTrial = shop.planExpiresAt && new Date(shop.planExpiresAt) > new Date()
   return !hasPaddle && !hasActiveTrial
 }

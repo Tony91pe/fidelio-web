@@ -18,6 +18,7 @@ interface Affiliate {
   code: string
   commissionType: 'MONTHLY' | 'ONE_TIME'
   commissionAmount: number
+  commissionMonths: number
   active: boolean
   notes: string | null
   referrals: Referral[]
@@ -28,6 +29,9 @@ const inputStyle: React.CSSProperties = {
   width: '100%', background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.12)',
   borderRadius: '10px', padding: '10px 14px', color: 'white', fontSize: '14px', outline: 'none',
   boxSizing: 'border-box', fontFamily: 'system-ui',
+}
+const selectStyle: React.CSSProperties = {
+  ...inputStyle, appearance: 'none', background: '#1a1030', cursor: 'pointer',
 }
 const labelStyle: React.CSSProperties = { display: 'block', fontSize: '12px', color: 'rgba(255,255,255,0.5)', marginBottom: '5px', fontWeight: '600', textTransform: 'uppercase', letterSpacing: '0.5px' }
 
@@ -42,7 +46,7 @@ export default function AffiliatesAdmin() {
   const [addingShop, setAddingShop] = useState(false)
 
   const [form, setForm] = useState({
-    name: '', email: '', code: '', commissionType: 'MONTHLY', commissionAmount: '0', notes: '',
+    name: '', email: '', code: '', commissionType: 'MONTHLY', commissionAmount: '0', commissionMonths: '0', notes: '',
   })
 
   async function load() {
@@ -64,7 +68,7 @@ export default function AffiliatesAdmin() {
   useEffect(() => { load() }, [])
 
   function openNew() {
-    setForm({ name: '', email: '', code: '', commissionType: 'MONTHLY', commissionAmount: '0', notes: '' })
+    setForm({ name: '', email: '', code: '', commissionType: 'MONTHLY', commissionAmount: '0', commissionMonths: '0', notes: '' })
     setView('form')
   }
 
@@ -82,7 +86,7 @@ export default function AffiliatesAdmin() {
       await fetch('/api/admin/affiliates', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ ...form, commissionAmount: parseFloat(form.commissionAmount) || 0 }),
+        body: JSON.stringify({ ...form, commissionAmount: parseFloat(form.commissionAmount) || 0, commissionMonths: parseInt(form.commissionMonths) || 0 }),
       })
       await load()
       setView('list')
@@ -152,6 +156,12 @@ export default function AffiliatesAdmin() {
   const totalReferrals = affiliates.reduce((s, a) => s + a.referrals.length, 0)
   const totalUnpaid = affiliates.reduce((s, a) => s + a.referrals.filter(r => !r.commissionPaid).length, 0)
 
+  function commissionLabel(a: Pick<Affiliate, 'commissionType' | 'commissionAmount' | 'commissionMonths'>) {
+    if (a.commissionType === 'ONE_TIME') return `€${a.commissionAmount} una tantum`
+    const months = a.commissionMonths > 0 ? ` × ${a.commissionMonths} mesi` : '/mese ∞'
+    return `€${a.commissionAmount}${months}`
+  }
+
   return (
     <div style={{ padding: '2rem', maxWidth: 900 }}>
       <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '1.75rem' }}>
@@ -199,8 +209,8 @@ export default function AffiliatesAdmin() {
                         {!a.active && <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.3)' }}>Disattivo</span>}
                       </div>
                       <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.35)' }}>
-                        {a.email} · {a.commissionType === 'MONTHLY' ? 'Mensile' : 'Una tantum'} · €{a.commissionAmount}
-                        {a.referrals.length > 0 && <span> · <strong style={{ color: a.referrals.length > 0 ? 'white' : undefined }}>{a.referrals.length} negozi</strong></span>}
+                        {a.email} · {commissionLabel(a)}
+                        {a.referrals.length > 0 && <span> · <strong style={{ color: 'white' }}>{a.referrals.length} negozi</strong></span>}
                         {unpaid > 0 && <span style={{ color: '#F59E0B' }}> · {unpaid} da pagare</span>}
                       </div>
                     </div>
@@ -240,16 +250,25 @@ export default function AffiliatesAdmin() {
           <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1rem' }}>
             <div>
               <label style={labelStyle}>Tipo commissione</label>
-              <select style={{ ...inputStyle, appearance: 'none' }} value={form.commissionType} onChange={e => setForm(f => ({ ...f, commissionType: e.target.value }))}>
-                <option value="MONTHLY">Mensile ricorrente</option>
-                <option value="ONE_TIME">Una tantum</option>
+              <select style={selectStyle} value={form.commissionType} onChange={e => setForm(f => ({ ...f, commissionType: e.target.value }))}>
+                <option value="MONTHLY" style={{ background: '#1a1030', color: 'white' }}>Mensile ricorrente</option>
+                <option value="ONE_TIME" style={{ background: '#1a1030', color: 'white' }}>Una tantum</option>
               </select>
             </div>
             <div>
-              <label style={labelStyle}>Importo commissione (€)</label>
+              <label style={labelStyle}>Importo (€)</label>
               <input style={inputStyle} type="number" min="0" step="0.01" value={form.commissionAmount} onChange={e => setForm(f => ({ ...f, commissionAmount: e.target.value }))} placeholder="0.00" />
             </div>
           </div>
+          {form.commissionType === 'MONTHLY' && (
+            <div>
+              <label style={labelStyle}>Mesi da pagare (0 = illimitato)</label>
+              <input style={inputStyle} type="number" min="0" step="1" value={form.commissionMonths} onChange={e => setForm(f => ({ ...f, commissionMonths: e.target.value }))} placeholder="0" />
+              <p style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.3)', marginTop: '4px', marginBottom: 0 }}>
+                Es: 6 = paghi la commissione per i primi 6 mesi di abbonamento del negozio referato. 0 = per sempre.
+              </p>
+            </div>
+          )}
           <div>
             <label style={labelStyle}>Note interne</label>
             <input style={inputStyle} value={form.notes} onChange={e => setForm(f => ({ ...f, notes: e.target.value }))} placeholder="Note private su questo affiliato..." />
@@ -281,7 +300,7 @@ export default function AffiliatesAdmin() {
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', marginBottom: '2px' }}>COMMISSIONE</div>
-              <div style={{ fontWeight: 700, fontSize: '1rem' }}>€{selected.commissionAmount} <span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>{selected.commissionType === 'MONTHLY' ? '/mese' : 'una tantum'}</span></div>
+              <div style={{ fontWeight: 700, fontSize: '1rem' }}>{commissionLabel(selected)}</div>
             </div>
             <div style={{ textAlign: 'center' }}>
               <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)', marginBottom: '2px' }}>DA PAGARE</div>

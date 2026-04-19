@@ -3,6 +3,7 @@ import { ClerkProvider } from '@clerk/nextjs'
 import { Geist } from 'next/font/google'
 import './globals.css'
 import { CookieBanner } from '@/components/CookieBanner'
+import { CrispChat } from '@/components/CrispChat'
 
 const geist = Geist({ subsets: ['latin'], display: 'swap' })
 
@@ -49,6 +50,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <html lang="it">
         <body className={geist.className}>
           {children}
+          <CrispChat />
           <CookieBanner />
         </body>
       </html>

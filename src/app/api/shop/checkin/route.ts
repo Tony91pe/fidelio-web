@@ -13,10 +13,16 @@ export async function POST(req: Request) {
   if (result.error) return result.error
 
   const { shop } = result
-  const { customerCode, amount } = await req.json()
 
-  if (!customerCode) {
-    return NextResponse.json({ error: 'Codice cliente richiesto' }, { status: 400, headers: corsHeaders })
+  let body: { customerCode?: unknown; amount?: unknown }
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'Richiesta non valida' }, { status: 400, headers: corsHeaders }) }
+  const { customerCode, amount } = body
+
+  if (typeof customerCode !== 'string' || !/^FID-[A-Z0-9]{6}$/.test(customerCode)) {
+    return NextResponse.json({ error: 'Codice cliente non valido' }, { status: 400, headers: corsHeaders })
+  }
+  if (amount !== undefined && amount !== null && (typeof amount !== 'number' || amount < 0 || amount > 100_000)) {
+    return NextResponse.json({ error: 'Importo non valido' }, { status: 400, headers: corsHeaders })
   }
 
   // Cerca il cliente globalmente (qualunque negozio Fidelio)

@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server'
-import { createHmac } from 'crypto'
+import { createHmac, timingSafeEqual } from 'crypto'
 import { db } from '@/lib/db'
 
 function verifySignature(body: string, signature: string, secret: string): boolean {
@@ -11,7 +11,11 @@ function verifySignature(body: string, signature: string, secret: string): boole
   const { ts, h1 } = parts
   if (!ts || !h1) return false
   const expected = createHmac('sha256', secret).update(`${ts}:${body}`).digest('hex')
-  return expected === h1
+  try {
+    return timingSafeEqual(Buffer.from(expected), Buffer.from(h1))
+  } catch {
+    return false
+  }
 }
 
 export async function POST(req: Request) {
@@ -22,7 +26,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Firma non valida' }, { status: 400 })
   }
 
-  const event = JSON.parse(body)
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let event: any
+  try { event = JSON.parse(body) } catch { return NextResponse.json({ error: 'Payload non valido' }, { status: 400 }) }
   const { event_type, data } = event
 
   if (event_type === 'subscription.activated' || event_type === 'transaction.completed') {
@@ -35,7 +41,7 @@ export async function POST(req: Request) {
         where: { id: shopId },
         data: {
           plan: plan as 'STARTER' | 'GROWTH' | 'PRO',
-          stripeId: customerId ?? null,
+          paddleCustomerId: customerId ?? null,
           planExpiresAt: null, // abbonamento attivo: rimuove la scadenza trial fondatore
         },
       })
@@ -48,7 +54,7 @@ export async function POST(req: Request) {
     if (shopId) {
       await db.shop.update({
         where: { id: shopId },
-        data: { plan: 'STARTER', stripeId: null, planExpiresAt: null },
+        data: { plan: 'STARTER', paddleCustomerId: null, planExpiresAt: null },
       })
     }
   }

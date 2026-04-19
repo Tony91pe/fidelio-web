@@ -3,21 +3,26 @@ import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'
 
 const isPublicRoute = createRouteMatcher([
   '/', '/login(.*)', '/register(.*)', '/pricing', '/privacy', '/termini',
-  '/rimborsi', '/cookie-policy', '/fondatore', '/checkin/(.*)', '/recensione', '/blog', '/blog/(.*)',
+  '/rimborsi', '/cookie-policy', '/fondatore', '/docs', '/checkin/(.*)', '/recensioni', '/blog', '/blog/(.*)',
   '/api/app/(.*)', '/api/customer/(.*)', '/api/checkin',
   '/api/scanner/(.*)', '/api/shops', '/api/webhooks/(.*)',
-  '/api/unsubscribe', '/api/referral', '/api/cron/(.*)', '/api/testimonials',
+  '/api/unsubscribe', '/api/referral', '/api/cron/(.*)', '/api/testimonials', '/api/shop/apply-founder',
   '/status', '/sitemap.xml', '/opengraph-image',
 ])
 
 const rateLimitMap = new Map<string, { count: number; reset: number }>()
 
 const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
-  '/api/customer/auth/send-otp': { max: 3, windowMs: 60_000 },
-  '/api/scanner/stamp':          { max: 30, windowMs: 60_000 },
-  '/api/scanner/lookup':         { max: 60, windowMs: 60_000 },
-  '/api/checkin':                { max: 30, windowMs: 60_000 },
-  '/api/shop/auth/send-otp':     { max: 3, windowMs: 60_000 },
+  '/api/customer/auth/send-otp':         { max: 3,  windowMs: 60_000 },
+  '/api/scanner/stamp':                  { max: 30, windowMs: 60_000 },
+  '/api/scanner/lookup':                 { max: 60, windowMs: 60_000 },
+  '/api/checkin':                        { max: 30, windowMs: 60_000 },
+  '/api/shop/auth/send-otp':             { max: 3,  windowMs: 60_000 },
+  '/api/shop/checkin':                   { max: 30, windowMs: 60_000 },
+  '/api/paddle/webhook':                 { max: 20, windowMs: 60_000 },
+  '/api/dashboard/customers/export':     { max: 5,  windowMs: 60_000 },
+  '/api/shop/export':                    { max: 5,  windowMs: 60_000 },
+  '/api/admin/contact-shop':             { max: 10, windowMs: 60_000 },
 }
 
 function getRateLimit(pathname: string) {

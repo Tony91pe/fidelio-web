@@ -1,16 +1,52 @@
 import { withSentryConfig } from '@sentry/nextjs';
 import type { NextConfig } from 'next'
+const securityHeaders = [
+  { key: 'X-Frame-Options', value: 'SAMEORIGIN' },
+  { key: 'X-Content-Type-Options', value: 'nosniff' },
+  { key: 'Referrer-Policy', value: 'strict-origin-when-cross-origin' },
+  { key: 'Permissions-Policy', value: 'camera=(), microphone=(), geolocation=(), payment=()' },
+  {
+    key: 'Content-Security-Policy',
+    value: [
+      "default-src 'self'",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.accounts.dev https://*.clerk.com https://cdn.crisp.chat https://client.crisp.chat https://*.sentry.io https://js.sentry-cdn.com",
+      "style-src 'self' 'unsafe-inline' https://cdn.crisp.chat https://client.crisp.chat",
+      "img-src 'self' data: blob: https: http:",
+      "font-src 'self' data: https://cdn.crisp.chat",
+      "connect-src 'self' https://*.clerk.com https://*.clerk.accounts.dev https://*.ingest.sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.neon.tech",
+      "frame-src 'self' https://*.clerk.com https://*.clerk.accounts.dev",
+      "worker-src 'self' blob:",
+      "media-src 'self'",
+    ].join('; '),
+  },
+]
+
+// CORS solo per endpoint pubblici (PWA, checkin, scanner, webhook)
+const publicCorsPaths = [
+  '/api/app/:path*',
+  '/api/customer/:path*',
+  '/api/checkin',
+  '/api/scanner/:path*',
+  '/api/shops',
+  '/api/webhooks/:path*',
+  '/api/unsubscribe',
+  '/api/referral',
+  '/api/testimonials',
+  '/api/shop/apply-founder',
+]
+const corsHeaders = [
+  { key: 'Access-Control-Allow-Origin', value: '*' },
+  { key: 'Access-Control-Allow-Methods', value: 'GET,POST,PUT,DELETE,OPTIONS' },
+  { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
+]
+
 const nextConfig: NextConfig = {
   async headers() {
     return [
-      {
-        source: '/api/:path*',
-        headers: [
-          { key: 'Access-Control-Allow-Origin', value: '*' },
-          { key: 'Access-Control-Allow-Methods', value: 'GET,POST,PUT,DELETE,OPTIONS' },
-          { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
-        ],
-      },
+      // Security headers su tutte le pagine
+      { source: '/(.*)', headers: securityHeaders },
+      // CORS solo sulle API pubbliche
+      ...publicCorsPaths.map(source => ({ source, headers: corsHeaders })),
     ]
   },
 }

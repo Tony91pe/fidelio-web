@@ -21,7 +21,7 @@ model Shop {
   website     String?
   primaryColor String? @default("#7C3AED")
   plan        Plan     @default(STARTER)
-  stripeId    String?
+  paddleCustomerId String?
   suspended   Boolean  @default(false)
   approved    Boolean  @default(false)
   planExpiresAt DateTime?
@@ -238,6 +238,7 @@ model Affiliate {
   code             String              @unique
   commissionType   CommissionType      @default(MONTHLY)
   commissionAmount Float               @default(0)
+  commissionMonths Int                 @default(0)
   active           Boolean             @default(true)
   notes            String?
   referrals        AffiliateReferral[]

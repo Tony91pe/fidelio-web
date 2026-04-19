@@ -11,6 +11,7 @@ export default function AdminLegal() {
 
   const internal = [
     { title: '📋 Registro Trattamenti GDPR', href: '/admin/gdpr', desc: 'Art. 30 GDPR — documento interno riservato', status: '✓ Compilato' },
+    { title: '📄 Data Processing Agreement (DPA)', href: '/admin/dpa', desc: 'Art. 28 GDPR — accordo con i negozi clienti', status: '✓ Versione 1.0' },
   ]
 
   return (

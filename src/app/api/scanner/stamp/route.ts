@@ -11,7 +11,15 @@ export async function POST(req: Request) {
   const shop = await db.shop.findFirst({ where: { ownerId: userId } })
   if (!shop) return NextResponse.json({ error: 'Negozio non trovato' }, { status: 404 })
 
-  const { customerCode, amount } = await req.json()
+  let body: { customerCode?: unknown; amount?: unknown }
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'Richiesta non valida' }, { status: 400 }) }
+  const { customerCode, amount } = body
+
+  if (typeof customerCode !== 'string' || !/^FID-[A-Z0-9]{6}$/.test(customerCode))
+    return NextResponse.json({ error: 'Codice cliente non valido' }, { status: 400 })
+  if (amount !== undefined && amount !== null && (typeof amount !== 'number' || amount < 0 || amount > 100_000))
+    return NextResponse.json({ error: 'Importo non valido' }, { status: 400 })
+
   const customer = await db.customer.findFirst({ where: { code: customerCode, shopId: shop.id } })
   if (!customer) return NextResponse.json({ error: 'Cliente non trovato' }, { status: 404 })
 

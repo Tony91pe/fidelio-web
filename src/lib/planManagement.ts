@@ -9,7 +9,7 @@ export async function upgradeDowngradePlan(shopId: string, newPlan: 'STARTER' | 
     data: {
       plan: newPlan,
       planExpiresAt: null,
-      ...(newPlan === 'STARTER' ? { stripeId: null } : {}),
+      ...(newPlan === 'STARTER' ? { paddleCustomerId: null } : {}),
     },
   })
 

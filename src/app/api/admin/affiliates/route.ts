@@ -34,10 +34,10 @@ export async function GET() {
 export async function POST(req: Request) {
   if (!await checkAdmin()) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
   const body = await req.json()
-  const { name, email, code, commissionType, commissionAmount, notes } = body
+  const { name, email, code, commissionType, commissionAmount, commissionMonths, notes } = body
   if (!name || !email || !code) return NextResponse.json({ error: 'Campi obbligatori mancanti' }, { status: 400 })
   const affiliate = await db.affiliate.create({
-    data: { name, email, code: code.toUpperCase(), commissionType: commissionType || 'MONTHLY', commissionAmount: parseFloat(commissionAmount) || 0, notes },
+    data: { name, email, code: code.toUpperCase(), commissionType: commissionType || 'MONTHLY', commissionAmount: parseFloat(commissionAmount) || 0, commissionMonths: parseInt(commissionMonths) || 0, notes },
   })
   return NextResponse.json(affiliate)
 }

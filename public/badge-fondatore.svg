@@ -1,0 +1,84 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 280 280" width="280" height="280">
+  <defs>
+    <linearGradient id="bg" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#1a0a3d"/>
+      <stop offset="100%" style="stop-color:#0d0d1a"/>
+    </linearGradient>
+    <linearGradient id="ring" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#a78bfa"/>
+      <stop offset="50%" style="stop-color:#6c3df4"/>
+      <stop offset="100%" style="stop-color:#c084fc"/>
+    </linearGradient>
+    <linearGradient id="innerRing" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#7c3aed"/>
+      <stop offset="100%" style="stop-color:#4f28c4"/>
+    </linearGradient>
+    <linearGradient id="fLogo" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#c084fc"/>
+      <stop offset="100%" style="stop-color:#a78bfa"/>
+    </linearGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="3" result="coloredBlur"/>
+      <feMerge><feMergeNode in="coloredBlur"/><feMergeNode in="SourceGraphic"/></feMerge>
+    </filter>
+    <filter id="shadow">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="rgba(108,61,244,0.5)"/>
+    </filter>
+  </defs>
+
+  <!-- Outer decorative stars -->
+  <g opacity="0.5">
+    <polygon points="140,8 143,18 153,18 145,24 148,34 140,28 132,34 135,24 127,18 137,18" fill="#a78bfa" filter="url(#glow)"/>
+  </g>
+
+  <!-- Outer ring -->
+  <circle cx="140" cy="148" r="120" fill="none" stroke="url(#ring)" stroke-width="3" opacity="0.6"/>
+  <circle cx="140" cy="148" r="112" fill="none" stroke="url(#ring)" stroke-width="1" opacity="0.3"/>
+
+  <!-- Main circle background -->
+  <circle cx="140" cy="148" r="106" fill="url(#bg)" filter="url(#shadow)"/>
+
+  <!-- Inner decorative ring -->
+  <circle cx="140" cy="148" r="100" fill="none" stroke="url(#innerRing)" stroke-width="2" opacity="0.8"/>
+
+  <!-- Star decorations around ring -->
+  <g fill="#a78bfa" opacity="0.7" font-size="10">
+    <circle cx="140" cy="50" r="2.5"/>
+    <circle cx="214" cy="84" r="2"/>
+    <circle cx="240" cy="160" r="2.5"/>
+    <circle cx="210" cy="230" r="2"/>
+    <circle cx="140" cy="252" r="2.5"/>
+    <circle cx="68" cy="230" r="2"/>
+    <circle cx="40" cy="160" r="2.5"/>
+    <circle cx="68" cy="84" r="2"/>
+  </g>
+
+  <!-- Crown top -->
+  <g transform="translate(140, 86)" filter="url(#glow)">
+    <path d="M-22 0 L-28 -18 L-10 -8 L0 -24 L10 -8 L28 -18 L22 0 Z" fill="url(#ring)" opacity="0.9"/>
+    <path d="M-22 0 L22 0 L18 8 L-18 8 Z" fill="url(#innerRing)" opacity="0.9"/>
+  </g>
+
+  <!-- F letter logo -->
+  <text x="140" y="158" text-anchor="middle" font-family="Georgia, serif" font-size="52" font-weight="900" fill="url(#fLogo)" filter="url(#glow)">F</text>
+
+  <!-- Fidelio text -->
+  <text x="140" y="182" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="11" font-weight="700" fill="rgba(255,255,255,0.5)" letter-spacing="3">FIDELIO</text>
+
+  <!-- Separator lines -->
+  <line x1="80" y1="193" x2="118" y2="193" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+  <line x1="162" y1="193" x2="200" y2="193" stroke="rgba(167,139,250,0.3)" stroke-width="1"/>
+
+  <!-- Main badge text -->
+  <text x="140" y="215" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="14" font-weight="800" fill="white" letter-spacing="0.5">NEGOZIO</text>
+  <text x="140" y="233" text-anchor="middle" font-family="-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="14" font-weight="800" fill="url(#ring)" letter-spacing="0.5">FONDATORE</text>
+
+  <!-- Bottom decorative dots -->
+  <g fill="rgba(167,139,250,0.4)">
+    <circle cx="118" cy="245" r="2"/>
+    <circle cx="130" cy="245" r="2"/>
+    <circle cx="140" cy="245" r="2"/>
+    <circle cx="150" cy="245" r="2"/>
+    <circle cx="162" cy="245" r="2"/>
+  </g>
+</svg>

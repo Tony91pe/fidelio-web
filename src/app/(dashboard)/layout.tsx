@@ -72,7 +72,7 @@ function UnpaidGate({ plan }: { plan: string }) {
             ))}
           </div>
         </div>
-        <Link href="/dashboard/upgrade" style={{ display: 'inline-block', background: '#7C3AED', color: 'white', padding: '0.9rem 2.5rem', borderRadius: '100px', textDecoration: 'none', fontWeight: '700', fontSize: '1rem', boxShadow: '0 0 30px rgba(108,61,244,0.4)' }}>
+        <Link href="/pricing" style={{ display: 'inline-block', background: '#7C3AED', color: 'white', padding: '0.9rem 2.5rem', borderRadius: '100px', textDecoration: 'none', fontWeight: '700', fontSize: '1rem', boxShadow: '0 0 30px rgba(108,61,244,0.4)' }}>
           Scegli il piano →
         </Link>
         <p style={{ marginTop: '1rem', color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem' }}>

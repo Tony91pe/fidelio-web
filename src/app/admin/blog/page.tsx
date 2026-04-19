@@ -320,13 +320,14 @@ export default function BlogAdmin() {
     setView('editor')
   }
 
-  async function save() {
+  async function save(publish?: boolean) {
     setWorking(true)
+    const payload = publish !== undefined ? { ...form, published: publish, publishedAt: publish ? new Date().toISOString() : null } : form
     try {
       if (editing) {
-        await fetch('/api/admin/blog', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editing.id, ...form }) })
+        await fetch('/api/admin/blog', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editing.id, ...payload }) })
       } else {
-        await fetch('/api/admin/blog', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(form) })
+        await fetch('/api/admin/blog', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
       }
       await load()
       setView('list')
@@ -457,18 +458,16 @@ export default function BlogAdmin() {
                 placeholder={'## Introduzione\n\nInizia a scrivere il tuo articolo qui...\n\n## Sezione 1\n\nContenuto della sezione.\n\n- Punto 1\n- Punto 2'}
               />
             </div>
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', padding: '0.75rem 1rem', background: 'rgba(255,255,255,0.04)', borderRadius: 10, border: '1px solid rgba(255,255,255,0.08)' }}>
-              <input type="checkbox" id="pub" checked={form.published} onChange={e => setForm(f => ({ ...f, published: e.target.checked }))} style={{ width: 16, height: 16, accentColor: '#6C3DF4' }} />
-              <label htmlFor="pub" style={{ fontSize: '0.9rem', fontWeight: 600, cursor: 'pointer' }}>
-                Pubblica subito (visibile sul sito)
-              </label>
-            </div>
-            <div style={{ display: 'flex', gap: '0.75rem' }}>
-              <button onClick={save} disabled={working || !form.title || !form.content}
-                style={{ flex: 1, background: '#6C3DF4', color: 'white', border: 'none', borderRadius: 10, padding: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', opacity: (working || !form.title || !form.content) ? 0.6 : 1 }}>
-                {working ? 'Salvataggio...' : editing ? '💾 Salva modifiche' : '✓ Crea articolo'}
+            <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
+              <button onClick={() => save(false)} disabled={working || !form.title || !form.content}
+                style={{ flex: 1, minWidth: 140, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', opacity: (working || !form.title || !form.content) ? 0.5 : 1 }}>
+                {working ? '...' : '📝 Salva come bozza'}
               </button>
-              <button onClick={() => setView('list')} style={{ background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.6)', border: 'none', borderRadius: 10, padding: '12px 20px', fontWeight: 600, cursor: 'pointer' }}>
+              <button onClick={() => save(true)} disabled={working || !form.title || !form.content}
+                style={{ flex: 2, minWidth: 160, background: '#6C3DF4', color: 'white', border: 'none', borderRadius: 10, padding: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', opacity: (working || !form.title || !form.content) ? 0.6 : 1 }}>
+                {working ? 'Salvataggio...' : editing ? '🚀 Salva e pubblica' : '🚀 Crea e pubblica'}
+              </button>
+              <button onClick={() => setView('list')} style={{ background: 'transparent', color: 'rgba(255,255,255,0.4)', border: 'none', borderRadius: 10, padding: '12px 16px', fontWeight: 600, cursor: 'pointer' }}>
                 Annulla
               </button>
             </div>

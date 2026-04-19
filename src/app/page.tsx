@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import Link from 'next/link'
 import { features } from './features-data'
 import { FounderCounter } from './FounderCounter'
+import { CrispButton } from './CrispButton'
 import { db } from '@/lib/db'
 
 export const metadata: Metadata = {
@@ -24,12 +25,12 @@ const plans = [
   {
     name: 'GROWTH', price: '39', period: 'mese',
     features: ['Tutto di STARTER', 'QR dinamico', 'Anti-frode', 'Premi illimitati', 'Gift card', 'Email automatiche avanzate (compleanno, winback)', 'Statistiche giornaliere', 'Dashboard completa', 'Ruoli: commesso, manager, owner', 'Branding personalizzato (logo + colori)', 'Notifiche push Android', 'Segmentazione clienti base', 'Supporto prioritario'],
-    cta: 'Inizia', featured: true,
+    cta: 'Abbonati', featured: true,
   },
   {
     name: 'PRO', price: '79', period: 'mese',
     features: ['Tutto di GROWTH', 'Multi-sede (multi-store)', 'Dashboard centralizzata', 'Ruoli avanzati e permessi granulari', 'Automazioni avanzate (trigger complessi)', 'API access', 'Reportistica avanzata', 'Supporto dedicato', 'Onboarding assistito'],
-    cta: 'Inizia', featured: false,
+    cta: 'Abbonati', featured: false,
   },
 ]
 
@@ -57,13 +58,32 @@ const FALLBACK_TESTIMONIALS = [
 
 export default async function LandingPage() {
   let testimonials = FALLBACK_TESTIMONIALS
+  let stats = { shops: 0, customers: 0, visits: 0 }
   try {
     const real = await db.testimonial.findMany({ where: { approved: true }, orderBy: { createdAt: 'desc' }, take: 6 })
     if (real.length >= 2) testimonials = real
   } catch {}
+  try {
+    const [shops, customers, visits] = await Promise.all([
+      db.shop.count({ where: { approved: true } }),
+      db.customer.count(),
+      db.visit.count(),
+    ])
+    stats = { shops, customers, visits }
+  } catch {}
 
   return (
     <div style={{ fontFamily: 'system-ui,sans-serif', background: '#0D0D1A', color: 'white', minHeight: '100vh', overflowX: 'hidden' }}>
+      <style>{`
+        @keyframes ctaPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(108,61,244,0.7), 0 0 16px rgba(108,61,244,0.4); transform: scale(1); }
+          50% { box-shadow: 0 0 0 8px rgba(108,61,244,0), 0 0 32px rgba(108,61,244,0.7); transform: scale(1.03); }
+        }
+        @keyframes navPulse {
+          0%, 100% { box-shadow: 0 0 0 0 rgba(108,61,244,0.8); }
+          50% { box-shadow: 0 0 0 6px rgba(108,61,244,0); }
+        }
+      `}</style>
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
@@ -71,13 +91,13 @@ export default async function LandingPage() {
 
       {/* Nav */}
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(13,13,26,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem' }}>
-        <Link href="/" style={{ fontSize: '1.4rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'white' }}>
+        <a href="/" style={{ fontSize: '1.4rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'white' }}>
           <img src="/favicon.svg" alt="Fidelio" width={28} height={28} style={{ borderRadius: 6 }} />
           Fidelio
-        </Link>
+        </a>
         <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
           <Link href="/login" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '0.9rem' }}>Accedi</Link>
-          <Link href="/register" style={{ background: '#6C3DF4', color: 'white', padding: '0.5rem 1.2rem', borderRadius: '100px', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600' }}>
+          <Link href="/register" style={{ background: '#6C3DF4', color: 'white', padding: '0.5rem 1.2rem', borderRadius: '100px', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600', animation: 'navPulse 2s ease-in-out infinite' }}>
             Inizia ora
           </Link>
         </div>
@@ -95,14 +115,38 @@ export default async function LandingPage() {
           Punti digitali, QR code alla cassa, email automatiche e un&apos;AI che ti aiuta a non perdere più clienti.
         </p>
         <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
-          <Link href="/register" style={{ background: '#6C3DF4', color: 'white', padding: '0.9rem 2rem', borderRadius: '100px', textDecoration: 'none', fontWeight: '700', fontSize: '1rem', boxShadow: '0 0 30px rgba(108,61,244,0.4)' }}>
+          <Link href="/register" style={{ background: '#6C3DF4', color: 'white', padding: '0.9rem 2rem', borderRadius: '100px', textDecoration: 'none', fontWeight: '700', fontSize: '1rem', animation: 'navPulse 2s ease-in-out infinite' }}>
             Inizia ora
           </Link>
         </div>
         <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.8rem', marginTop: '1rem' }}>
-          Setup in 10 minuti. Nessuna competenza tecnica richiesta.
+          Setup in 10 minuti · Trial gratuito 14 giorni · Nessuna carta di credito
         </p>
+        <div style={{ display: 'inline-flex', alignItems: 'center', gap: '0.5rem', background: 'rgba(16,185,129,0.08)', border: '1px solid rgba(16,185,129,0.2)', borderRadius: '100px', padding: '0.4rem 1rem', marginTop: '0.75rem' }}>
+          <span style={{ fontSize: '0.9rem' }}>🛡️</span>
+          <span style={{ fontSize: '0.8rem', color: '#10B981', fontWeight: '700' }}>Soddisfatti o rimborsati entro 14 giorni</span>
+        </div>
       </div>
+
+      {/* Stats reali */}
+      {stats.shops > 0 && (
+        <div style={{ maxWidth: '700px', margin: '0 auto', padding: '0 2rem 4rem' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', gap: '3rem', flexWrap: 'wrap' }}>
+            {[
+              { value: stats.shops, label: 'negozi attivi', suffix: '+' },
+              { value: stats.customers, label: 'clienti fidelizzati', suffix: '+' },
+              { value: stats.visits, label: 'visite registrate', suffix: '+' },
+            ].map(({ value, label, suffix }) => (
+              <div key={label} style={{ textAlign: 'center' }}>
+                <div style={{ fontSize: '2.5rem', fontWeight: '900', background: 'linear-gradient(135deg,#A78BFA,#60A5FA)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' } as React.CSSProperties}>
+                  {value.toLocaleString('it-IT')}{suffix}
+                </div>
+                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.85rem', marginTop: '0.25rem' }}>{label}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
 
       {/* Features */}
       <div style={{ maxWidth: '1100px', margin: '0 auto', padding: '5rem 2rem' }}>
@@ -144,7 +188,7 @@ export default async function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/register" style={{ display: 'block', background: p.featured ? '#6C3DF4' : 'transparent', color: 'white', padding: '0.7rem', borderRadius: '10px', textAlign: 'center', textDecoration: 'none', fontWeight: '600', fontSize: '0.9rem', border: p.featured ? 'none' : '1px solid rgba(255,255,255,0.2)' }}>
+              <Link href="/register" style={{ display: 'block', background: '#6C3DF4', color: 'white', padding: '0.75rem', borderRadius: '10px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem', animation: 'ctaPulse 2s ease-in-out infinite' }}>
                 {p.cta}
               </Link>
             </div>
@@ -208,6 +252,62 @@ export default async function LandingPage() {
         </div>
       </div>
 
+      {/* Perché fidarsi */}
+      <div style={{ maxWidth: '960px', margin: '0 auto', padding: '3rem 2rem 5rem' }}>
+        <div style={{ textAlign: 'center', marginBottom: '2.5rem' }}>
+          <div style={{ display: 'inline-block', background: 'rgba(16,185,129,0.1)', border: '1px solid rgba(16,185,129,0.2)', padding: '0.3rem 1rem', borderRadius: '100px', fontSize: '0.8rem', color: '#10B981', fontWeight: '600', marginBottom: '1rem' }}>
+            La nostra promessa
+          </div>
+          <h2 style={{ fontSize: '2.2rem', fontWeight: '800', marginBottom: '0.75rem' }}>Perché fidarsi di Fidelio</h2>
+          <p style={{ color: 'rgba(255,255,255,0.45)', fontSize: '0.95rem', maxWidth: '500px', margin: '0 auto' }}>
+            Costruito per i negozi italiani, con trasparenza totale su prezzi e dati.
+          </p>
+        </div>
+        <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fit,minmax(260px,1fr))', gap: '1rem' }}>
+          {[
+            { icon: '🔒', title: 'Dati al sicuro', desc: 'Server in Europa, GDPR compliant. I dati dei tuoi clienti non vengono mai condivisi o venduti a terzi.' },
+            { icon: '🇮🇹', title: 'Made in Italy', desc: 'Supporto in italiano, capisce le esigenze dei negozi italiani. Non un tool americano tradotto.' },
+            { icon: '💸', title: 'Nessuna commissione', desc: 'Paghi solo l\'abbonamento mensile. Zero commissioni sulle vendite, zero costi nascosti.' },
+            { icon: '🔄', title: 'Annulli quando vuoi', desc: 'Nessun contratto a lungo termine. Disdici online in un click, senza penali e senza telefonate.' },
+            { icon: '💬', title: 'Supporto umano', desc: 'Rispondiamo entro 24h via chat o email. Una persona reale, non un bot, pronta ad aiutarti.' },
+            { icon: '⚡', title: 'Sempre aggiornato', desc: 'Nuove funzionalità ogni mese, incluse nel tuo piano. Non paghi mai un aggiornamento extra.' },
+          ].map(({ icon, title, desc }) => (
+            <div key={title} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '16px', padding: '1.4rem 1.5rem', display: 'flex', gap: '1rem', alignItems: 'flex-start' }}>
+              <div style={{ fontSize: '1.6rem', flexShrink: 0, marginTop: '0.1rem' }}>{icon}</div>
+              <div>
+                <div style={{ fontWeight: '700', fontSize: '0.95rem', marginBottom: '0.3rem', color: '#fff' }}>{title}</div>
+                <div style={{ color: 'rgba(255,255,255,0.5)', fontSize: '0.85rem', lineHeight: '1.6' }}>{desc}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* FAQ */}
+      <div style={{ maxWidth: '720px', margin: '0 auto', padding: '2rem 2rem 5rem' }}>
+        <h2 style={{ textAlign: 'center', fontSize: '2rem', fontWeight: '800', marginBottom: '0.5rem' }}>Domande frequenti</h2>
+        <p style={{ textAlign: 'center', color: 'rgba(255,255,255,0.4)', marginBottom: '3rem', fontSize: '0.95rem' }}>Hai altre domande? <CrispButton style={{ background: 'none', border: 'none', color: '#A78BFA', fontWeight: '700', cursor: 'pointer', fontSize: '0.95rem', padding: 0 }}>Scrivici in chat →</CrispButton></p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          {[
+            { q: 'I clienti devono scaricare un\'app?', a: 'No. I clienti scansionano il QR code con la fotocamera del telefono e accedono alla PWA direttamente dal browser. Zero installazioni.' },
+            { q: 'Come funziona il trial di 14 giorni?', a: 'Registri il negozio, vieni approvato (entro 24h) e hai 14 giorni gratuiti per provare tutte le funzionalità del piano GROWTH. Nessuna carta di credito richiesta.' },
+            { q: 'Posso personalizzare i premi?', a: 'Sì. Puoi creare qualsiasi tipo di premio: uno sconto, un prodotto gratuito, un servizio omaggio. Tu decidi quanti punti servono per ottenerlo.' },
+            { q: 'Funziona per qualsiasi tipo di negozio?', a: 'Sì — bar, ristoranti, parrucchieri, palestre, panetterie, negozi di abbigliamento e molto altro. Se hai clienti abituali, Fidelio fa al caso tuo.' },
+            { q: 'Posso integrarlo con il mio e-commerce?', a: 'Sì, con il piano PRO hai accesso alle API e ai webhook per Shopify e WooCommerce. I punti vengono assegnati automaticamente ad ogni ordine.' },
+            { q: 'Cosa succede se annullo?', a: 'Puoi annullare in qualsiasi momento. I dati dei tuoi clienti rimangono disponibili per 30 giorni, poi vengono eliminati su richiesta.' },
+            { q: 'Il QR code cambia nel tempo?', a: 'Con il piano GROWTH e PRO hai il QR dinamico: puoi aggiornare le impostazioni del negozio senza dover ristampare nulla.' },
+          ].map(({ q, a }, i) => (
+            <details key={i} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '14px', padding: '1.25rem 1.5rem' }}>
+              <summary style={{ fontWeight: '700', fontSize: '0.95rem', cursor: 'pointer', listStyle: 'none', display: 'flex', justifyContent: 'space-between', alignItems: 'center', gap: '1rem' }}>
+                {q}
+                <span style={{ color: '#A78BFA', flexShrink: 0, fontSize: '1.1rem' }}>+</span>
+              </summary>
+              <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.9rem', lineHeight: '1.7', marginTop: '0.75rem', marginBottom: 0 }}>{a}</p>
+            </details>
+          ))}
+        </div>
+      </div>
+
       {/* CTA finale */}
       <div style={{ textAlign: 'center', padding: '4rem 2rem', background: 'radial-gradient(ellipse 60% 80% at 50% 50%,rgba(108,61,244,0.2) 0%,transparent 70%)' }}>
         <h2 style={{ fontSize: 'clamp(1.8rem,4vw,3rem)', fontWeight: '800', marginBottom: '1rem' }}>
@@ -216,12 +316,22 @@ export default async function LandingPage() {
         <p style={{ color: 'rgba(255,255,255,0.5)', marginBottom: '2rem', fontSize: '1rem' }}>
           Unisciti ai negozi che usano Fidelio. Setup in 10 minuti, nessun contratto.
         </p>
-        <Link href="/register" style={{ background: '#6C3DF4', color: 'white', padding: '1rem 2.5rem', borderRadius: '100px', textDecoration: 'none', fontWeight: '700', fontSize: '1.1rem', boxShadow: '0 0 40px rgba(108,61,244,0.5)', display: 'inline-block' }}>
+        <Link href="/register" style={{ background: '#6C3DF4', color: 'white', padding: '1rem 2.5rem', borderRadius: '100px', textDecoration: 'none', fontWeight: '700', fontSize: '1.1rem', boxShadow: '0 0 40px rgba(108,61,244,0.5)', display: 'inline-block', animation: 'ctaPulse 2s ease-in-out infinite' }}>
           Inizia ora →
         </Link>
-        <p style={{ color: 'rgba(255,255,255,0.25)', fontSize: '0.8rem', marginTop: '1rem' }}>
-          Garanzia rimborso 14 giorni · Annulla quando vuoi
-        </p>
+        {/* Badge garanzia */}
+        <div style={{ display: 'flex', justifyContent: 'center', gap: '1.5rem', marginTop: '1.75rem', flexWrap: 'wrap' }}>
+          {[
+            { icon: '🛡️', text: 'Soddisfatti o rimborsati 14 giorni' },
+            { icon: '🔓', text: 'Nessun contratto' },
+            { icon: '⚡', text: 'Setup in 10 minuti' },
+          ].map(({ icon, text }) => (
+            <div key={text} style={{ display: 'flex', alignItems: 'center', gap: '0.4rem', background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '100px', padding: '0.35rem 0.9rem' }}>
+              <span style={{ fontSize: '0.85rem' }}>{icon}</span>
+              <span style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.55)', fontWeight: '600' }}>{text}</span>
+            </div>
+          ))}
+        </div>
       </div>
 
       {/* Fondatori — client component per il counter live */}

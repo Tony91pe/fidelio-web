@@ -17,6 +17,8 @@ export async function GET(req: Request) {
   let expired = 0
   let warned = 0
 
+  try { await db.$connect() } catch {}
+
   // Scade punti scaduti
   const toExpire = await db.customer.findMany({
     where: { pointsExpiresAt: { lte: now }, points: { gt: 0 } },

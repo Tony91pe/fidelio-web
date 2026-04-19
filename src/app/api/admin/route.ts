@@ -91,7 +91,7 @@ export async function PATCH(req: Request) {
     expiresAt.setMonth(expiresAt.getMonth() + 6)
     const { userId } = await auth()
     await logEvent({ eventType: 'TRIAL_ACTIVATED', userId: userId ?? undefined, shopId, action: 'Trial fondatore 6 mesi regalato', metadata: { plan: 'GROWTH', months: 6 } })
-    return NextResponse.json(await db.shop.update({ where: { id: shopId }, data: { plan: 'GROWTH', planExpiresAt: expiresAt, isFounder: true } }))
+    return NextResponse.json(await db.shop.update({ where: { id: shopId }, data: { plan: 'GROWTH', planExpiresAt: expiresAt } }))
   }
   if (action === 'giftMonths') {
     const giftedPlan = ['STARTER', 'GROWTH', 'PRO'].includes(plan) ? plan : 'GROWTH'
@@ -114,8 +114,45 @@ export async function PATCH(req: Request) {
   if (action === 'approve') {
     clearMapCache()
     const { userId } = await auth()
+    const trial14 = new Date()
+    trial14.setDate(trial14.getDate() + 14)
+    const shop = await db.shop.update({ where: { id: shopId }, data: { approved: true, planExpiresAt: trial14 } })
     await logEvent({ eventType: 'SHOP_APPROVED', userId: userId ?? undefined, shopId, action: 'Negozio approvato', metadata: {} })
-    return NextResponse.json(await db.shop.update({ where: { id: shopId }, data: { approved: true } }))
+    if (shop.ownerEmail) {
+      try {
+        await resend.emails.send({
+          from: 'Fidelio <noreply@getfidelio.app>',
+          to: shop.ownerEmail,
+          subject: `🎉 ${shop.name} è stato approvato su Fidelio!`,
+          html: `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"/></head>
+<body style="margin:0;padding:0;background:#0D0D1A;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0D0D1A;padding:32px 16px">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
+<tr><td style="background:linear-gradient(135deg,#4A1FB8,#6C3DF4);border-radius:16px 16px 0 0;padding:28px 40px;text-align:center">
+  <span style="font-size:22px;font-weight:900;color:#fff;letter-spacing:-0.5px">F</span>&nbsp;<span style="font-size:22px;font-weight:800;color:#fff">Fidelio</span>
+</td></tr>
+<tr><td style="background:#13131F;padding:40px;border-left:1px solid rgba(255,255,255,0.07);border-right:1px solid rgba(255,255,255,0.07)">
+  <h2 style="margin:0 0 12px;font-size:26px;font-weight:800;color:#fff">Il tuo negozio è live! 🎉</h2>
+  <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6">Complimenti! <strong style="color:#fff">${shop.name}</strong> è stato approvato e il programma fedeltà è attivo.</p>
+  <div style="background:rgba(108,61,244,0.12);border:1px solid rgba(108,61,244,0.3);border-radius:12px;padding:20px;margin:0 0 24px">
+    <p style="margin:0 0 14px;font-size:13px;font-weight:700;color:#A78BFA">I prossimi 3 passi:</p>
+    <p style="margin:0 0 10px;font-size:14px;color:rgba(255,255,255,0.7)">🖨️ <strong style="color:#fff">Stampa il QR code</strong> — vai su Dashboard → Scanner e stampalo per la cassa</p>
+    <p style="margin:0 0 10px;font-size:14px;color:rgba(255,255,255,0.7)">🎁 <strong style="color:#fff">Crea il primo premio</strong> — va in Dashboard → Premi e aggiungi un incentivo</p>
+    <p style="margin:0;font-size:14px;color:rgba(255,255,255,0.7)">👋 <strong style="color:#fff">Presenta Fidelio ai clienti</strong> — mostra il QR e spiega come funziona</p>
+  </div>
+  <table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 auto"><tr>
+    <td style="border-radius:12px;background:#6C3DF4"><a href="https://www.getfidelio.app/dashboard" style="display:inline-block;padding:14px 28px;color:#fff;font-size:15px;font-weight:700;text-decoration:none">Vai alla dashboard →</a></td>
+  </tr></table>
+</td></tr>
+<tr><td style="background:#0D0D1A;border-radius:0 0 16px 16px;border:1px solid rgba(255,255,255,0.06);border-top:none;padding:20px 40px;text-align:center">
+  <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.25)">© 2026 Fidelio · <a href="https://www.getfidelio.app" style="color:#A78BFA;text-decoration:none">getfidelio.app</a></p>
+</td></tr>
+</table></td></tr></table></body></html>`,
+        })
+      } catch {}
+    }
+    return NextResponse.json(shop)
   }
   if (action === 'unapprove') {
     clearMapCache()

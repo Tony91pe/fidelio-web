@@ -5,6 +5,25 @@ import { logEvent } from '@/lib/logging'
 
 const FROM = 'Fidelio <noreply@getfidelio.app>'
 
+function wrap(content: string, preheader = '') {
+  return `<!DOCTYPE html><html lang="it"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/></head>
+<body style="margin:0;padding:0;background:#0D0D1A;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;color:#ffffff">
+${preheader ? `<div style="display:none;max-height:0;overflow:hidden">${preheader}</div>` : ''}
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#0D0D1A;padding:32px 16px">
+<tr><td align="center">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="max-width:560px">
+<tr><td style="background:linear-gradient(135deg,#4A1FB8,#6C3DF4);border-radius:16px 16px 0 0;padding:24px 40px;text-align:center">
+  <span style="font-size:20px;font-weight:900;color:#fff">F</span>&nbsp;<span style="font-size:20px;font-weight:800;color:#fff">Fidelio</span>
+</td></tr>
+<tr><td style="background:#13131F;padding:36px 40px;border-left:1px solid rgba(255,255,255,0.07);border-right:1px solid rgba(255,255,255,0.07)">
+${content}
+</td></tr>
+<tr><td style="background:#0D0D1A;border-radius:0 0 16px 16px;border:1px solid rgba(255,255,255,0.06);border-top:none;padding:20px 40px;text-align:center">
+  <p style="margin:0;font-size:12px;color:rgba(255,255,255,0.25)">© 2026 Fidelio · <a href="https://www.getfidelio.app" style="color:#A78BFA;text-decoration:none">getfidelio.app</a></p>
+</td></tr>
+</table></td></tr></table></body></html>`
+}
+
 function daysSince(date: Date) {
   return Math.floor((Date.now() - date.getTime()) / (1000 * 60 * 60 * 24))
 }
@@ -117,7 +136,7 @@ export async function GET(req: Request) {
           from: FROM,
           to: shop.ownerEmail,
           subject: seq.subject,
-          html: seq.getBody(shop.name),
+          html: wrap(seq.getBody(shop.name)),
         })
 
         await logEvent({

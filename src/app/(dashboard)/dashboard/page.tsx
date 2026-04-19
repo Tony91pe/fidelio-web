@@ -4,6 +4,7 @@ import { db } from '@/lib/db'
 import Link from 'next/link'
 import VisitsChart from './VisitsChart'
 import AIInsights from './AIInsights'
+import { NotificationBell } from '@/components/dashboard/NotificationBell'
 
 const EMOJI: Record<string, string> = {
   bar: '☕', restaurant: '🍕', hair: '✂️', beauty: '💅',
@@ -67,10 +68,13 @@ export default async function DashboardPage() {
           </h1>
           <p style={{ color: 'rgba(255,255,255,0.4)', marginTop: '0.2rem' }}>Ciao {user?.firstName}! 👋</p>
         </div>
-        <Link href="/dashboard/customers/new"
-          style={{ background: '#6C3DF4', color: 'white', padding: '10px 20px', borderRadius: '10px', fontWeight: '600', textDecoration: 'none', fontSize: '14px' }}>
-          + Aggiungi cliente
-        </Link>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <NotificationBell />
+          <Link href="/dashboard/customers/new"
+            style={{ background: '#6C3DF4', color: 'white', padding: '10px 20px', borderRadius: '10px', fontWeight: '600', textDecoration: 'none', fontSize: '14px' }}>
+            + Aggiungi cliente
+          </Link>
+        </div>
       </div>
 
       {/* Onboarding checklist */}

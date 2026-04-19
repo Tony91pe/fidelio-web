@@ -47,7 +47,7 @@ export async function GET(req: Request) {
   const expiring = await db.shop.findMany({
     where: {
       plan: { not: 'STARTER' },
-      stripeId: null,
+      paddleCustomerId: null,
       planExpiresAt: { not: null },
       OR: [
         { planExpiresAt: { gte: in30start, lte: in30end } },

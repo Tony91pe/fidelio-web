@@ -168,6 +168,9 @@ export default function AdminPage() {
               ⏳ {pendingShops.length} in attesa
             </div>
           )}
+          <a href="/admin/roadmap" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', borderRadius: 8, padding: '6px 14px', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none' }}>
+            🗺️ Roadmap
+          </a>
           <button onClick={() => setEmailModal(true)} style={{ background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', color: '#a78bfa', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'inherit' }}>
             ✉️ Invia Email
           </button>
