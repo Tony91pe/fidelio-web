@@ -41,6 +41,16 @@ const corsHeaders = [
 ]
 
 const nextConfig: NextConfig = {
+  async redirects() {
+    return [
+      {
+        source: '/:path*',
+        has: [{ type: 'host', value: 'getfidelio.app' }],
+        destination: 'https://www.getfidelio.app/:path*',
+        permanent: true,
+      },
+    ]
+  },
   async headers() {
     return [
       // Security headers su tutte le pagine
