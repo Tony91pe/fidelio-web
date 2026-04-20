@@ -11,12 +11,17 @@ const securityHeaders = [
       "default-src 'self'",
       "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.accounts.dev https://*.clerk.com https://cdn.crisp.chat https://client.crisp.chat https://*.sentry.io https://js.sentry-cdn.com",
       "style-src 'self' 'unsafe-inline' https://cdn.crisp.chat https://client.crisp.chat",
-      "img-src 'self' data: blob: https: http:",
+      // img-src: rimosso http: (solo HTTPS), specificati domini noti
+      "img-src 'self' data: blob: https://images.clerk.dev https://*.clerk.com https://img.crisp.chat https://client.crisp.chat https://www.getfidelio.app https://app.fidelio.app",
       "font-src 'self' data: https://cdn.crisp.chat",
-      "connect-src 'self' https://*.clerk.com https://*.clerk.accounts.dev https://*.ingest.sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.neon.tech",
+      "connect-src 'self' https://*.clerk.com https://*.clerk.accounts.dev https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.neon.tech",
       "frame-src 'self' https://*.clerk.com https://*.clerk.accounts.dev",
       "worker-src 'self' blob:",
       "media-src 'self'",
+      // Direttive mancanti segnalate da ZAP
+      "base-uri 'self'",
+      "form-action 'self'",
+      "frame-ancestors 'self'",
     ].join('; '),
   },
 ]
@@ -34,10 +39,12 @@ const publicCorsPaths = [
   '/api/testimonials',
   '/api/shop/apply-founder',
 ]
+// CORS ristretto alle origini note invece di wildcard *
 const corsHeaders = [
-  { key: 'Access-Control-Allow-Origin', value: '*' },
+  { key: 'Access-Control-Allow-Origin', value: 'https://app.fidelio.app' },
   { key: 'Access-Control-Allow-Methods', value: 'GET,POST,PUT,DELETE,OPTIONS' },
   { key: 'Access-Control-Allow-Headers', value: 'Content-Type, Authorization' },
+  { key: 'Vary', value: 'Origin' },
 ]
 
 const nextConfig: NextConfig = {
