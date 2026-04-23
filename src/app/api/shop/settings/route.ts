@@ -3,6 +3,13 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { geocodeAddress } from '@/lib/geocode'
 
+function toSlug(name: string): string {
+  return name.toLowerCase().trim()
+    .replace(/[àáâã]/g, 'a').replace(/[èéêë]/g, 'e').replace(/[ìíîï]/g, 'i')
+    .replace(/[òóôõ]/g, 'o').replace(/[ùúûü]/g, 'u').replace(/[ç]/g, 'c')
+    .replace(/[^a-z0-9\s-]/g, '').replace(/\s+/g, '-').replace(/-+/g, '-').slice(0, 60)
+}
+
 export async function GET() {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
@@ -18,13 +25,18 @@ export async function GET() {
     primaryColor: shop.primaryColor ?? '#7C3AED',
     winbackDays: shop.winbackDays,
     plan: shop.plan,
+    emailNotificationsEnabled: shop.emailNotificationsEnabled,
+    pushNotificationsEnabled: shop.pushNotificationsEnabled,
+    birthdayEmailEnabled: shop.birthdayEmailEnabled,
+    winbackEmailEnabled: shop.winbackEmailEnabled,
+    onboardingCompleted: shop.onboardingCompleted,
   })
 }
 
 export async function PUT(req: Request) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-  const { name, phone, address, city, pointsSystem, pointsPerVisit, pointsPerEuro, rewardThreshold, rewardDescription, welcomePoints, primaryColor, winbackDays } = await req.json()
+  const { name, phone, address, city, pointsSystem, pointsPerVisit, pointsPerEuro, rewardThreshold, rewardDescription, welcomePoints, primaryColor, winbackDays, emailNotificationsEnabled, pushNotificationsEnabled, birthdayEmailEnabled, winbackEmailEnabled } = await req.json()
   const shop = await db.shop.findFirst({ where: { ownerId: userId } })
   if (!shop) return NextResponse.json({ error: 'Negozio non trovato' }, { status: 404 })
 
@@ -40,15 +52,31 @@ export async function PUT(req: Request) {
     coords = await geocodeAddress(newAddress, newCity)
   }
 
+  // Genera slug se non esiste ancora o se il nome è cambiato
+  let slug = shop.slug
+  if (!slug && (name ?? shop.name)) {
+    const base = toSlug(name ?? shop.name)
+    slug = base
+    let suffix = 1
+    while (await db.shop.findFirst({ where: { slug, NOT: { id: shop.id } } })) {
+      slug = `${base}-${suffix++}`
+    }
+  }
+
   const updated = await db.shop.update({
     where: { id: shop.id },
     data: {
       name, phone, address, city,
+      ...(slug && !shop.slug ? { slug } : {}),
       ...(coords && { lat: coords.lat, lng: coords.lng }),
       pointsSystem, pointsPerVisit, pointsPerEuro,
       rewardThreshold, rewardDescription, welcomePoints,
       ...(primaryColor && { primaryColor }),
       ...(winbackDays && { winbackDays: parseInt(winbackDays) }),
+      ...(emailNotificationsEnabled !== undefined && { emailNotificationsEnabled }),
+      ...(pushNotificationsEnabled !== undefined && { pushNotificationsEnabled }),
+      ...(birthdayEmailEnabled !== undefined && { birthdayEmailEnabled }),
+      ...(winbackEmailEnabled !== undefined && { winbackEmailEnabled }),
     }
   })
   return NextResponse.json(updated)

@@ -19,6 +19,8 @@ export default async function DashboardPage() {
   const user = await currentUser()
   const shop = await db.shop.findFirst({ where: { ownerId: userId } })
 
+  if (shop && !shop.onboardingCompleted) redirect('/dashboard/onboarding')
+
   if (!shop) return (
     <div style={{ textAlign: 'center', marginTop: '5rem' }}>
       <div style={{ fontSize: '3rem', marginBottom: '1rem' }}>🏪</div>

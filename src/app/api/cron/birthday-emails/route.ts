@@ -18,7 +18,7 @@ export async function GET(req: Request) {
     where: {
       birthday: { not: null },
       shopId: { not: null },
-      shop: { plan: { in: ['GROWTH', 'PRO'] } },
+      shop: { plan: { in: ['GROWTH', 'PRO'] }, birthdayEmailEnabled: true },
     },
     include: { shop: { select: { id: true, name: true } } },
   })

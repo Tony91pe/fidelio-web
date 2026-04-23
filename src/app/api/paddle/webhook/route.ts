@@ -35,14 +35,24 @@ export async function POST(req: Request) {
     const customData = data?.custom_data ?? data?.subscription?.custom_data
     const { shopId, plan } = customData ?? {}
     const customerId = data?.customer_id
+    const subscriptionId = event_type === 'subscription.activated' ? data?.id : undefined
 
     if (shopId && plan) {
+      const isGrowthOrPro = plan === 'GROWTH' || plan === 'PRO'
       await db.shop.update({
         where: { id: shopId },
         data: {
           plan: plan as 'STARTER' | 'GROWTH' | 'PRO',
           paddleCustomerId: customerId ?? null,
-          planExpiresAt: null, // abbonamento attivo: rimuove la scadenza trial fondatore
+          ...(subscriptionId ? { paddleSubscriptionId: subscriptionId } : {}),
+          planExpiresAt: null,
+          // Attiva automazioni automaticamente al cambio piano
+          ...(isGrowthOrPro ? {
+            emailNotificationsEnabled: true,
+            pushNotificationsEnabled: true,
+            birthdayEmailEnabled: true,
+            winbackEmailEnabled: true,
+          } : {}),
         },
       })
     }
@@ -54,7 +64,14 @@ export async function POST(req: Request) {
     if (shopId) {
       await db.shop.update({
         where: { id: shopId },
-        data: { plan: 'STARTER', paddleCustomerId: null, planExpiresAt: null },
+        data: {
+          plan: 'STARTER', paddleCustomerId: null, planExpiresAt: null,
+          // Disattiva automazioni al downgrade
+          emailNotificationsEnabled: false,
+          pushNotificationsEnabled: false,
+          birthdayEmailEnabled: false,
+          winbackEmailEnabled: false,
+        },
       })
     }
   }

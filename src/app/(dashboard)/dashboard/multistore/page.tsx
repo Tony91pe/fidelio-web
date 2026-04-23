@@ -94,23 +94,52 @@ export default function MultiStorePage() {
 
       <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
         {branches.map((b, i) => (
-          <div key={b.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '1.25rem', display: 'flex', justifyContent: 'space-between', alignItems: 'center', flexWrap: 'wrap', gap: '1rem' }}>
-            <div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
-                <p style={{ fontWeight: 700 }}>{b.name}</p>
-                {i === 0 && <span style={{ fontSize: '0.7rem', fontWeight: 700, background: 'rgba(124,58,237,0.2)', color: '#a78bfa', padding: '2px 8px', borderRadius: 100 }}>Sede principale</span>}
+          <div key={b.id} style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: 12, padding: '1.25rem' }}>
+            <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', gap: '1rem', flexWrap: 'wrap' }}>
+              <div>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', marginBottom: '0.25rem' }}>
+                  <p style={{ fontWeight: 700 }}>{b.name}</p>
+                  {i === 0 && <span style={{ fontSize: '0.7rem', fontWeight: 700, background: 'rgba(124,58,237,0.2)', color: '#a78bfa', padding: '2px 8px', borderRadius: 100 }}>Principale</span>}
+                </div>
+                <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>{b.address}, {b.city}</p>
               </div>
-              <p style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.4)' }}>{b.address}, {b.city}</p>
+              <div style={{ display: 'flex', gap: '1.25rem', alignItems: 'center' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontWeight: 800, fontSize: '1.2rem', color: '#a78bfa' }}>{b.customers}</p>
+                  <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)' }}>clienti</p>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontWeight: 800, fontSize: '1.2rem', color: '#60a5fa' }}>{b.visits}</p>
+                  <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)' }}>visite</p>
+                </div>
+              </div>
             </div>
-            <div style={{ display: 'flex', gap: '1.5rem', alignItems: 'center' }}>
-              <div style={{ textAlign: 'center' }}>
-                <p style={{ fontWeight: 800, fontSize: '1.2rem', color: '#a78bfa' }}>{b.customers}</p>
-                <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)' }}>clienti</p>
-              </div>
-              <div style={{ textAlign: 'center' }}>
-                <p style={{ fontWeight: 800, fontSize: '1.2rem', color: '#60a5fa' }}>{b.visits}</p>
-                <p style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)' }}>visite</p>
-              </div>
+            {/* Azioni sede */}
+            <div style={{ display: 'flex', gap: '0.5rem', marginTop: '1rem', flexWrap: 'wrap' }}>
+              <a
+                href={`${process.env.NEXT_PUBLIC_APP_URL ?? ''}/checkin/${b.id}`}
+                target="_blank" rel="noreferrer"
+                style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: 8, background: 'rgba(124,58,237,0.12)', color: '#a78bfa', border: '1px solid rgba(124,58,237,0.2)', textDecoration: 'none', fontWeight: 600 }}
+              >
+                📱 QR checkin →
+              </a>
+              {i > 0 && (
+                <button
+                  onClick={async () => {
+                    if (!confirm(`Eliminare la sede "${b.name}"? I dati verranno persi.`)) return
+                    const res = await fetch('/api/shop/branches', {
+                      method: 'DELETE',
+                      headers: { 'Content-Type': 'application/json' },
+                      body: JSON.stringify({ shopId: b.id }),
+                    })
+                    if (res.ok) setBranches(prev => prev.filter(x => x.id !== b.id))
+                    else alert('Errore durante l\'eliminazione')
+                  }}
+                  style={{ fontSize: '0.78rem', padding: '6px 12px', borderRadius: 8, background: 'rgba(239,68,68,0.1)', color: '#ef4444', border: '1px solid rgba(239,68,68,0.2)', cursor: 'pointer', fontWeight: 600 }}
+                >
+                  🗑 Elimina sede
+                </button>
+              )}
             </div>
           </div>
         ))}

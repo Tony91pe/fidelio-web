@@ -9,12 +9,12 @@ const securityHeaders = [
     key: 'Content-Security-Policy',
     value: [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.accounts.dev https://*.clerk.com https://cdn.crisp.chat https://client.crisp.chat https://*.sentry.io https://js.sentry-cdn.com",
-      "style-src 'self' 'unsafe-inline' https://cdn.crisp.chat https://client.crisp.chat",
+      "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://clerk.com https://*.clerk.accounts.dev https://*.clerk.com https://*.getfidelio.app https://cdn.crisp.chat https://client.crisp.chat https://*.sentry.io https://js.sentry-cdn.com https://www.googletagmanager.com https://www.google-analytics.com",
+      "style-src 'self' 'unsafe-inline' https://cdn.crisp.chat https://client.crisp.chat https://fonts.googleapis.com",
       // img-src: rimosso http: (solo HTTPS), specificati domini noti
       "img-src 'self' data: blob: https://images.clerk.dev https://*.clerk.com https://img.crisp.chat https://client.crisp.chat https://www.getfidelio.app https://app.fidelio.app",
-      "font-src 'self' data: https://cdn.crisp.chat",
-      "connect-src 'self' https://*.clerk.com https://*.clerk.accounts.dev https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://client.crisp.chat wss://client.crisp.chat https://*.neon.tech",
+      "font-src 'self' data: https://cdn.crisp.chat https://client.crisp.chat https://fonts.gstatic.com",
+      "connect-src 'self' https://*.clerk.com https://*.clerk.accounts.dev https://*.getfidelio.app https://*.ingest.sentry.io https://*.ingest.de.sentry.io https://client.crisp.chat wss://client.crisp.chat wss://client.relay.crisp.chat https://*.neon.tech https://www.googletagmanager.com https://www.google-analytics.com https://analytics.google.com https://region1.google-analytics.com",
       "frame-src 'self' https://*.clerk.com https://*.clerk.accounts.dev",
       "worker-src 'self' blob:",
       "media-src 'self'",

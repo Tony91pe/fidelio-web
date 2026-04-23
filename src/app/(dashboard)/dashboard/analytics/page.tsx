@@ -10,14 +10,19 @@ type Analytics = {
   newCustomersTrend: number
   totalPoints: number
   avgPoints: number
+  totalRedeemed: number
   recentVisits: number
   weekVisits: number
   allVisits: number
   retentionRate: number
   avgVisits: number
   loyalCustomers: number
+  churnRate: number
+  avgDaysBetweenVisits: number | null
   topCustomers: { id: string; name: string; email: string; points: number; totalVisits: number; lastVisitAt: string | null }[]
+  topRewards: { title: string; count: number }[]
   visitsByDay: { label: string; count: number }[]
+  monthlyTrend: { label: string; count: number }[]
 }
 
 function StatCard({ label, value, sub, icon, color, trend }: {
@@ -43,6 +48,28 @@ function StatCard({ label, value, sub, icon, color, trend }: {
       <div style={{ fontSize: '0.78rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.3rem' }}>{label}</div>
       <div style={{ fontSize: '2rem', fontWeight: '800', color }}>{value}</div>
       {sub && <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.35)', marginTop: '0.3rem' }}>{sub}</div>}
+    </div>
+  )
+}
+
+function BarChart({ data, color = '#6C3DF4' }: { data: { label: string; count: number }[]; color?: string }) {
+  const max = Math.max(...data.map(d => d.count), 1)
+  return (
+    <div style={{ display: 'flex', alignItems: 'flex-end', gap: '6px', height: '100px' }}>
+      {data.map(d => (
+        <div key={d.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
+          <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>
+            {d.count > 0 ? d.count : ''}
+          </div>
+          <div style={{
+            width: '100%', borderRadius: '4px',
+            height: `${Math.round((d.count / max) * 72) + 4}px`,
+            background: d.count === max ? color : `${color}55`,
+            transition: 'height 0.3s',
+          }} />
+          <div style={{ fontSize: '0.65rem', color: 'rgba(255,255,255,0.4)' }}>{d.label}</div>
+        </div>
+      ))}
     </div>
   )
 }
@@ -74,8 +101,6 @@ export default function AnalyticsPage() {
   if (loading) return <div style={{ textAlign: 'center', padding: '3rem', color: 'rgba(255,255,255,0.4)' }}>Caricamento...</div>
   if (!data) return <div style={{ textAlign: 'center', padding: '3rem', color: 'rgba(255,255,255,0.4)' }}>Errore nel caricamento</div>
 
-  const maxDay = Math.max(...data.visitsByDay.map(d => d.count), 1)
-
   return (
     <div>
       <h1 style={{ fontSize: '1.5rem', fontWeight: '700', marginBottom: '0.4rem' }}>Analytics</h1>
@@ -95,56 +120,41 @@ export default function AnalyticsPage() {
 
       {/* KPI secondari */}
       <div style={{ display: 'grid', gridTemplateColumns: 'repeat(4,1fr)', gap: '1rem', marginBottom: '2rem' }}>
-        <StatCard label="Visite questa settimana" value={data.weekVisits} icon="📅" color="#A78BFA" />
-        <StatCard label="Visite ultimi 30gg" value={data.recentVisits} icon="📊" color="#6C3DF4" />
-        <StatCard label="Media visite/cliente" value={data.avgVisits} icon="🔁" color="#10B981" />
-        <StatCard label="Media punti/cliente" value={data.avgPoints} icon="⭐" color="#F59E0B" />
+        <StatCard label="Premi riscattati" value={data.totalRedeemed} icon="🎁" color="#A78BFA"
+          sub="Totale storico" />
+        <StatCard label="Churn rate" value={`${data.churnRate}%`} icon="📉" color={data.churnRate > 30 ? '#EF4444' : '#10B981'}
+          sub="Clienti persi vs attivi" />
+        <StatCard label="Freq. media visite" value={data.avgDaysBetweenVisits != null ? `${data.avgDaysBetweenVisits}gg` : '—'} icon="🔁" color="#10B981"
+          sub="Giorni tra una visita e l'altra" />
+        <StatCard label="Media punti/cliente" value={data.avgPoints} icon="⭐" color="#F59E0B"
+          sub={`${data.allVisits} visite totali`} />
       </div>
 
+      {/* Grafici: visite per giorno + trend mensile */}
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
-        {/* Visite per giorno della settimana */}
         <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.5rem' }}>
           <h3 style={{ fontWeight: '700', marginBottom: '0.3rem', fontSize: '1rem' }}>Visite per giorno</h3>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginBottom: '1.2rem' }}>Ultimi 30 giorni</p>
-          <div style={{ display: 'flex', alignItems: 'flex-end', gap: '8px', height: '100px' }}>
-            {data.visitsByDay.map(d => (
-              <div key={d.label} style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '4px' }}>
-                <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.5)', fontWeight: '600' }}>
-                  {d.count > 0 ? d.count : ''}
-                </div>
-                <div style={{
-                  width: '100%', borderRadius: '4px',
-                  height: `${Math.round((d.count / maxDay) * 72) + 4}px`,
-                  background: d.count === maxDay ? '#6C3DF4' : 'rgba(108,61,244,0.35)',
-                  transition: 'height 0.3s',
-                }} />
-                <div style={{ fontSize: '0.68rem', color: 'rgba(255,255,255,0.4)' }}>{d.label}</div>
-              </div>
-            ))}
-          </div>
+          <BarChart data={data.visitsByDay} color="#6C3DF4" />
         </div>
 
-        {/* Salute del negozio */}
+        <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.5rem' }}>
+          <h3 style={{ fontWeight: '700', marginBottom: '0.3rem', fontSize: '1rem' }}>Nuovi clienti</h3>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginBottom: '1.2rem' }}>Ultimi 6 mesi</p>
+          <BarChart data={data.monthlyTrend} color="#10B981" />
+        </div>
+      </div>
+
+      {/* Salute negozio + Top premi */}
+      <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '1.5rem', marginBottom: '1.5rem' }}>
         <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.5rem' }}>
           <h3 style={{ fontWeight: '700', marginBottom: '0.3rem', fontSize: '1rem' }}>Salute del negozio</h3>
           <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginBottom: '1.2rem' }}>Indicatori chiave</p>
           {[
-            {
-              label: 'Tasso attivazione',
-              value: data.totalCustomers > 0 ? Math.round((data.activeCustomers / data.totalCustomers) * 100) : 0,
-              good: 60, color: '#10B981',
-            },
-            {
-              label: 'Retention',
-              value: data.retentionRate,
-              good: 40, color: '#A78BFA',
-            },
-            {
-              label: 'Clienti a rischio',
-              value: data.totalCustomers > 0 ? Math.round((data.atRiskCustomers / data.totalCustomers) * 100) : 0,
-              good: -1, // lower is better
-              color: '#EF4444',
-            },
+            { label: 'Tasso attivazione', value: data.totalCustomers > 0 ? Math.round((data.activeCustomers / data.totalCustomers) * 100) : 0, color: '#10B981' },
+            { label: 'Retention', value: data.retentionRate, color: '#A78BFA' },
+            { label: 'Churn', value: data.churnRate, color: '#EF4444' },
+            { label: 'Clienti a rischio', value: data.totalCustomers > 0 ? Math.round((data.atRiskCustomers / data.totalCustomers) * 100) : 0, color: '#F59E0B' },
           ].map(metric => (
             <div key={metric.label} style={{ marginBottom: '1rem' }}>
               <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.3rem' }}>
@@ -157,9 +167,34 @@ export default function AnalyticsPage() {
             </div>
           ))}
         </div>
+
+        <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.5rem' }}>
+          <h3 style={{ fontWeight: '700', marginBottom: '0.3rem', fontSize: '1rem' }}>Premi più riscattati</h3>
+          <p style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem', marginBottom: '1.2rem' }}>Top 5 storici</p>
+          {data.topRewards.length === 0 ? (
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem' }}>Nessun riscatto ancora</p>
+          ) : (
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+              {data.topRewards.map((r, i) => {
+                const maxCount = data.topRewards[0]?.count ?? 1
+                return (
+                  <div key={i}>
+                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.25rem' }}>
+                      <span style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.8)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{r.title}</span>
+                      <span style={{ fontSize: '0.82rem', fontWeight: '700', color: '#A78BFA', marginLeft: '0.5rem' }}>{r.count}x</span>
+                    </div>
+                    <div style={{ height: '4px', background: 'rgba(255,255,255,0.08)', borderRadius: '2px', overflow: 'hidden' }}>
+                      <div style={{ height: '100%', width: `${Math.round((r.count / maxCount) * 100)}%`, background: '#A78BFA', borderRadius: '2px' }} />
+                    </div>
+                  </div>
+                )
+              })}
+            </div>
+          )}
+        </div>
       </div>
 
-      {/* Tiers fedeltà */}
+      {/* Tier fedeltà */}
       {data.totalCustomers > 0 && (() => {
         const tiers = [
           { label: 'Nuovo', range: '0–99 pt', min: 0, max: 99, color: '#6b7280', icon: '🌱' },
@@ -168,9 +203,7 @@ export default function AnalyticsPage() {
           { label: 'Oro', range: '2000–4999 pt', min: 2000, max: 4999, color: '#FFD700', icon: '🥇' },
           { label: 'Platino', range: '5000+ pt', min: 5000, max: Infinity, color: '#A78BFA', icon: '💎' },
         ]
-        const counts = tiers.map(t =>
-          data.topCustomers.filter(c => c.points >= t.min && c.points <= t.max).length
-        )
+        const counts = tiers.map(t => data.topCustomers.filter(c => c.points >= t.min && c.points <= t.max).length)
         const maxCount = Math.max(...counts, 1)
         return (
           <div style={{ background: 'rgba(255,255,255,0.04)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.5rem', marginBottom: '1.5rem' }}>
@@ -213,7 +246,7 @@ export default function AnalyticsPage() {
                 </div>
                 <div style={{ flex: 1 }}>
                   <div style={{ fontSize: '0.9rem', fontWeight: '600' }}>{c.name}</div>
-                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{c.totalVisits} visite</div>
+                  <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.4)' }}>{c.totalVisits} visite · ogni {data.avgDaysBetweenVisits ?? '?'}gg in media</div>
                 </div>
                 <div style={{ textAlign: 'right' }}>
                   <div style={{ fontSize: '0.9rem', fontWeight: '700', color: '#A78BFA' }}>{c.points} pt</div>

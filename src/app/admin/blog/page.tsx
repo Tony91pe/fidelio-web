@@ -295,6 +295,7 @@ export default function BlogAdmin() {
   const [view, setView] = useState<'list' | 'editor' | 'ideas'>('list')
   const [editing, setEditing] = useState<Post | null>(null)
   const [working, setWorking] = useState(false)
+  const [saveError, setSaveError] = useState<string | null>(null)
 
   const [form, setForm] = useState({ title: '', description: '', category: 'Strategia', readTime: '5 min', content: '', published: false })
 
@@ -322,15 +323,21 @@ export default function BlogAdmin() {
 
   async function save(publish?: boolean) {
     setWorking(true)
+    setSaveError(null)
     const payload = publish !== undefined ? { ...form, published: publish, publishedAt: publish ? new Date().toISOString() : null } : form
     try {
-      if (editing) {
-        await fetch('/api/admin/blog', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editing.id, ...payload }) })
-      } else {
-        await fetch('/api/admin/blog', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      const res = editing
+        ? await fetch('/api/admin/blog', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ id: editing.id, ...payload }) })
+        : await fetch('/api/admin/blog', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        setSaveError(err.error || `Errore ${res.status}`)
+        return
       }
       await load()
       setView('list')
+    } catch {
+      setSaveError('Errore di rete. Riprova.')
     } finally { setWorking(false) }
   }
 
@@ -458,6 +465,11 @@ export default function BlogAdmin() {
                 placeholder={'## Introduzione\n\nInizia a scrivere il tuo articolo qui...\n\n## Sezione 1\n\nContenuto della sezione.\n\n- Punto 1\n- Punto 2'}
               />
             </div>
+            {saveError && (
+              <div style={{ background: 'rgba(239,68,68,0.1)', border: '1px solid rgba(239,68,68,0.3)', borderRadius: 10, padding: '10px 14px', color: '#EF4444', fontSize: '0.875rem' }}>
+                {saveError}
+              </div>
+            )}
             <div style={{ display: 'flex', gap: '0.75rem', flexWrap: 'wrap' }}>
               <button onClick={() => save(false)} disabled={working || !form.title || !form.content}
                 style={{ flex: 1, minWidth: 140, background: 'rgba(255,255,255,0.07)', color: 'rgba(255,255,255,0.8)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: 10, padding: '12px', fontWeight: 700, fontSize: '0.95rem', cursor: 'pointer', opacity: (working || !form.title || !form.content) ? 0.5 : 1 }}>

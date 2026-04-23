@@ -71,6 +71,7 @@ export default function PrivacyPage() {
           </tbody>
         </table>
         <P>SCC = Clausole Contrattuali Standard approvate dalla Commissione Europea (art. 46.2.c GDPR) — garanzia adeguata per i trasferimenti extra-UE.</P>
+        <P>Il Data Processing Agreement (DPA) completo ai sensi dell&apos;art. 28 GDPR è disponibile alla pagina <a href="/dpa" style={{ color: '#A78BFA' }}>/dpa</a>.</P>
       </Section>
 
       <Section title="4. Periodo di conservazione">

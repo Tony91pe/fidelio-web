@@ -9,7 +9,7 @@ export async function GET(req: Request) {
   }
 
   const shops = await db.shop.findMany({
-    where: { plan: { in: ['GROWTH', 'PRO'] } },
+    where: { plan: { in: ['GROWTH', 'PRO'] }, winbackEmailEnabled: true },
     select: { id: true, name: true, winbackDays: true },
   })
 

@@ -4,6 +4,7 @@ import { features } from './features-data'
 import { FounderCounter } from './FounderCounter'
 import { CrispButton } from './CrispButton'
 import { db } from '@/lib/db'
+import { FidelioLogo } from '@/components/FidelioLogo/FidelioLogo'
 
 export const metadata: Metadata = {
   title: 'Fidelio — Fidelizza i tuoi clienti con punti digitali e QR code',
@@ -79,10 +80,6 @@ export default async function LandingPage() {
           0%, 100% { box-shadow: 0 0 0 0 rgba(108,61,244,0.7), 0 0 16px rgba(108,61,244,0.4); transform: scale(1); }
           50% { box-shadow: 0 0 0 8px rgba(108,61,244,0), 0 0 32px rgba(108,61,244,0.7); transform: scale(1.03); }
         }
-        @keyframes navPulse {
-          0%, 100% { box-shadow: 0 0 0 0 rgba(108,61,244,0.8); }
-          50% { box-shadow: 0 0 0 6px rgba(108,61,244,0); }
-        }
       `}</style>
       <script
         type="application/ld+json"
@@ -90,17 +87,11 @@ export default async function LandingPage() {
       />
 
       {/* Nav */}
-      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(13,13,26,0.9)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.08)', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '1rem 2rem' }}>
-        <a href="/" style={{ fontSize: '1.4rem', fontWeight: '700', display: 'flex', alignItems: 'center', gap: '0.6rem', textDecoration: 'none', color: 'white' }}>
-          <img src="/favicon.svg" alt="Fidelio" width={28} height={28} style={{ borderRadius: 6 }} />
-          Fidelio
+      <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(13,13,26,0.88)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 2rem', overflow: 'hidden' }}>
+        {/* marginRight negativo compensa l'overflow DOM invisibile causato da transformOrigin:left sul scale */}
+        <a href="/" style={{ textDecoration: 'none', display: 'block', flexShrink: 0, marginRight: '-100px' }}>
+          <FidelioLogo size="sm" tagline={false} animate={true} />
         </a>
-        <div style={{ display: 'flex', gap: '1rem', alignItems: 'center' }}>
-          <Link href="/login" style={{ color: 'rgba(255,255,255,0.6)', textDecoration: 'none', fontSize: '0.9rem' }}>Accedi</Link>
-          <Link href="/register" style={{ background: '#6C3DF4', color: 'white', padding: '0.5rem 1.2rem', borderRadius: '100px', textDecoration: 'none', fontSize: '0.9rem', fontWeight: '600', animation: 'navPulse 2s ease-in-out infinite' }}>
-            Inizia ora
-          </Link>
-        </div>
       </nav>
 
       {/* Hero */}
@@ -347,6 +338,8 @@ export default async function LandingPage() {
           <Link href="/privacy" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>Privacy Policy</Link>
           <Link href="/termini" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>Termini di Servizio</Link>
           <Link href="/cookie-policy" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>Cookie Policy</Link>
+          <Link href="/rimborsi" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>Rimborsi</Link>
+          <Link href="/dpa" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>DPA</Link>
           <a href="mailto:support@getfidelio.app" style={{ color: 'rgba(255,255,255,0.4)', textDecoration: 'none', fontSize: '0.8rem' }}>Contatti</a>
         </nav>
         <p style={{ marginTop: '1rem' }}>© 2026 Fidelio. Tutti i diritti riservati.</p>

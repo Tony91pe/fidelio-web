@@ -18,7 +18,7 @@ export async function POST(req: Request) {
   try { body = await req.json() } catch { return NextResponse.json({ error: 'Richiesta non valida' }, { status: 400, headers: corsHeaders }) }
   const { customerCode, amount } = body
 
-  if (typeof customerCode !== 'string' || !/^FID-[A-Z0-9]{6}$/.test(customerCode)) {
+  if (typeof customerCode !== 'string' || customerCode.trim().length < 4 || customerCode.trim().length > 60) {
     return NextResponse.json({ error: 'Codice cliente non valido' }, { status: 400, headers: corsHeaders })
   }
   if (amount !== undefined && amount !== null && (typeof amount !== 'number' || amount < 0 || amount > 100_000)) {
@@ -28,7 +28,7 @@ export async function POST(req: Request) {
   // Cerca il cliente globalmente (qualunque negozio Fidelio)
   const customer = await db.customer.findUnique({ where: { code: customerCode } })
   if (!customer) {
-    return NextResponse.json({ error: 'Cliente non trovato. Il codice non è registrato su Fidelio.' }, { status: 404, headers: corsHeaders })
+    return NextResponse.json({ error: 'Cliente non trovato' }, { status: 404, headers: corsHeaders })
   }
 
   // Controlla se è la prima visita in questo negozio

@@ -19,6 +19,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   return [
     { url: BASE_URL, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },
+    { url: `${BASE_URL}/programma-fedelta`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.95 },
     { url: `${BASE_URL}/pricing`, lastModified: new Date(), changeFrequency: 'monthly', priority: 0.8 },
     { url: `${BASE_URL}/blog`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.75 },
     { url: `${BASE_URL}/fondatore`, lastModified: new Date(), changeFrequency: 'weekly', priority: 0.7 },

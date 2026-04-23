@@ -21,7 +21,9 @@ model Shop {
   website     String?
   primaryColor String? @default("#7C3AED")
   plan        Plan     @default(STARTER)
-  paddleCustomerId String?
+  paddleCustomerId     String?
+  paddleSubscriptionId String?
+  billingPortalUrl     String?
   suspended   Boolean  @default(false)
   approved    Boolean  @default(false)
   planExpiresAt DateTime?
@@ -36,6 +38,12 @@ model Shop {
   winbackDays Int      @default(30)
   isFounder   Boolean  @default(false)
   pointsExpireMonths Int?
+  slug                      String?  @unique
+  emailNotificationsEnabled Boolean @default(true)
+  pushNotificationsEnabled  Boolean @default(true)
+  birthdayEmailEnabled      Boolean @default(true)
+  winbackEmailEnabled       Boolean @default(true)
+  onboardingCompleted       Boolean @default(false)
   customers   Customer[]
   rewards     Reward[]
   giftCards   GiftCard[]

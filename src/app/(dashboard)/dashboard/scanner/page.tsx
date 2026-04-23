@@ -32,6 +32,17 @@ export default function ScannerPage() {
   const [queue, setQueue] = useState<PendingStamp[]>([])
   const [syncing, setSyncing] = useState(false)
   const readerRef = useRef<BrowserQRCodeReader | null>(null)
+  const [branches, setBranches] = useState<{id:string;name:string}[]>([])
+  const [selectedShopId, setSelectedShopId] = useState<string | null>(null)
+
+  useEffect(() => {
+    fetch('/api/shop/branches').then(r => r.json()).then((data: {id:string;name:string}[]) => {
+      if (Array.isArray(data) && data.length > 1) {
+        setBranches(data)
+        setSelectedShopId(data[0].id)
+      }
+    }).catch(() => {})
+  }, [])
 
   useEffect(() => {
     setQueue(loadQueue())
@@ -88,7 +99,7 @@ export default function ScannerPage() {
       const res = await fetch('/api/scanner/lookup', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerCode }),
+        body: JSON.stringify({ customerCode, ...(selectedShopId ? { shopId: selectedShopId } : {}) }),
       })
       if (!res.ok) throw new Error('Cliente non trovato')
       setResult(await res.json())
@@ -123,7 +134,7 @@ export default function ScannerPage() {
       const res = await fetch('/api/scanner/stamp', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ customerCode: result.code, amount: amount ? parseFloat(amount) : undefined }),
+        body: JSON.stringify({ customerCode: result.code, amount: amount ? parseFloat(amount) : undefined, ...(selectedShopId ? { shopId: selectedShopId } : {}) }),
       })
       if (!res.ok) throw new Error('Errore assegnazione punti')
       setSuccess(true)
@@ -147,6 +158,20 @@ export default function ScannerPage() {
         </div>
       </div>
       <p style={{ color: 'rgba(255,255,255,0.4)', marginBottom: '1rem' }}>Scannerizza il QR del cliente per assegnare punti</p>
+
+      {/* Selettore sede per utenti multi-sede */}
+      {branches.length > 1 && (
+        <div style={{ marginBottom: '1rem' }}>
+          <label style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', display: 'block', marginBottom: '6px' }}>Sede attiva</label>
+          <select
+            value={selectedShopId ?? ''}
+            onChange={e => setSelectedShopId(e.target.value)}
+            style={{ background: 'rgba(255,255,255,0.07)', border: '1px solid rgba(255,255,255,0.15)', borderRadius: '10px', padding: '10px 14px', color: 'white', width: '100%', outline: 'none', fontSize: '14px' }}
+          >
+            {branches.map(b => <option key={b.id} value={b.id} style={{ background: '#1a1a2e' }}>{b.name}</option>)}
+          </select>
+        </div>
+      )}
 
       {!online && (
         <div style={{ background: 'rgba(245,158,11,0.1)', border: '1px solid rgba(245,158,11,0.3)', borderRadius: '12px', padding: '12px 16px', marginBottom: '1rem', fontSize: '13px', color: '#F59E0B' }}>

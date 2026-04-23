@@ -57,6 +57,7 @@ type Shop = {
   id: string; name: string; category: string; city: string; address: string
   plan: string; suspended: boolean; approved: boolean
   createdAt: string; ownerId: string; ownerEmail: string | null
+  planExpiresAt: string | null
   _count: { customers: number; visits: number }
 }
 
@@ -378,7 +379,7 @@ export default function AdminShops() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-              {['Nome', 'Email proprietario', 'Città', 'Piano', 'Clienti', 'Stato', 'Approvato', 'Registrato', 'Azioni'].map(h => (
+              {['Nome', 'Email proprietario', 'Città', 'Piano', 'Clienti', 'Stato', 'Approvato', 'Registrato', 'Scadenza', 'Azioni'].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '0.75rem 1rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
@@ -400,13 +401,25 @@ export default function AdminShops() {
                   {shop.approved ? <span style={{ color: '#10b981' }}>✓</span> : <span style={{ color: '#f59e0b' }}>⏳</span>}
                 </td>
                 <td style={{ padding: '0.75rem 1rem', color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>{new Date(shop.createdAt).toLocaleDateString('it-IT')}</td>
+                <td style={{ padding: '0.75rem 1rem', fontSize: '0.75rem', whiteSpace: 'nowrap' }}>
+                  {shop.planExpiresAt
+                    ? (() => {
+                        const d = new Date(shop.planExpiresAt)
+                        const expired = d < new Date()
+                        const soon = !expired && d < new Date(Date.now() + 7 * 24 * 60 * 60 * 1000)
+                        return <span style={{ color: expired ? '#ef4444' : soon ? '#f59e0b' : 'rgba(255,255,255,0.4)' }}>
+                          {expired ? '⚠ ' : soon ? '⚡ ' : ''}{d.toLocaleDateString('it-IT')}
+                        </span>
+                      })()
+                    : <span style={{ color: 'rgba(255,255,255,0.2)' }}>—</span>}
+                </td>
                 <td style={{ padding: '0.75rem 1rem' }}>
                   <ShopDropdown shop={shop} working={working} onAction={action} onDelete={setDeleteModal} />
                 </td>
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={9} style={{ padding: '3rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)' }}>Nessun negozio trovato</td></tr>
+              <tr><td colSpan={10} style={{ padding: '3rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)' }}>Nessun negozio trovato</td></tr>
             )}
           </tbody>
         </table>

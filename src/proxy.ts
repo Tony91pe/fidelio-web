@@ -6,7 +6,8 @@ const isPublicRoute = createRouteMatcher([
   '/rimborsi', '/cookie-policy', '/fondatore', '/docs', '/checkin/(.*)', '/recensioni', '/blog', '/blog/(.*)',
   '/api/app/(.*)', '/api/customer/(.*)', '/api/checkin',
   '/api/scanner/(.*)', '/api/shops', '/api/webhooks/(.*)',
-  '/api/unsubscribe', '/api/referral', '/api/cron/(.*)', '/api/testimonials', '/api/shop/apply-founder',
+  '/api/unsubscribe', '/api/referral', '/api/cron/(.*)', '/api/testimonials',
+  '/api/shop/(.*)',
   '/status', '/sitemap.xml', '/opengraph-image',
 ])
 
@@ -20,6 +21,7 @@ const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
   '/api/shop/auth/send-otp':             { max: 3,  windowMs: 60_000 },
   '/api/shop/checkin':                   { max: 30, windowMs: 60_000 },
   '/api/paddle/webhook':                 { max: 20, windowMs: 60_000 },
+  '/api/webhooks/woocommerce':           { max: 20, windowMs: 60_000 },
   '/api/dashboard/customers/export':     { max: 5,  windowMs: 60_000 },
   '/api/shop/export':                    { max: 5,  windowMs: 60_000 },
   '/api/admin/contact-shop':             { max: 10, windowMs: 60_000 },
@@ -60,7 +62,14 @@ export default clerkMiddleware(async (auth, req: NextRequest) => {
   }
 
   if (!isPublicRoute(req)) {
-    await auth.protect()
+    if (pathname.startsWith('/api/')) {
+      const { userId } = await auth()
+      if (!userId) {
+        return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
+      }
+    } else {
+      await auth.protect()
+    }
   }
 })
 

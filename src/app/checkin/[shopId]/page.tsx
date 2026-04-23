@@ -8,11 +8,13 @@ const emoji: Record<string,string> = {
 }
 
 export default async function CheckinPage({
-  params
+  params, searchParams
 }: {
   params: Promise<{ shopId: string }>
+  searchParams: Promise<{ ref?: string }>
 }) {
   const { shopId } = await params
+  const { ref } = await searchParams
   const shop = await db.shop.findUnique({ where: { id: shopId } })
   if (!shop) redirect('/')
   return (
@@ -24,7 +26,7 @@ export default async function CheckinPage({
         <p style={{color:'rgba(255,255,255,0.5)', marginBottom:'2rem'}}>
           Registrati per accumulare punti
         </p>
-        <CheckinForm shopId={shop.id} shopName={shop.name} />
+        <CheckinForm shopId={shop.id} shopName={shop.name} defaultRef={ref} />
       </div>
     </div>
   )

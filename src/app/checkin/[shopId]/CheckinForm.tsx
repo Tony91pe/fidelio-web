@@ -7,15 +7,18 @@ const inp: React.CSSProperties = {
   width:'100%',outline:'none',fontSize:'16px',marginBottom:'12px'
 }
 
-export default function CheckinForm({ shopId, shopName }: { shopId:string; shopName:string }) {
+export default function CheckinForm({ shopId, shopName, defaultRef }: { shopId:string; shopName:string; defaultRef?:string }) {
   const [step, setStep] = useState<'form'|'success'>('form')
   const [points, setPoints] = useState(0)
   const [customerCode, setCustomerCode] = useState('')
+  const [myReferralCode, setMyReferralCode] = useState('')
   const [isNew, setIsNew] = useState(false)
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
   const [birthday, setBirthday] = useState('')
+  const [referralCode, setReferralCode] = useState(defaultRef ?? '')
+  const [showReferral, setShowReferral] = useState(!!defaultRef)
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
@@ -23,12 +26,13 @@ export default function CheckinForm({ shopId, shopName }: { shopId:string; shopN
     try {
       const res = await fetch('/api/checkin', {
         method:'POST', headers:{'Content-Type':'application/json'},
-        body:JSON.stringify({ name, email, birthday, shopId }),
+        body:JSON.stringify({ name, email, birthday, shopId, ...(referralCode.trim() ? { referralCode: referralCode.trim().toUpperCase() } : {}) }),
       })
       const data = await res.json()
       if (res.ok) {
         setPoints(data.pointsEarned)
         setCustomerCode(data.customerCode)
+        setMyReferralCode(data.referralCode ?? '')
         setIsNew(data.isNew)
         setStep('success')
       }
@@ -49,6 +53,13 @@ export default function CheckinForm({ shopId, shopName }: { shopId:string; shopN
         <p style={{fontFamily:'monospace',fontSize:'1.5rem',fontWeight:'700',color:'#A78BFA',letterSpacing:'0.1em'}}>{customerCode}</p>
         <p style={{color:'rgba(255,255,255,0.4)',fontSize:'0.75rem',marginTop:'0.3rem'}}>Conserva questo codice per il supporto</p>
       </div>
+      {myReferralCode && (
+        <div style={{background:'rgba(16,185,129,0.08)',border:'1px solid rgba(16,185,129,0.2)',borderRadius:'12px',padding:'1rem',marginTop:'1rem',textAlign:'left'}}>
+          <p style={{color:'#10B981',fontSize:'0.82rem',fontWeight:'700',marginBottom:'0.3rem'}}>🎁 Porta un amico e guadagna punti!</p>
+          <p style={{color:'rgba(255,255,255,0.5)',fontSize:'0.75rem',marginBottom:'0.5rem'}}>Condividi il tuo codice — ricevi punti per ogni amico che si iscrive</p>
+          <p style={{fontFamily:'monospace',fontSize:'1.2rem',fontWeight:'800',color:'white',letterSpacing:'0.15em',textAlign:'center'}}>{myReferralCode}</p>
+        </div>
+      )}
     </div>
   )
 
@@ -60,10 +71,29 @@ export default function CheckinForm({ shopId, shopName }: { shopId:string; shopN
         <label style={{position:'absolute',top:'-8px',left:'12px',fontSize:'11px',color:'rgba(255,255,255,0.5)',background:'transparent',pointerEvents:'none'}}>Data di nascita</label>
         <input style={{...inp,marginBottom:0,colorScheme:'dark'}} type="date" value={birthday} onChange={e => setBirthday(e.target.value)} required />
       </div>
+
+      {/* Codice amico */}
+      {!showReferral ? (
+        <button type="button" onClick={() => setShowReferral(true)}
+          style={{display:'block',width:'100%',textAlign:'center',background:'transparent',border:'1px dashed rgba(255,255,255,0.15)',borderRadius:'12px',padding:'10px',color:'rgba(255,255,255,0.4)',fontSize:'13px',cursor:'pointer',marginBottom:'12px'}}>
+          Hai un codice amico? Inseriscilo →
+        </button>
+      ) : (
+        <input style={inp} placeholder="Codice amico (es. AB3XY7)" value={referralCode}
+          onChange={e => setReferralCode(e.target.value.toUpperCase())}
+          maxLength={6} />
+      )}
+
       <button type="submit" disabled={loading}
         style={{width:'100%',background:'#6C3DF4',color:'white',padding:'16px',borderRadius:'12px',fontWeight:'700',border:'none',cursor:'pointer',fontSize:'16px',opacity:loading?0.7:1}}>
         {loading ? 'Registrazione...' : 'Inizia ad accumulare punti'}
       </button>
+      <p style={{marginTop:'12px',fontSize:'12px',color:'rgba(255,255,255,0.35)',lineHeight:'1.5',textAlign:'center'}}>
+        Registrandoti accetti che <strong style={{color:'rgba(255,255,255,0.5)'}}>{shopName}</strong> tratti i tuoi dati (nome, email, data di nascita) per il programma fedeltà tramite Fidelio.
+        Puoi richiedere la cancellazione in qualsiasi momento scrivendo a{' '}
+        <a href="mailto:support@getfidelio.app" style={{color:'rgba(167,139,250,0.7)',textDecoration:'none'}}>support@getfidelio.app</a>.{' '}
+        <a href="/privacy" style={{color:'rgba(167,139,250,0.7)',textDecoration:'none'}}>Privacy Policy</a>
+      </p>
     </form>
   )
 }

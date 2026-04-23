@@ -2,25 +2,28 @@ import { auth } from '@clerk/nextjs/server'
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 import { sendPushNotification } from '@/lib/push'
+import { sendPointsEmail, sendNearRewardEmail } from '@/lib/email'
 import { logEvent } from '@/lib/logging'
 
 export async function POST(req: Request) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
 
-  const shop = await db.shop.findFirst({ where: { ownerId: userId } })
+  let body: { customerCode?: unknown; amount?: unknown; shopId?: unknown }
+  try { body = await req.json() } catch { return NextResponse.json({ error: 'Richiesta non valida' }, { status: 400 }) }
+  const { customerCode, amount, shopId } = body
+
+  const shop = (typeof shopId === 'string' && shopId)
+    ? await db.shop.findFirst({ where: { id: shopId, ownerId: userId } })
+    : await db.shop.findFirst({ where: { ownerId: userId } })
   if (!shop) return NextResponse.json({ error: 'Negozio non trovato' }, { status: 404 })
 
-  let body: { customerCode?: unknown; amount?: unknown }
-  try { body = await req.json() } catch { return NextResponse.json({ error: 'Richiesta non valida' }, { status: 400 }) }
-  const { customerCode, amount } = body
-
-  if (typeof customerCode !== 'string' || !/^FID-[A-Z0-9]{6}$/.test(customerCode))
+  if (typeof customerCode !== 'string' || customerCode.trim().length < 4 || customerCode.trim().length > 60)
     return NextResponse.json({ error: 'Codice cliente non valido' }, { status: 400 })
   if (amount !== undefined && amount !== null && (typeof amount !== 'number' || amount < 0 || amount > 100_000))
     return NextResponse.json({ error: 'Importo non valido' }, { status: 400 })
 
-  const customer = await db.customer.findFirst({ where: { code: customerCode, shopId: shop.id } })
+  const customer = await db.customer.findUnique({ where: { code: customerCode } })
   if (!customer) return NextResponse.json({ error: 'Cliente non trovato' }, { status: 404 })
 
   let points = 0
@@ -44,21 +47,39 @@ export async function POST(req: Request) {
     })
   ])
 
-  // Invia notifica push al cliente
   const newPoints = customer.points + points
-  const subscriptions = await db.pushSubscription.findMany({
-    where: { email: customer.email }
-  })
+  const isRewardReady = newPoints >= shop.rewardThreshold
+  const isNearReward = !isRewardReady && newPoints >= shop.rewardThreshold * 0.8
 
-  for (const sub of subscriptions) {
-    const isRewardReady = newPoints >= shop.rewardThreshold
-    await sendPushNotification(sub, {
-      title: isRewardReady ? '🎉 Premio disponibile!' : `+${points} punti da ${shop.name}`,
-      body: isRewardReady
-        ? `Hai raggiunto ${newPoints} punti! Ritira il tuo premio: ${shop.rewardDescription}`
-        : `Hai ora ${newPoints} punti. Ti mancano ${Math.max(shop.rewardThreshold - newPoints, 0)} punti al prossimo premio.`,
-      icon: '/icons/icon-192x192.png',
-    })
+  // Push al cliente (se abilitato dal negozio)
+  if (shop.pushNotificationsEnabled) {
+    const subscriptions = await db.pushSubscription.findMany({ where: { email: customer.email } })
+    for (const sub of subscriptions) {
+      await sendPushNotification(sub, {
+        title: isRewardReady ? '🎉 Premio disponibile!' : `+${points} punti da ${shop.name}`,
+        body: isRewardReady
+          ? `Hai raggiunto ${newPoints} punti! Ritira il tuo premio: ${shop.rewardDescription}`
+          : `Hai ora ${newPoints} punti. Ti mancano ${Math.max(shop.rewardThreshold - newPoints, 0)} punti al prossimo premio.`,
+        icon: '/icons/icon-192x192.png',
+      })
+    }
+  }
+
+  // Email transazionale al cliente (se abilitato e ha email)
+  if (shop.emailNotificationsEnabled && customer.email) {
+    try {
+      if (isNearReward) {
+        await sendNearRewardEmail(
+          customer.email, customer.name ?? 'Cliente', shop.name,
+          newPoints, shop.rewardThreshold, shop.rewardDescription
+        )
+      } else {
+        await sendPointsEmail(
+          customer.email, customer.name ?? 'Cliente', shop.name,
+          points, newPoints, shop.rewardThreshold
+        )
+      }
+    } catch { /* non bloccare il timbro se l'email fallisce */ }
   }
 
   await logEvent({

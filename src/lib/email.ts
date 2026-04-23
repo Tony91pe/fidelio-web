@@ -201,6 +201,66 @@ export async function sendGiftCardEmail(to: string, recipientName: string, shopN
   })
 }
 
+export async function sendPointsEmail(to: string, customerName: string, shopName: string, pointsAdded: number, totalPoints: number, rewardThreshold: number) {
+  const resend = getResendClient()
+  const remaining = Math.max(rewardThreshold - totalPoints, 0)
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: `+${pointsAdded} punti da ${shopName}!`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#ffffff;line-height:1.2">Visita registrata! ⭐</h2>
+      <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6">
+        Ciao <strong style="color:#ffffff">${customerName}</strong>,<br>
+        grazie per la visita da <strong style="color:#ffffff">${shopName}</strong>!
+      </p>
+      ${pointsBadge(pointsAdded, 'punti guadagnati oggi')}
+      <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:12px;padding:16px;text-align:center;margin:12px 0">
+        <div style="font-size:12px;color:rgba(255,255,255,0.4);margin-bottom:4px">Saldo totale</div>
+        <div style="font-size:24px;font-weight:800;color:#A78BFA">${totalPoints.toLocaleString('it-IT')} pt</div>
+        ${remaining > 0
+          ? `<div style="font-size:12px;color:rgba(255,255,255,0.4);margin-top:4px">Ti mancano <strong style="color:#ffffff">${remaining} punti</strong> al prossimo premio</div>`
+          : `<div style="font-size:13px;color:#10B981;font-weight:700;margin-top:6px">🎉 Hai un premio disponibile! Vieni in negozio a ritirarlo.</div>`
+        }
+      </div>
+    `, { preheader: `+${pointsAdded} punti da ${shopName} — saldo: ${totalPoints} pt`, unsubscribeEmail: to }),
+  })
+}
+
+export async function sendNearRewardEmail(to: string, customerName: string, shopName: string, totalPoints: number, rewardThreshold: number, rewardDescription: string) {
+  const resend = getResendClient()
+  const remaining = rewardThreshold - totalPoints
+  const pct = Math.round((totalPoints / rewardThreshold) * 100)
+  return resend.emails.send({
+    from: FROM,
+    to,
+    subject: `Ci sei quasi! Mancano solo ${remaining} punti al tuo premio 🎁`,
+    html: baseTemplate(`
+      <h2 style="margin:0 0 8px;font-size:26px;font-weight:800;color:#ffffff;line-height:1.2">Sei quasi al traguardo! 🏁</h2>
+      <p style="margin:0 0 20px;font-size:15px;color:rgba(255,255,255,0.6);line-height:1.6">
+        Ciao <strong style="color:#ffffff">${customerName}</strong>,<br>
+        mancano solo <strong style="color:#A78BFA">${remaining} punti</strong> al tuo prossimo premio da <strong style="color:#ffffff">${shopName}</strong>!
+      </p>
+      <div style="background:rgba(108,61,244,0.12);border:1px solid rgba(108,61,244,0.3);border-radius:16px;padding:20px;margin:20px 0">
+        <div style="display:flex;justify-content:space-between;margin-bottom:8px">
+          <span style="font-size:13px;color:rgba(255,255,255,0.5)">${totalPoints} pt</span>
+          <span style="font-size:13px;color:rgba(255,255,255,0.5)">${rewardThreshold} pt</span>
+        </div>
+        <div style="height:8px;background:rgba(255,255,255,0.08);border-radius:4px;overflow:hidden">
+          <div style="height:100%;width:${pct}%;background:linear-gradient(90deg,#6C3DF4,#A78BFA);border-radius:4px"></div>
+        </div>
+        <div style="text-align:center;margin-top:12px">
+          <div style="font-size:13px;color:rgba(255,255,255,0.5)">Premio</div>
+          <div style="font-size:16px;font-weight:700;color:#ffffff">${rewardDescription}</div>
+        </div>
+      </div>
+      <p style="margin:0;font-size:13px;color:rgba(255,255,255,0.4);line-height:1.6">
+        Passa da <strong style="color:rgba(255,255,255,0.6)">${shopName}</strong> ancora una volta e il premio è tuo!
+      </p>
+    `, { preheader: `Solo ${remaining} punti al premio — vieni da ${shopName}!`, unsubscribeEmail: to }),
+  })
+}
+
 export async function sendEmail({ to, subject, data }: {
   to: string
   subject: string

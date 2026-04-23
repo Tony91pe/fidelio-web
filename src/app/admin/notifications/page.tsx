@@ -34,9 +34,9 @@ export default function AdminNotifications() {
         <div>
           <label style={{ fontSize: '0.75rem', fontWeight: 600, color: 'rgba(255,255,255,0.4)', textTransform: 'uppercase', letterSpacing: '0.06em', display: 'block', marginBottom: '0.4rem' }}>Destinatari</label>
           <select value={target} onChange={e => setTarget(e.target.value)} style={{ ...inp }}>
-            <option value="all">Tutti i negozi ({data?.shops?.length ?? '...'})</option>
-            <option value="paying">Solo piani paganti ({data?.shops?.filter((s: any) => s.plan !== 'STARTER').length ?? '...'})</option>
-            <option value="pending">In attesa di approvazione ({data?.shops?.filter((s: any) => !s.approved).length ?? '...'})</option>
+            <option value="all" style={{ background: '#1a1a2e', color: 'white' }}>Tutti i negozi ({data?.shops?.length ?? '...'})</option>
+            <option value="paying" style={{ background: '#1a1a2e', color: 'white' }}>Solo piani paganti ({data?.shops?.filter((s: any) => s.plan !== 'STARTER').length ?? '...'})</option>
+            <option value="pending" style={{ background: '#1a1a2e', color: 'white' }}>In attesa di approvazione ({data?.shops?.filter((s: any) => !s.approved).length ?? '...'})</option>
           </select>
         </div>
         <div>
