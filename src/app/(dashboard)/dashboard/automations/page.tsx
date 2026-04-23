@@ -9,6 +9,9 @@ type Settings = {
   pushNotificationsEnabled: boolean
   birthdayEmailEnabled: boolean
   winbackEmailEnabled: boolean
+  googleReviewEnabled: boolean
+  googleReviewUrl: string
+  googleReviewMinVisits: number
 }
 
 const inp: React.CSSProperties = {
@@ -82,6 +85,9 @@ export default function AutomationsPage() {
         pushNotificationsEnabled: s.pushNotificationsEnabled ?? true,
         birthdayEmailEnabled: s.birthdayEmailEnabled ?? true,
         winbackEmailEnabled: s.winbackEmailEnabled ?? true,
+        googleReviewEnabled: s.googleReviewEnabled ?? false,
+        googleReviewUrl: s.googleReviewUrl ?? '',
+        googleReviewMinVisits: s.googleReviewMinVisits ?? 3,
       })
       setWinbackDays(s.winbackDays ?? 30)
     })
@@ -167,6 +173,36 @@ export default function AutomationsPage() {
           active={settings.winbackEmailEnabled}
           onToggle={v => patch({ winbackEmailEnabled: v })}
         />
+        <AutoCard
+          icon="⭐" label="Recensioni Google"
+          desc={`Mostra il link recensione Google nel check-in dopo ${settings.googleReviewMinVisits} visite`}
+          active={settings.googleReviewEnabled}
+          onToggle={v => patch({ googleReviewEnabled: v })}
+        />
+      </div>
+
+      {/* Google Review config */}
+      <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 12, padding: '1.25rem', marginBottom: '1.5rem' }}>
+        <p style={{ fontWeight: 700, marginBottom: '0.75rem' }}>⭐ Configurazione Recensioni Google</p>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '0.75rem' }}>
+          <div>
+            <label style={{ fontSize: '0.8rem', color: 'rgba(255,255,255,0.5)', display: 'block', marginBottom: '0.4rem' }}>Link recensione Google</label>
+            <input
+              type="url" placeholder="https://g.page/r/..." style={{ ...inp, width: '100%', maxWidth: '400px' }}
+              value={settings.googleReviewUrl}
+              onChange={e => setSettings(prev => prev ? { ...prev, googleReviewUrl: e.target.value } : prev)}
+              onBlur={e => patch({ googleReviewUrl: e.target.value })}
+            />
+          </div>
+          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+            <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>Mostra dopo</span>
+            <input type="number" style={inp} min={1} max={20} value={settings.googleReviewMinVisits}
+              onChange={e => setSettings(prev => prev ? { ...prev, googleReviewMinVisits: parseInt(e.target.value) || 3 } : prev)}
+              onBlur={e => patch({ googleReviewMinVisits: parseInt(e.target.value) || 3 })}
+            />
+            <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.6)' }}>visite totali</span>
+          </div>
+        </div>
       </div>
 
       {/* Winback config */}

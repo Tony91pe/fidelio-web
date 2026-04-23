@@ -30,13 +30,16 @@ export async function GET() {
     birthdayEmailEnabled: shop.birthdayEmailEnabled,
     winbackEmailEnabled: shop.winbackEmailEnabled,
     onboardingCompleted: shop.onboardingCompleted,
+    googleReviewUrl: shop.googleReviewUrl ?? '',
+    googleReviewEnabled: shop.googleReviewEnabled,
+    googleReviewMinVisits: shop.googleReviewMinVisits ?? 3,
   })
 }
 
 export async function PUT(req: Request) {
   const { userId } = await auth()
   if (!userId) return NextResponse.json({ error: 'Non autorizzato' }, { status: 401 })
-  const { name, phone, address, city, pointsSystem, pointsPerVisit, pointsPerEuro, rewardThreshold, rewardDescription, welcomePoints, primaryColor, winbackDays, emailNotificationsEnabled, pushNotificationsEnabled, birthdayEmailEnabled, winbackEmailEnabled } = await req.json()
+  const { name, phone, address, city, pointsSystem, pointsPerVisit, pointsPerEuro, rewardThreshold, rewardDescription, welcomePoints, primaryColor, winbackDays, emailNotificationsEnabled, pushNotificationsEnabled, birthdayEmailEnabled, winbackEmailEnabled, googleReviewUrl, googleReviewEnabled, googleReviewMinVisits } = await req.json()
   const shop = await db.shop.findFirst({ where: { ownerId: userId } })
   if (!shop) return NextResponse.json({ error: 'Negozio non trovato' }, { status: 404 })
 
@@ -77,6 +80,9 @@ export async function PUT(req: Request) {
       ...(pushNotificationsEnabled !== undefined && { pushNotificationsEnabled }),
       ...(birthdayEmailEnabled !== undefined && { birthdayEmailEnabled }),
       ...(winbackEmailEnabled !== undefined && { winbackEmailEnabled }),
+      ...(googleReviewUrl !== undefined && { googleReviewUrl: googleReviewUrl || null }),
+      ...(googleReviewEnabled !== undefined && { googleReviewEnabled }),
+      ...(googleReviewMinVisits !== undefined && { googleReviewMinVisits: parseInt(googleReviewMinVisits) }),
     }
   })
   return NextResponse.json(updated)

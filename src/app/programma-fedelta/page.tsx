@@ -5,11 +5,11 @@ import { db } from '@/lib/db'
 export const dynamic = 'force-dynamic'
 
 export const metadata: Metadata = {
-  title: 'Programma Fedeltà per Negozi: Guida Completa 2025 — Fidelio',
+  title: 'Programma Fedeltà per Negozi: Guida Completa 2026 — Fidelio',
   description: 'Guida definitiva su come creare un programma fedeltà digitale per il tuo negozio. Punti, premi, QR code e strategie per far tornare i clienti ogni settimana.',
   alternates: { canonical: 'https://www.getfidelio.app/programma-fedelta' },
   openGraph: {
-    title: 'Programma Fedeltà per Negozi: Guida Completa 2025',
+    title: 'Programma Fedeltà per Negozi: Guida Completa 2026',
     description: 'Tutto quello che devi sapere per creare un programma fedeltà digitale efficace per bar, ristoranti, parrucchieri e negozi italiani.',
     url: 'https://www.getfidelio.app/programma-fedelta',
     type: 'article',
@@ -49,10 +49,10 @@ const jsonLd = {
     {
       '@type': 'Article',
       '@id': 'https://www.getfidelio.app/programma-fedelta#article',
-      headline: 'Programma Fedeltà per Negozi: Guida Completa 2025',
+      headline: 'Programma Fedeltà per Negozi: Guida Completa 2026',
       description: 'Guida definitiva su come creare un programma fedeltà digitale per il tuo negozio.',
-      datePublished: '2025-01-15',
-      dateModified: '2025-04-23',
+      datePublished: '2026-01-15',
+      dateModified: '2026-04-23',
       author: { '@type': 'Organization', name: 'Fidelio', url: 'https://www.getfidelio.app' },
       publisher: { '@type': 'Organization', name: 'Fidelio', url: 'https://www.getfidelio.app' },
       mainEntityOfPage: 'https://www.getfidelio.app/programma-fedelta',
@@ -130,11 +130,11 @@ export default async function PillarPage() {
 
         {/* Badge */}
         <div style={{ display: 'inline-flex', alignItems: 'center', gap: '6px', background: 'rgba(108,61,244,0.15)', border: '1px solid rgba(108,61,244,0.3)', padding: '0.3rem 1rem', borderRadius: '100px', fontSize: '0.78rem', color: '#A78BFA', fontWeight: '700', marginBottom: '1.25rem' }}>
-          📖 Guida Completa · Aggiornata Aprile 2025
+          📖 Guida Completa · Aggiornata Aprile 2026
         </div>
 
         <h1 style={{ fontSize: 'clamp(1.8rem,4.5vw,2.8rem)', fontWeight: '900', lineHeight: '1.15', marginBottom: '1.25rem' }}>
-          Programma Fedeltà per Negozi:<br />La Guida Definitiva 2025
+          Programma Fedeltà per Negozi:<br />La Guida Definitiva 2026
         </h1>
 
         <p style={{ fontSize: '1.1rem', color: 'rgba(255,255,255,0.65)', lineHeight: '1.75', marginBottom: '1rem' }}>

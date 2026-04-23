@@ -13,6 +13,7 @@ export default function CheckinForm({ shopId, shopName, defaultRef }: { shopId:s
   const [customerCode, setCustomerCode] = useState('')
   const [myReferralCode, setMyReferralCode] = useState('')
   const [isNew, setIsNew] = useState(false)
+  const [googleReviewUrl, setGoogleReviewUrl] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const [name, setName] = useState('')
   const [email, setEmail] = useState('')
@@ -34,6 +35,7 @@ export default function CheckinForm({ shopId, shopName, defaultRef }: { shopId:s
         setCustomerCode(data.customerCode)
         setMyReferralCode(data.referralCode ?? '')
         setIsNew(data.isNew)
+        setGoogleReviewUrl(data.googleReviewUrl ?? null)
         setStep('success')
       }
     } finally { setLoading(false) }
@@ -58,6 +60,17 @@ export default function CheckinForm({ shopId, shopName, defaultRef }: { shopId:s
           <p style={{color:'#10B981',fontSize:'0.82rem',fontWeight:'700',marginBottom:'0.3rem'}}>🎁 Porta un amico e guadagna punti!</p>
           <p style={{color:'rgba(255,255,255,0.5)',fontSize:'0.75rem',marginBottom:'0.5rem'}}>Condividi il tuo codice — ricevi punti per ogni amico che si iscrive</p>
           <p style={{fontFamily:'monospace',fontSize:'1.2rem',fontWeight:'800',color:'white',letterSpacing:'0.15em',textAlign:'center'}}>{myReferralCode}</p>
+        </div>
+      )}
+      {googleReviewUrl && (
+        <div style={{background:'rgba(251,188,4,0.08)',border:'1px solid rgba(251,188,4,0.25)',borderRadius:'12px',padding:'1rem',marginTop:'1rem',textAlign:'center'}}>
+          <p style={{fontSize:'1.2rem',marginBottom:'0.3rem'}}>⭐</p>
+          <p style={{color:'rgba(255,255,255,0.85)',fontSize:'0.88rem',fontWeight:'700',marginBottom:'0.25rem'}}>Ti è piaciuto? Lascia una recensione!</p>
+          <p style={{color:'rgba(255,255,255,0.45)',fontSize:'0.78rem',marginBottom:'0.75rem'}}>Ci vuole 1 minuto e ci aiuta tantissimo</p>
+          <a href={googleReviewUrl} target="_blank" rel="noopener noreferrer"
+            style={{display:'inline-block',background:'#FBBC04',color:'#111',padding:'9px 20px',borderRadius:'8px',fontWeight:'800',textDecoration:'none',fontSize:'0.85rem'}}>
+            ⭐ Scrivi una recensione su Google
+          </a>
         </div>
       )}
     </div>

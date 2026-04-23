@@ -94,5 +94,18 @@ export async function POST(req: Request) {
 
   try { await sendWelcomeEmail(email, name as string, shop.name, WELCOME) } catch {}
 
-  return NextResponse.json({ pointsEarned: WELCOME, isNew: true, customerCode: customer.code, referralCode: myReferralCode })
+  const showGoogleReview = !!(
+    shop.googleReviewEnabled &&
+    shop.googleReviewUrl &&
+    (shop.plan === 'GROWTH' || shop.plan === 'PRO') &&
+    customer.totalVisits >= (shop.googleReviewMinVisits ?? 3)
+  )
+
+  return NextResponse.json({
+    pointsEarned: WELCOME,
+    isNew: true,
+    customerCode: customer.code,
+    referralCode: myReferralCode,
+    googleReviewUrl: showGoogleReview ? shop.googleReviewUrl : null,
+  })
 }
