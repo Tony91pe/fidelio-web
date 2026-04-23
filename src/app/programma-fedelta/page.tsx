@@ -80,10 +80,10 @@ const jsonLd = {
   ],
 }
 
-const CTA = ({ label = 'Inizia gratis per 14 giorni →', ref: refParam = 'pillar' }: { label?: string; ref?: string }) => (
+const CTA = ({ label = 'Inizia gratis per 14 giorni →', utmRef = 'pillar' }: { label?: string; utmRef?: string }) => (
   <div style={{ textAlign: 'center', margin: '2.5rem 0' }}>
     <Link
-      href={`/register?ref=${refParam}`}
+      href={`/register?ref=${utmRef}`}
       style={{ display: 'inline-block', background: 'linear-gradient(135deg,#6C3DF4,#8B5CF6)', color: 'white', padding: '14px 36px', borderRadius: '100px', fontWeight: '700', textDecoration: 'none', fontSize: '1rem', boxShadow: '0 0 32px rgba(108,61,244,0.35)' }}
     >
       {label}
@@ -215,7 +215,7 @@ export default async function PillarPage() {
           I programmi fedeltà digitali funzionano perché sfruttano due meccanismi psicologici potenti: il <strong style={{ color: 'white' }}>completion bias</strong> (il cervello vuole completare ciò che ha iniziato — i punti accumulati "devono" essere usati) e il <strong style={{ color: 'white' }}>sunk cost</strong> (ho già investito 8 visite, non cambio negozio ora).
         </p>
 
-        <CTA label="Attiva il tuo programma fedeltà →" ref="pillar-s2" />
+        <CTA label="Attiva il tuo programma fedeltà →" utmRef="pillar-s2" />
 
         {/* --- SEZIONE 3 --- */}
         <h2 id="tipi" style={{ fontSize: '1.6rem', fontWeight: '800', marginBottom: '1rem', scrollMarginTop: '5rem' }}>
@@ -338,7 +338,7 @@ export default async function PillarPage() {
           </div>
         ))}
 
-        <CTA label="Scegli il tuo piano e inizia →" ref="pillar-s5" />
+        <CTA label="Scegli il tuo piano e inizia →" utmRef="pillar-s5" />
 
         {/* --- SEZIONE 6 --- */}
         <h2 id="errori" style={{ fontSize: '1.6rem', fontWeight: '800', margin: '2.5rem 0 1rem', scrollMarginTop: '5rem' }}>
@@ -426,7 +426,7 @@ export default async function PillarPage() {
           ))}
         </div>
 
-        <CTA label="Inizia gratis — nessuna carta richiesta →" ref="pillar-s8" />
+        <CTA label="Inizia gratis — nessuna carta richiesta →" utmRef="pillar-s8" />
 
         {/* --- SEZIONE FAQ --- */}
         <h2 id="faq" style={{ fontSize: '1.6rem', fontWeight: '800', margin: '2.5rem 0 1.25rem', scrollMarginTop: '5rem' }}>
