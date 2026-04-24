@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState, useRef, useMemo } from 'react'
+import { useEffect, useState, useRef, useMemo, useCallback } from 'react'
 
 const CATEGORIES = ['bar', 'ristorante', 'pizzeria', 'parrucchiere', 'estetista', 'palestra', 'negozio', 'farmacia', 'supermercato', 'other']
 const PLANS = ['STARTER', 'GROWTH', 'PRO']
@@ -188,6 +188,12 @@ export default function AdminShops() {
   })
   const [logoUploading, setLogoUploading] = useState(false)
   const [deleteModal, setDeleteModal] = useState<{ id: string; name: string; customers: number } | null>(null)
+  const [copied, setCopied] = useState<string | null>(null)
+  const copyId = useCallback((id: string) => {
+    navigator.clipboard.writeText(id)
+    setCopied(id)
+    setTimeout(() => setCopied(null), 1500)
+  }, [])
 
   async function load() {
     const r = await fetch('/api/admin')
@@ -379,7 +385,7 @@ export default function AdminShops() {
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.83rem' }}>
           <thead>
             <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.1)' }}>
-              {['Nome', 'Email proprietario', 'Città', 'Piano', 'Clienti', 'Stato', 'Approvato', 'Registrato', 'Scadenza', 'Azioni'].map(h => (
+              {['ID', 'Nome', 'Email proprietario', 'Città', 'Piano', 'Clienti', 'Stato', 'Approvato', 'Registrato', 'Scadenza', 'Azioni'].map(h => (
                 <th key={h} style={{ textAlign: 'left', padding: '0.75rem 1rem', color: 'rgba(255,255,255,0.4)', fontWeight: 600, fontSize: '0.72rem', textTransform: 'uppercase', whiteSpace: 'nowrap' }}>{h}</th>
               ))}
             </tr>
@@ -387,6 +393,19 @@ export default function AdminShops() {
           <tbody>
             {filtered.map(shop => (
               <tr key={shop.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.05)', opacity: shop.suspended ? 0.55 : 1 }}>
+                <td style={{ padding: '0.75rem 1rem', whiteSpace: 'nowrap' }}>
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                    <code style={{ fontSize: '0.7rem', color: '#a78bfa', background: 'rgba(167,139,250,0.1)', padding: '2px 6px', borderRadius: 4 }}>
+                      {shop.id.slice(0, 8)}…
+                    </code>
+                    <button
+                      onClick={() => copyId(shop.id)}
+                      title={shop.id}
+                      style={{ background: 'none', border: 'none', cursor: 'pointer', color: copied === shop.id ? '#10b981' : 'rgba(255,255,255,0.3)', fontSize: '0.75rem', padding: '2px 4px' }}>
+                      {copied === shop.id ? '✓' : '⎘'}
+                    </button>
+                  </div>
+                </td>
                 <td style={{ padding: '0.75rem 1rem', fontWeight: 600, whiteSpace: 'nowrap' }}>{shop.name}</td>
                 <td style={{ padding: '0.75rem 1rem', color: 'rgba(255,255,255,0.45)', fontSize: '0.78rem' }}>{shop.ownerEmail ?? '—'}</td>
                 <td style={{ padding: '0.75rem 1rem', color: 'rgba(255,255,255,0.5)' }}>{shop.city}</td>
@@ -419,7 +438,7 @@ export default function AdminShops() {
               </tr>
             ))}
             {filtered.length === 0 && (
-              <tr><td colSpan={10} style={{ padding: '3rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)' }}>Nessun negozio trovato</td></tr>
+              <tr><td colSpan={11} style={{ padding: '3rem', textAlign: 'center', color: 'rgba(255,255,255,0.2)' }}>Nessun negozio trovato</td></tr>
             )}
           </tbody>
         </table>
