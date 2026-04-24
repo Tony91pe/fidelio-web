@@ -1,5 +1,5 @@
 'use client'
-import { useEffect, useState } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 
 function isUnpaid(shop: any): boolean {
   const hasSubscription = !!shop.lsSubscriptionId
@@ -63,6 +63,13 @@ export default function AdminDashboard() {
       setEmailLoading(null)
     }
   }
+
+  const [copied, setCopied] = useState<string | null>(null)
+  const copyId = useCallback((id: string) => {
+    navigator.clipboard.writeText(id)
+    setCopied(id)
+    setTimeout(() => setCopied(null), 1500)
+  }, [])
 
   const mrr = data?.shops?.reduce((acc: number, s: any) => {
     if (!isUnpaid(s)) {
@@ -177,6 +184,65 @@ export default function AdminDashboard() {
             <div style={{ fontSize: '0.72rem', color: 'rgba(255,255,255,0.4)', marginTop: '0.2rem' }}>{stat.label}</div>
           </div>
         ))}
+      </div>
+
+      {/* Tabella negozi */}
+      <div style={{ marginTop: '2rem' }}>
+        <h2 style={{ fontSize: '1rem', fontWeight: 700, marginBottom: '1rem', color: 'rgba(255,255,255,0.7)' }}>Tutti i negozi</h2>
+        <div style={{ overflowX: 'auto' }}>
+          <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '0.8rem' }}>
+            <thead>
+              <tr style={{ borderBottom: '1px solid rgba(255,255,255,0.08)' }}>
+                {['ID', 'Nome', 'Città', 'Piano', 'Stato', 'LS Sub ID', 'Clienti', 'Creato'].map(h => (
+                  <th key={h} style={{ padding: '0.5rem 0.75rem', textAlign: 'left', color: 'rgba(255,255,255,0.35)', fontWeight: 600, whiteSpace: 'nowrap' }}>{h}</th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {data?.shops?.map((shop: any) => (
+                <tr key={shop.id} style={{ borderBottom: '1px solid rgba(255,255,255,0.04)' }}>
+                  <td style={{ padding: '0.5rem 0.75rem', whiteSpace: 'nowrap' }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                      <code style={{ fontSize: '0.7rem', color: '#a78bfa', background: 'rgba(167,139,250,0.1)', padding: '2px 6px', borderRadius: 4 }}>
+                        {shop.id.slice(0, 8)}…
+                      </code>
+                      <button
+                        onClick={() => copyId(shop.id)}
+                        title={shop.id}
+                        style={{ background: 'none', border: 'none', cursor: 'pointer', color: copied === shop.id ? '#10b981' : 'rgba(255,255,255,0.3)', fontSize: '0.75rem', padding: '2px 4px' }}>
+                        {copied === shop.id ? '✓' : '⎘'}
+                      </button>
+                    </div>
+                  </td>
+                  <td style={{ padding: '0.5rem 0.75rem', fontWeight: 600, color: 'white', whiteSpace: 'nowrap' }}>{shop.name}</td>
+                  <td style={{ padding: '0.5rem 0.75rem', color: 'rgba(255,255,255,0.4)', whiteSpace: 'nowrap' }}>{shop.city}</td>
+                  <td style={{ padding: '0.5rem 0.75rem', whiteSpace: 'nowrap' }}>
+                    <span style={{
+                      padding: '2px 8px', borderRadius: 100, fontSize: '0.7rem', fontWeight: 700,
+                      background: shop.plan === 'PRO' ? 'rgba(251,191,36,0.15)' : shop.plan === 'GROWTH' ? 'rgba(108,61,244,0.2)' : 'rgba(255,255,255,0.06)',
+                      color: shop.plan === 'PRO' ? '#fbbf24' : shop.plan === 'GROWTH' ? '#a78bfa' : 'rgba(255,255,255,0.4)',
+                    }}>{shop.plan}</span>
+                  </td>
+                  <td style={{ padding: '0.5rem 0.75rem', whiteSpace: 'nowrap' }}>
+                    <span style={{ fontSize: '0.7rem', color: shop.approved ? (shop.suspended ? '#ef4444' : '#10b981') : '#f59e0b' }}>
+                      {shop.suspended ? '🔴 Sospeso' : shop.approved ? '🟢 Attivo' : '🟡 In attesa'}
+                    </span>
+                  </td>
+                  <td style={{ padding: '0.5rem 0.75rem', whiteSpace: 'nowrap' }}>
+                    {shop.lsSubscriptionId
+                      ? <code style={{ fontSize: '0.68rem', color: '#10b981', background: 'rgba(16,185,129,0.1)', padding: '2px 6px', borderRadius: 4 }}>{String(shop.lsSubscriptionId).slice(0, 10)}…</code>
+                      : <span style={{ color: 'rgba(255,255,255,0.2)', fontSize: '0.7rem' }}>—</span>
+                    }
+                  </td>
+                  <td style={{ padding: '0.5rem 0.75rem', color: 'rgba(255,255,255,0.5)', textAlign: 'center' }}>{shop._count?.customers ?? 0}</td>
+                  <td style={{ padding: '0.5rem 0.75rem', color: 'rgba(255,255,255,0.3)', whiteSpace: 'nowrap' }}>
+                    {new Date(shop.createdAt).toLocaleDateString('it-IT')}
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   )
