@@ -59,3 +59,14 @@ It is built with **Next.js 14** and optimized for performance, SEO, and fast loa
 ```bash
 npm install
 npm run dev
+
+## 📄 License
+
+Private project — all rights reserved.
+
+---
+
+## 👤 Author
+
+**Antonio**  
+Founder of **Fidelio**
