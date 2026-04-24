@@ -29,6 +29,9 @@ export async function GET() {
     woocommerceWebhookSecret: process.env.WOOCOMMERCE_WEBHOOK_SECRET ?? '',
     prestashopWebhookUrl: 'https://www.getfidelio.app/api/webhooks/prestashop',
     prestashopWebhookSecret: process.env.PRESTASHOP_WEBHOOK_SECRET ?? '',
+    shopifyWebhookUrl: 'https://www.getfidelio.app/api/webhooks/shopify',
+    squareWebhookUrl: 'https://www.getfidelio.app/api/webhooks/square',
+    customerPortalUrl: 'https://www.getfidelio.app/c/',
     widgetSnippet,
   })
 }

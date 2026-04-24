@@ -7,6 +7,9 @@ type IntegrationData = {
   woocommerceWebhookSecret: string
   prestashopWebhookUrl: string
   prestashopWebhookSecret: string
+  shopifyWebhookUrl: string
+  squareWebhookUrl: string
+  customerPortalUrl: string
   widgetSnippet: string
   pointsPerEuro: number
   website: string | null
@@ -148,6 +151,76 @@ export default function IntegrationsPage() {
                   <li key={i} style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', lineHeight: '1.5' }}>{s}</li>
                 ))}
               </ol>
+            </div>
+          </>
+        )}
+      </Section>
+
+      {/* Shopify */}
+      <Section title="Shopify" icon="🛍️" locked={!isGrowth}>
+        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.88rem', lineHeight: '1.65', marginBottom: '1.25rem' }}>
+          Assegna punti automaticamente quando un cliente completa un acquisto sul tuo store Shopify.
+        </p>
+        {data && (
+          <>
+            <CopyBox label="URL Webhook da inserire in Shopify" value={data.shopifyWebhookUrl} />
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '1rem', marginTop: '0.5rem' }}>
+              <p style={{ fontSize: '0.82rem', fontWeight: '700', color: 'white', marginBottom: '0.6rem' }}>📋 Istruzioni Shopify:</p>
+              <ol style={{ paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                {[
+                  'Vai su Shopify Admin → Impostazioni → Notifiche → Webhook',
+                  'Clicca "Crea webhook"',
+                  'Evento: Pagamento ordine | Formato: JSON',
+                  'URL: incolla l\'URL sopra',
+                  'Salva il webhook',
+                  'Assicurati che il dominio myshopify.com sia nel campo "Sito web" delle impostazioni Fidelio',
+                ].map((s, i) => (
+                  <li key={i} style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', lineHeight: '1.5' }}>{s}</li>
+                ))}
+              </ol>
+            </div>
+          </>
+        )}
+      </Section>
+
+      {/* Square */}
+      <Section title="Square POS" icon="🟦" locked={!isGrowth}>
+        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.88rem', lineHeight: '1.65', marginBottom: '1.25rem' }}>
+          Integra il tuo terminale Square per assegnare punti ad ogni pagamento completato in negozio o online.
+        </p>
+        {data && (
+          <>
+            <CopyBox label="URL Webhook Square" value={data.squareWebhookUrl} />
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.07)', borderRadius: '10px', padding: '1rem', marginTop: '0.5rem' }}>
+              <p style={{ fontSize: '0.82rem', fontWeight: '700', color: 'white', marginBottom: '0.6rem' }}>📋 Istruzioni Square:</p>
+              <ol style={{ paddingLeft: '1.2rem', display: 'flex', flexDirection: 'column', gap: '0.4rem' }}>
+                {[
+                  'Vai su Square Developer Dashboard → Applicazioni',
+                  'Seleziona la tua app → Webhook → Aggiungi endpoint',
+                  'URL: incolla l\'URL sopra',
+                  'Evento: payment.completed',
+                  'Copia il "Signature Key" e inseriscilo come SQUARE_WEBHOOK_SECRET nelle variabili Fidelio (contatta il supporto)',
+                ].map((s, i) => (
+                  <li key={i} style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', lineHeight: '1.5' }}>{s}</li>
+                ))}
+              </ol>
+            </div>
+          </>
+        )}
+      </Section>
+
+      {/* Portale Cliente */}
+      <Section title="Portale Cliente (Card digitale)" icon="🎴">
+        <p style={{ color: 'rgba(255,255,255,0.55)', fontSize: '0.88rem', lineHeight: '1.65', marginBottom: '1.25rem' }}>
+          Ogni cliente ha una card digitale personale con punti, livello, premi e link referral. Accessibile via QR code o link diretto.
+        </p>
+        {data && (
+          <>
+            <CopyBox label="URL base portale clienti" value={data.customerPortalUrl + '{codice_cliente}'} />
+            <div style={{ background: 'rgba(108,61,244,0.08)', border: '1px solid rgba(108,61,244,0.2)', borderRadius: '10px', padding: '0.75rem 1rem', marginTop: '0.5rem' }}>
+              <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.5)', lineHeight: '1.6' }}>
+                💡 Il codice cliente si trova nella sezione <strong style={{ color: 'white' }}>Clienti</strong>. Ogni cliente ha il proprio QR code che punta automaticamente alla sua card personale con il tuo logo e colori.
+              </p>
             </div>
           </>
         )}
