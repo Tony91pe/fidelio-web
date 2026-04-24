@@ -68,9 +68,9 @@ export default function Sidebar() {
       <aside className="hidden md:flex w-60 min-h-screen bg-white/3 border-r border-white/6 flex-col p-4">
         <Link href="/" className="flex items-center gap-2.5 px-3 mb-6">
           <div className="w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm flex-shrink-0" style={{ background: 'linear-gradient(135deg, #7C3AED, #3B82F6)', boxShadow: '0 4px 12px rgba(124,58,237,0.4)' }}>F</div>
-          <div className="flex flex-col">
-            <span className="text-xl font-bold leading-tight">Fidelio</span>
-            <span className="text-[9px] font-semibold tracking-widest uppercase" style={{ color: 'rgba(167,139,250,0.6)', letterSpacing: '0.12em' }}>Fedeltà Digitale · Made in Italy</span>
+          <div style={{ display: 'flex', flexDirection: 'column' }}>
+            <span className="text-xl font-bold" style={{ lineHeight: 1.1 }}>Fidelio</span>
+            <span style={{ fontSize: '9px', fontWeight: 600, letterSpacing: '0.1em', textTransform: 'uppercase', color: 'rgba(167,139,250,0.6)' }}>Fedeltà Digitale · Made in Italy</span>
           </div>
         </Link>
         <div className="bg-[#6C3DF4]/10 border border-[#6C3DF4]/20 rounded-xl px-3 py-2 mb-6">
