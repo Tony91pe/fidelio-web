@@ -20,7 +20,7 @@ const RATE_LIMITS: Record<string, { max: number; windowMs: number }> = {
   '/api/checkin':                        { max: 30, windowMs: 60_000 },
   '/api/shop/auth/send-otp':             { max: 3,  windowMs: 60_000 },
   '/api/shop/checkin':                   { max: 30, windowMs: 60_000 },
-  '/api/paddle/webhook':                 { max: 20, windowMs: 60_000 },
+  '/api/lemonsqueezy/webhook':           { max: 20, windowMs: 60_000 },
   '/api/webhooks/woocommerce':           { max: 20, windowMs: 60_000 },
   '/api/dashboard/customers/export':     { max: 5,  windowMs: 60_000 },
   '/api/shop/export':                    { max: 5,  windowMs: 60_000 },

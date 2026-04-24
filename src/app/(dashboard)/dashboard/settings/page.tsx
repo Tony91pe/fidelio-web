@@ -424,7 +424,7 @@ function CancelSubscriptionSection() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    fetch('/api/paddle/cancel').then(r => r.json()).then(d => {
+    fetch('/api/lemonsqueezy/subscription').then(r => r.json()).then(d => {
       setPlan(d.plan ?? 'STARTER')
       setBillingPortalUrl(d.billingPortalUrl ?? null)
     }).finally(() => setLoading(false))

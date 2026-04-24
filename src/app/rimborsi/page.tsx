@@ -30,8 +30,8 @@ export default function RimborsiPage() {
           content: 'Puoi cancellare il tuo abbonamento in qualsiasi momento dalla sezione "Upgrade" del tuo dashboard. La cancellazione è immediata e non verranno addebitati ulteriori importi. Non sono previsti rimborsi pro-rata per il periodo rimanente del mese in corso.'
         },
         {
-          title: '5. Pagamenti gestiti da Paddle',
-          content: 'I pagamenti sono processati da Paddle.com, che agisce come Merchant of Record. Le transazioni vengono gestite da Paddle nel rispetto delle normative internazionali sui pagamenti. In caso di dispute, Paddle può essere contattato direttamente all\'indirizzo paddle.com/legal.'
+          title: '5. Pagamenti gestiti da Lemon Squeezy',
+          content: 'I pagamenti sono processati da Lemon Squeezy (lemonsqueezy.com), che agisce come Merchant of Record. Le transazioni vengono gestite da Lemon Squeezy nel rispetto delle normative internazionali sui pagamenti. In caso di dispute, Lemon Squeezy può essere contattato direttamente all\'indirizzo lemonsqueezy.com/help.'
         },
         {
           title: '6. Eccezioni',
