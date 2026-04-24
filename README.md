@@ -1,3 +1,52 @@
+## 🚀 Overview
+
+**Fidelio** is a modern loyalty platform designed for local shops.  
+Customers can collect points, redeem rewards, and explore nearby stores — all through a fast, installable **PWA** built with **Next.js 14**.
+
+The platform includes:
+
+- Customer PWA  
+- QR-based reward system  
+- Wallet with personal QR  
+- Map with nearby shops  
+- Rewards & gift cards  
+- Email OTP authentication  
+
+---
+
+## ✨ Features
+
+- **Email OTP login** (no password required)  
+- **QR code scanner** for point collection  
+- **Customer wallet** with personal QR  
+- **Rewards & gift cards**  
+- **Interactive map** with Leaflet  
+- **Offline-ready PWA**  
+- **Fast UI** with Tailwind CSS  
+- **State management** with Zustand  
+- **Data fetching** with React Query  
+
+---
+
+## 🧱 Tech Stack
+
+- **Next.js 14 (App Router)**
+- **React 18**
+- **TypeScript**
+- **Tailwind CSS**
+- **Zustand**
+- **React Query**
+- **next-pwa**
+- **Leaflet**
+- **jsQR**
+
+---
+
+## 🌐 Live Website
+
+👉 **https://getfidelio.com**
+
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
