@@ -90,7 +90,7 @@ export default async function LandingPage() {
       <nav style={{ position: 'fixed', top: 0, left: 0, right: 0, zIndex: 100, background: 'rgba(13,13,26,0.88)', backdropFilter: 'blur(20px)', borderBottom: '1px solid rgba(255,255,255,0.07)', display: 'flex', alignItems: 'center', justifyContent: 'center', padding: '1rem 2rem', overflow: 'hidden' }}>
         {/* marginRight negativo compensa l'overflow DOM invisibile causato da transformOrigin:left sul scale */}
         <a href="/" style={{ textDecoration: 'none', display: 'block', flexShrink: 0, marginRight: '-100px' }}>
-          <FidelioLogo size="sm" tagline={false} animate={true} />
+          <FidelioLogo size="sm" tagline={true} animate={true} />
         </a>
       </nav>
 
