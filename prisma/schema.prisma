@@ -273,6 +273,18 @@ enum CommissionType {
   ONE_TIME
 }
 
+model NpsResponse {
+  id         String   @id @default(cuid())
+  score      Int
+  feedback   String?
+  shopId     String
+  customerId String?
+  createdAt  DateTime @default(now())
+
+  @@index([shopId])
+  @@index([createdAt])
+}
+
 model Log {
   id        String   @id @default(cuid())
   eventType String

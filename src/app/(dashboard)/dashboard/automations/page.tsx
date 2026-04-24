@@ -67,17 +67,22 @@ function AutoCard({ icon, label, desc, active, onToggle, badge, note }: {
   )
 }
 
+type NpsData = { total: number; avg: number | null; nps: number | null; responses: { score: number; feedback: string | null; createdAt: string }[] }
+
 export default function AutomationsPage() {
   const [settings, setSettings] = useState<Settings | null>(null)
   const [winbackDays, setWinbackDays] = useState(30)
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
+  const [nps, setNps] = useState<NpsData | null>(null)
 
   useEffect(() => {
     Promise.all([
       fetch('/api/shop/plan').then(r => r.json()),
       fetch('/api/shop/settings').then(r => r.json()),
-    ]).then(([planData, s]) => {
+      fetch('/api/shop/nps').then(r => r.json()),
+    ]).then(([planData, s, npsData]) => {
+      setNps(npsData)
       setSettings({
         plan: planData.plan,
         winbackDays: s.winbackDays ?? 30,
@@ -246,6 +251,53 @@ export default function AutomationsPage() {
           </a>
         </div>
       )}
+
+      {/* NPS Analytics */}
+      <div style={{ marginTop: '2.5rem' }}>
+        <p style={{ fontSize: '0.75rem', fontWeight: 700, color: 'rgba(255,255,255,0.35)', textTransform: 'uppercase', letterSpacing: '0.06em', marginBottom: '0.75rem' }}>
+          Soddisfazione clienti (NPS)
+        </p>
+        <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: 14, padding: '1.25rem' }}>
+          {!nps || nps.total === 0 ? (
+            <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '0.85rem', textAlign: 'center', padding: '1rem 0' }}>
+              Nessuna risposta ancora — le valutazioni appariranno qui dopo i check-in
+            </p>
+          ) : (
+            <>
+              <div style={{ display: 'flex', gap: '1.5rem', marginBottom: '1.25rem', flexWrap: 'wrap' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '2rem', fontWeight: 900, color: nps.nps! >= 50 ? '#10B981' : nps.nps! >= 0 ? '#F59E0B' : '#EF4444' }}>
+                    {nps.nps! > 0 ? '+' : ''}{nps.nps}
+                  </p>
+                  <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)' }}>NPS Score</p>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '2rem', fontWeight: 900, color: '#A78BFA' }}>{nps.avg}</p>
+                  <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)' }}>Media su 10</p>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <p style={{ fontSize: '2rem', fontWeight: 900, color: 'white' }}>{nps.total}</p>
+                  <p style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.35)' }}>Risposte totali</p>
+                </div>
+              </div>
+              {/* Ultimi feedback negativi */}
+              {nps.responses.filter(r => r.score <= 6 && r.feedback).length > 0 && (
+                <div>
+                  <p style={{ fontSize: '0.78rem', fontWeight: 700, color: 'rgba(255,255,255,0.5)', marginBottom: '0.5rem' }}>💬 Ultimi feedback da migliorare</p>
+                  <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem' }}>
+                    {nps.responses.filter(r => r.score <= 6 && r.feedback).slice(0, 3).map((r, i) => (
+                      <div key={i} style={{ background: 'rgba(239,68,68,0.07)', border: '1px solid rgba(239,68,68,0.15)', borderRadius: 10, padding: '0.6rem 0.9rem', display: 'flex', gap: '0.75rem', alignItems: 'flex-start' }}>
+                        <span style={{ fontSize: '0.75rem', fontWeight: 800, color: '#EF4444', flexShrink: 0, marginTop: 2 }}>{r.score}/10</span>
+                        <p style={{ fontSize: '0.82rem', color: 'rgba(255,255,255,0.6)', lineHeight: 1.5 }}>{r.feedback}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
+          )}
+        </div>
+      </div>
     </div>
   )
 }
