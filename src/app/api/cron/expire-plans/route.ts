@@ -14,7 +14,7 @@ export async function GET(req: Request) {
     where: {
       plan: { not: 'STARTER' },
       planExpiresAt: { lt: now },
-      paddleCustomerId: null, // solo chi non ha un abbonamento Paddle attivo
+      lsSubscriptionId: null, // solo chi non ha un abbonamento attivo
     },
     select: { id: true, plan: true, planExpiresAt: true, ownerEmail: true, name: true },
   })

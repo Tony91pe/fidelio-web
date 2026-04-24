@@ -2,9 +2,9 @@
 import { useEffect, useState } from 'react'
 
 function isUnpaid(shop: any): boolean {
-  const hasPaddle = !!shop.paddleCustomerId
+  const hasSubscription = !!shop.lsSubscriptionId
   const hasActiveTrial = shop.planExpiresAt && new Date(shop.planExpiresAt) > new Date()
-  return !hasPaddle && !hasActiveTrial
+  return !hasSubscription && !hasActiveTrial
 }
 
 type GiftState = { months: number; plan: string }
