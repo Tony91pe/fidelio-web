@@ -7,7 +7,7 @@ const isPublicRoute = createRouteMatcher([
   '/api/app/(.*)', '/api/customer/(.*)', '/api/checkin',
   '/api/scanner/(.*)', '/api/shops', '/api/webhooks/(.*)',
   '/api/unsubscribe', '/api/referral', '/api/cron/(.*)', '/api/testimonials',
-  '/api/shop/(.*)',
+  '/api/shop/(.*)', '/api/lemonsqueezy/webhook',
   '/status', '/sitemap.xml', '/opengraph-image',
 ])
 
