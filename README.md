@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="/public/logo.png" width="120" alt="Fidelio Logo" />
+  <img src="public/favicon.svg" width="120" alt="Fidelio Logo" />
 </p>
 
 <h1 align="center">Fidelio Web — Official Website</h1>
@@ -59,6 +59,9 @@ It is built with **Next.js 14** and optimized for performance, SEO, and fast loa
 ```bash
 npm install
 npm run dev
+```
+
+---
 
 ## 📄 License
 
