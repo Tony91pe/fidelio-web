@@ -1,30 +1,40 @@
-## 🚀 Overview
+<p align="center">
+  <img src="/public/logo.png" width="120" alt="Fidelio Logo" />
+</p>
 
-**Fidelio** is a modern loyalty platform designed for local shops.  
-Customers can collect points, redeem rewards, and explore nearby stores — all through a fast, installable **PWA** built with **Next.js 14**.
+<h1 align="center">Fidelio Web — Official Website</h1>
 
-The platform includes:
+<p align="center">
+  Marketing website for Fidelio, the loyalty platform for local shops.
+</p>
 
-- Customer PWA  
-- QR-based reward system  
-- Wallet with personal QR  
-- Map with nearby shops  
-- Rewards & gift cards  
-- Email OTP authentication  
+---
+
+## 🌐 Overview
+
+**Fidelio Web** is the official marketing website of **Fidelio**, a modern loyalty platform for local shops.
+
+The website presents:
+
+- Product features  
+- Pricing  
+- How Fidelio works  
+- Benefits for shop owners  
+- Contact & onboarding flow  
+
+It is built with **Next.js 14** and optimized for performance, SEO, and fast loading.
 
 ---
 
 ## ✨ Features
 
-- **Email OTP login** (no password required)  
-- **QR code scanner** for point collection  
-- **Customer wallet** with personal QR  
-- **Rewards & gift cards**  
-- **Interactive map** with Leaflet  
-- **Offline-ready PWA**  
-- **Fast UI** with Tailwind CSS  
-- **State management** with Zustand  
-- **Data fetching** with React Query  
+- Modern responsive UI  
+- SEO‑optimized pages  
+- Product sections (QR, points, rewards, gift cards)  
+- Pricing page  
+- Contact & onboarding CTA  
+- Fast static rendering  
+- Tailwind CSS design system  
 
 ---
 
@@ -34,11 +44,7 @@ The platform includes:
 - **React 18**
 - **TypeScript**
 - **Tailwind CSS**
-- **Zustand**
-- **React Query**
-- **next-pwa**
-- **Leaflet**
-- **jsQR**
+- **Vercel hosting**
 
 ---
 
@@ -46,40 +52,10 @@ The platform includes:
 
 👉 **https://getfidelio.com**
 
+---
 
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
-
-## Getting Started
-
-First, run the development server:
+## 📦 Development
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
