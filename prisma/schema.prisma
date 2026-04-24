@@ -21,8 +21,8 @@ model Shop {
   website     String?
   primaryColor String? @default("#7C3AED")
   plan        Plan     @default(STARTER)
-  paddleCustomerId     String?
-  paddleSubscriptionId String?
+  lsCustomerId         String?
+  lsSubscriptionId     String?
   billingPortalUrl     String?
   suspended   Boolean  @default(false)
   approved    Boolean  @default(false)

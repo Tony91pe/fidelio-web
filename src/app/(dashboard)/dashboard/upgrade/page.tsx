@@ -28,7 +28,7 @@ export default function UpgradePage() {
   async function handleUpgrade(planId: string) {
     setLoading(planId)
     try {
-      const res = await fetch('/api/paddle/checkout', {
+      const res = await fetch('/api/lemonsqueezy/checkout', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ plan: planId }),
