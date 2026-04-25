@@ -39,6 +39,8 @@ export default function AdminPage() {
   const [emailTarget, setEmailTarget] = useState<'all' | 'paying' | 'pending'>('all')
   const [emailSending, setEmailSending] = useState(false)
   const [emailDone, setEmailDone] = useState(false)
+  const [geocoding, setGeocoding] = useState(false)
+  const [geocodeResult, setGeocodeResult] = useState<{ updated: number; failed: number; total: number } | null>(null)
 
   async function load() {
     const r = await fetch('/api/admin')
@@ -71,6 +73,24 @@ export default function AdminPage() {
     await load()
     setSelected(null)
     setWorking(false)
+  }
+
+  async function runGeocoding() {
+    if (!confirm('Ricalcolare le coordinate GPS per tutti i negozi senza lat/lng? (1 negozio/sec, può richiedere qualche minuto)')) return
+    setGeocoding(true)
+    setGeocodeResult(null)
+    try {
+      const r = await fetch('/api/admin/shops/coordinates', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ geocodeAll: true }),
+      })
+      const res = await r.json()
+      setGeocodeResult({ updated: res.updated, failed: res.failed, total: res.total })
+    } catch {
+      setGeocodeResult({ updated: 0, failed: 1, total: 0 })
+    }
+    setGeocoding(false)
   }
 
   async function sendEmail() {
@@ -171,6 +191,9 @@ export default function AdminPage() {
           <a href="/admin/roadmap" style={{ background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)', color: 'rgba(255,255,255,0.6)', borderRadius: 8, padding: '6px 14px', fontSize: '0.8rem', fontWeight: 600, textDecoration: 'none' }}>
             🗺️ Roadmap
           </a>
+          <button onClick={runGeocoding} disabled={geocoding} style={{ background: geocodeResult ? 'rgba(16,185,129,0.2)' : 'rgba(255,255,255,0.06)', border: `1px solid ${geocodeResult ? 'rgba(16,185,129,0.4)' : 'rgba(255,255,255,0.1)'}`, color: geocodeResult ? '#10b981' : 'rgba(255,255,255,0.6)', borderRadius: 8, padding: '6px 14px', cursor: geocoding ? 'not-allowed' : 'pointer', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'inherit', opacity: geocoding ? 0.6 : 1 }}>
+            {geocoding ? '⏳ Geocoding...' : geocodeResult ? `✓ +${geocodeResult.updated} coordinate` : '📍 Ricalcola coordinate'}
+          </button>
           <button onClick={() => setEmailModal(true)} style={{ background: 'rgba(124,58,237,0.2)', border: '1px solid rgba(124,58,237,0.4)', color: '#a78bfa', borderRadius: 8, padding: '6px 14px', cursor: 'pointer', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'inherit' }}>
             ✉️ Invia Email
           </button>
