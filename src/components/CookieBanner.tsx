@@ -1,15 +1,30 @@
 'use client'
 
 import { useState, useEffect } from 'react'
+import { usePathname } from 'next/navigation'
 import Script from 'next/script'
 
 const GA_ID = 'G-C9T26YPYCH'
+
+declare global {
+  interface Window {
+    gtag?: (...args: unknown[]) => void
+    dataLayer?: unknown[]
+  }
+}
 
 export function CookieBanner() {
   const [show, setShow] = useState(false)
   const [analyticsEnabled, setAnalyticsEnabled] = useState(false)
   const [customizing, setCustomizing] = useState(false)
   const [analyticsToggle, setAnalyticsToggle] = useState(false)
+  const pathname = usePathname()
+
+  // Track SPA route changes
+  useEffect(() => {
+    if (!analyticsEnabled || !window.gtag) return
+    window.gtag('config', GA_ID, { page_path: pathname })
+  }, [pathname, analyticsEnabled])
 
   useEffect(() => {
     const consent = localStorage.getItem('cookie_consent')
