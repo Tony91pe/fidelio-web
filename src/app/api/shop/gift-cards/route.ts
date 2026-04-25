@@ -45,18 +45,17 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Le gift card richiedono il piano Growth o superiore.', planRequired: 'GROWTH', currentPlan: shop.plan }, { status: 403, headers: corsHeaders })
   }
 
-  const { value, description, customerEmail } = await req.json()
+  const { value, description, customerEmail, customerName: nameOverride, dedica } = await req.json()
 
   if (!value || value <= 0) {
     return NextResponse.json({ error: 'Valore non valido' }, { status: 400, headers: corsHeaders })
   }
 
-  // Genera codice univoco GC-XXXXXXXX
   const code = `GC-${randomBytes(4).toString('hex').toUpperCase()}`
 
-  // Cerca nome cliente se email fornita
-  let customerName: string | null = null
-  if (customerEmail) {
+  // Usa il nome fornito direttamente, oppure cercalo dall'email
+  let customerName: string | null = nameOverride || null
+  if (!customerName && customerEmail) {
     const customer = await db.customer.findFirst({
       where: { email: customerEmail, shopId: shop.id },
       select: { name: true },
@@ -72,6 +71,7 @@ export async function POST(req: Request) {
       description: description || null,
       customerEmail: customerEmail || null,
       customerName,
+      dedica: dedica || null,
       shopId: shop.id,
     },
   })
