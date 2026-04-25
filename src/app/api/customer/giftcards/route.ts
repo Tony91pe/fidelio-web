@@ -7,16 +7,15 @@ export async function GET(req: Request) {
   if (!email) return NextResponse.json({ error: 'Email richiesta' }, { status: 400 })
 
   const customers = await db.customer.findMany({ where: { email } })
-  if (!customers.length) return NextResponse.json([])
-
   const shopIds = customers.map((c) => c.shopId).filter((id): id is string => id !== null)
 
+  // Gift card esplicitamente assegnate a questa email (da qualsiasi negozio)
+  // oppure gift card generiche (senza email) dei negozi già visitati
   const giftCards = await db.giftCard.findMany({
     where: {
-      shopId: { in: shopIds },
       OR: [
         { customerEmail: email },
-        { customerEmail: null },
+        ...(shopIds.length > 0 ? [{ shopId: { in: shopIds }, customerEmail: null }] : []),
       ],
     },
     include: { shop: { select: { name: true, logo: true } } },

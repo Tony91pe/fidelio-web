@@ -34,7 +34,20 @@ export async function POST(req: Request) {
 
   await db.otpCode.deleteMany({ where: { email, type: 'shop' } })
 
-  const shop = await db.shop.findFirst({ where: { ownerEmail: email } })
+  // Cerca prima come owner, poi come staff
+  let shop = await db.shop.findFirst({ where: { ownerEmail: email } })
+  let role: string = 'owner'
+  let staffName: string | null = null
+
+  if (!shop) {
+    const staff = await db.staffMember.findFirst({ where: { email }, include: { shop: true } })
+    if (staff) {
+      shop = staff.shop
+      role = staff.role.toLowerCase()
+      staffName = staff.name
+    }
+  }
+
   if (!shop) {
     return NextResponse.json({ error: 'Negozio non trovato' }, { status: 404, headers: corsHeaders })
   }
@@ -42,7 +55,7 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Account sospeso. Contatta il supporto.' }, { status: 403, headers: corsHeaders })
   }
 
-  const token = jwt.sign({ shopId: shop.id, email }, JWT_SECRET, { expiresIn: '30d' })
+  const token = jwt.sign({ shopId: shop.id, email, role }, JWT_SECRET, { expiresIn: '30d' })
 
   return NextResponse.json({
     token,
@@ -50,8 +63,8 @@ export async function POST(req: Request) {
       id: shop.ownerId,
       shopId: shop.id,
       email,
-      name: shop.name,
-      role: 'owner',
+      name: staffName ?? shop.name,
+      role,
     },
     shop: {
       id: shop.id,

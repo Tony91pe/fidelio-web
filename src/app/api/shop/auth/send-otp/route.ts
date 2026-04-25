@@ -16,9 +16,10 @@ export async function POST(req: Request) {
     return NextResponse.json({ error: 'Email non valida' }, { status: 400, headers: corsHeaders })
   }
 
-  // Verifica che l'email sia associata a un negozio
+  // Verifica che l'email sia associata a un negozio (owner o staff)
   const shop = await db.shop.findFirst({ where: { ownerEmail: email } })
-  if (!shop) {
+  const staffMember = shop ? null : await db.staffMember.findFirst({ where: { email } })
+  if (!shop && !staffMember) {
     return NextResponse.json(
       { error: 'Email non associata a nessun negozio Fidelio' },
       { status: 400, headers: corsHeaders }
