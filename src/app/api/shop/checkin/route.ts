@@ -57,6 +57,11 @@ export async function POST(req: Request) {
     note = 'Timbro PWA'
   }
 
+  // Aggiorna anche il record per-negozio (usato dalla PWA cliente)
+  const perShopCustomer = await db.customer.findFirst({
+    where: { email: customer.email, shopId: shop.id },
+  })
+
   await db.$transaction([
     db.visit.create({
       data: { points, customerId: customer.id, shopId: shop.id, amount: amount || null, note },
@@ -65,6 +70,22 @@ export async function POST(req: Request) {
       where: { id: customer.id },
       data: { points: { increment: points }, totalVisits: { increment: 1 }, lastVisitAt: new Date() },
     }),
+    ...(perShopCustomer
+      ? [db.customer.update({
+          where: { id: perShopCustomer.id },
+          data: { points: { increment: points }, totalVisits: { increment: 1 }, lastVisitAt: new Date() },
+        })]
+      : [db.customer.create({
+          data: {
+            email: customer.email,
+            name: customer.name,
+            shopId: shop.id,
+            points,
+            totalVisits: 1,
+            lastVisitAt: new Date(),
+          },
+        })]
+    ),
   ])
 
   const newPoints = customer.points + points

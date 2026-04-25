@@ -1,16 +1,19 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
+import { corsHeaders } from '@/lib/customerAuth'
+
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders })
+}
 
 export async function GET(req: Request) {
   const { searchParams } = new URL(req.url)
   const email = searchParams.get('email')
-  if (!email) return NextResponse.json({ error: 'Email richiesta' }, { status: 400 })
+  if (!email) return NextResponse.json({ error: 'Email richiesta' }, { status: 400, headers: corsHeaders })
 
   const customers = await db.customer.findMany({ where: { email } })
   const shopIds = customers.map((c) => c.shopId).filter((id): id is string => id !== null)
 
-  // Gift card esplicitamente assegnate a questa email (da qualsiasi negozio)
-  // oppure gift card generiche (senza email) dei negozi già visitati
   const giftCards = await db.giftCard.findMany({
     where: {
       OR: [
@@ -37,6 +40,7 @@ export async function GET(req: Request) {
       shopLogo: gc.shop?.logo ?? null,
       shopId: gc.shopId,
       createdAt: gc.createdAt,
-    }))
+    })),
+    { headers: corsHeaders }
   )
 }

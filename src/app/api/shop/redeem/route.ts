@@ -50,11 +50,23 @@ export async function POST(req: Request) {
 
   const newPoints = customer.points - pointsToDeduct
 
+  // Cerca il record per-negozio per aggiornare i punti visibili nella PWA cliente
+  const perShopCustomer = await db.customer.findFirst({
+    where: { email: customer.email, shopId: shop.id },
+  })
+
   await db.$transaction(async (tx) => {
     await tx.customer.update({
       where: { id: customer.id },
       data: { points: { decrement: pointsToDeduct } },
     })
+
+    if (perShopCustomer && perShopCustomer.points >= pointsToDeduct) {
+      await tx.customer.update({
+        where: { id: perShopCustomer.id },
+        data: { points: { decrement: pointsToDeduct } },
+      })
+    }
 
     if (rewardRecord) {
       await tx.redemption.create({
