@@ -17,13 +17,22 @@ export async function POST(req: Request) {
   }
 
   // Verifica che l'email sia associata a un negozio (owner o staff)
+  let shopName = 'Fidelio'
   const shop = await db.shop.findFirst({ where: { ownerEmail: email } })
-  const staffMember = shop ? null : await db.staffMember.findFirst({ where: { email } })
-  if (!shop && !staffMember) {
-    return NextResponse.json(
-      { error: 'Email non associata a nessun negozio Fidelio' },
-      { status: 400, headers: corsHeaders }
-    )
+  if (shop) {
+    shopName = shop.name
+  } else {
+    const staff = await db.staffMember.findFirst({
+      where: { email },
+      include: { shop: { select: { name: true } } },
+    })
+    if (!staff) {
+      return NextResponse.json(
+        { error: 'Email non associata a nessun negozio Fidelio' },
+        { status: 400, headers: corsHeaders }
+      )
+    }
+    shopName = staff.shop.name
   }
 
   const code = Math.floor(100000 + Math.random() * 900000).toString()
@@ -48,7 +57,7 @@ export async function POST(req: Request) {
             <h1 style="color: white; font-size: 28px; margin: 0 0 8px;">🏪 Fidelio</h1>
             <p style="color: rgba(255,255,255,0.85); margin: 0; font-size: 14px;">Portale Negozio</p>
           </div>
-          <h2 style="color: #1a1a2e; font-size: 20px; margin-bottom: 8px;">Accesso a ${shop.name}</h2>
+          <h2 style="color: #1a1a2e; font-size: 20px; margin-bottom: 8px;">Accesso a ${shopName}</h2>
           <p style="color: #666; font-size: 14px; margin-bottom: 24px;">Usa questo codice per accedere al portale del tuo negozio. Valido per 10 minuti.</p>
           <div style="background: #f0fdf4; border: 2px solid #10B981; border-radius: 12px; padding: 24px; text-align: center; margin-bottom: 24px;">
             <span style="font-family: monospace; font-size: 40px; font-weight: 900; letter-spacing: 8px; color: #10B981;">${code}</span>
