@@ -96,14 +96,14 @@ export async function POST(req: Request) {
     metadata: { points, totalPoints: newPoints, isFirstVisit, amount: amount || null },
   })
 
-  // Controlla se il cliente ha raggiunto la soglia per un premio
-  const rewardAvailable = newPoints >= shop.rewardThreshold
-
-  // Cerca il premio specifico più vicino
+  // Cerca il premio specifico raggiungibile (prima di calcolare rewardAvailable)
   const nextReward = await db.reward.findFirst({
     where: { shopId: shop.id, active: true, pointsCost: { lte: newPoints } },
     orderBy: { pointsCost: 'desc' },
   })
+
+  // Premio disponibile se ha un Reward specifico riscattabile O ha superato la soglia generale
+  const rewardAvailable = nextReward !== null || newPoints >= shop.rewardThreshold
 
   return NextResponse.json({
     customerName: customer.name,
@@ -112,7 +112,7 @@ export async function POST(req: Request) {
     totalPoints: newPoints,
     isFirstVisit,
     rewardAvailable,
-    rewardDescription: nextReward?.description || shop.rewardDescription,
+    rewardDescription: nextReward?.title || shop.rewardDescription,
     rewardThreshold: nextReward?.pointsCost || shop.rewardThreshold,
     rewardId: nextReward?.id || null,
     customerId: customer.id,
