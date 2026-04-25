@@ -96,11 +96,25 @@ export async function POST(req: Request) {
     metadata: { points, totalPoints: newPoints, isFirstVisit, amount: amount || null },
   })
 
+  // Controlla se il cliente ha raggiunto la soglia per un premio
+  const rewardAvailable = newPoints >= shop.rewardThreshold
+
+  // Cerca il premio specifico più vicino
+  const nextReward = await db.reward.findFirst({
+    where: { shopId: shop.id, active: true, pointsCost: { lte: newPoints } },
+    orderBy: { pointsCost: 'desc' },
+  })
+
   return NextResponse.json({
     customerName: customer.name,
     customerCode: customer.code,
     pointsAdded: points,
     totalPoints: newPoints,
     isFirstVisit,
+    rewardAvailable,
+    rewardDescription: nextReward?.description || shop.rewardDescription,
+    rewardThreshold: nextReward?.pointsCost || shop.rewardThreshold,
+    rewardId: nextReward?.id || null,
+    customerId: customer.id,
   }, { headers: corsHeaders })
 }
