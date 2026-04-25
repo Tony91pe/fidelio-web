@@ -61,10 +61,10 @@ export async function POST(req: Request) {
       data: { points: { decrement: pointsToDeduct } },
     })
 
-    if (perShopCustomer && perShopCustomer.points >= pointsToDeduct) {
+    if (perShopCustomer) {
       await tx.customer.update({
         where: { id: perShopCustomer.id },
-        data: { points: { decrement: pointsToDeduct } },
+        data: { points: Math.max(0, perShopCustomer.points - pointsToDeduct) },
       })
     }
 
