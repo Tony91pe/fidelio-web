@@ -7,6 +7,10 @@ const corsHeaders = {
   'Access-Control-Allow-Headers': 'Content-Type, Authorization',
 }
 
+export async function OPTIONS() {
+  return new NextResponse(null, { status: 200, headers: corsHeaders })
+}
+
 export async function GET(_: Request, { params }: { params: Promise<{ id: string }> }) {
   const { id } = await params
   const shop = await db.shop.findUnique({

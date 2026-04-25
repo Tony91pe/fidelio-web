@@ -42,6 +42,12 @@ export async function PATCH(req: Request) {
     }
   }
 
+  const effectiveName = name ?? shop.name
+  const effectiveAddress = address ?? shop.address
+  const effectiveCity = city ?? shop.city
+  const effectiveCategory = category ?? shop.category
+  const profileComplete = !!(effectiveName && effectiveAddress && effectiveCity && effectiveCategory)
+
   const updated = await db.shop.update({
     where: { id: shop.id },
     data: {
@@ -57,6 +63,7 @@ export async function PATCH(req: Request) {
       ...(pointsPerEuro !== undefined && { pointsPerEuro }),
       ...(welcomePoints !== undefined && { welcomePoints }),
       ...coordsUpdate,
+      ...(profileComplete && !shop.approved && { approved: true }),
     },
   })
 
