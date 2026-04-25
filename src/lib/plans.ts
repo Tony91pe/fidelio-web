@@ -72,6 +72,7 @@ export const FEATURES_BY_PLAN = {
     'integrations',
     'campaigns',
     'ai_insights',
+    'nps_analytics',
     'roles_advanced',
     'support_dedicated',
     'onboarding_assisted',

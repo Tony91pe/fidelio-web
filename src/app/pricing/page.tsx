@@ -21,7 +21,7 @@ const plans = [
   {
     name: 'Pro', price: '79', color: '#f97316', featured: false,
     cta: 'Inizia con Pro',
-    features: ['Tutto di Growth', 'Multi-negozio', 'Campagne marketing SMS', 'AI Insights predittivi', 'Export dati GDPR', 'Accesso API', 'Report settimanali automatici', 'Automazioni avanzate', 'Supporto dedicato', 'Onboarding assistito'],
+    features: ['Tutto di Growth', 'Multi-negozio', 'Campagne marketing SMS', 'AI Insights predittivi', 'NPS Analytics (soddisfazione clienti)', 'Export dati GDPR', 'Accesso API', 'Report settimanali automatici', 'Automazioni avanzate', 'Supporto dedicato', 'Onboarding assistito'],
   },
 ]
 
@@ -39,6 +39,7 @@ const compare = [
   { feature: 'Campagne SMS', starter: '—', growth: '—', pro: '✓' },
   { feature: 'Multi-negozio', starter: '—', growth: '—', pro: '✓' },
   { feature: 'AI Insights', starter: '—', growth: '—', pro: '✓' },
+  { feature: 'NPS Analytics', starter: '—', growth: '—', pro: '✓' },
   { feature: 'Accesso API', starter: '—', growth: '—', pro: '✓' },
 ]
 

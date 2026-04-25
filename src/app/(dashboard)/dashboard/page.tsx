@@ -33,15 +33,28 @@ export default async function DashboardPage() {
     </div>
   )
 
+  const isProPlan = shop.plan === 'PRO'
   const ago30 = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000)
-  const [total, active, atRisk, pts, rewardCount, customerCount] = await Promise.all([
+  const [total, active, atRisk, pts, rewardCount, customerCount, npsResponses] = await Promise.all([
     db.customer.count({ where: { shopId: shop.id } }),
     db.customer.count({ where: { shopId: shop.id, lastVisitAt: { gte: ago30 } } }),
     db.customer.count({ where: { shopId: shop.id, lastVisitAt: { lt: ago30, not: null } } }),
     db.visit.aggregate({ where: { shopId: shop.id }, _sum: { points: true } }),
     db.reward.count({ where: { shopId: shop.id, active: true } }),
     db.customer.count({ where: { shopId: shop.id } }),
+    isProPlan
+      ? db.npsResponse.findMany({ where: { shopId: shop.id }, select: { score: true }, take: 200 })
+      : Promise.resolve(null),
   ])
+
+  let npsScore: number | null = null
+  let npsAvg: number | null = null
+  if (npsResponses && npsResponses.length > 0) {
+    const promoters = npsResponses.filter(r => r.score >= 9).length
+    const detractors = npsResponses.filter(r => r.score <= 6).length
+    npsScore = Math.round(((promoters - detractors) / npsResponses.length) * 100)
+    npsAvg = +(npsResponses.reduce((s, r) => s + r.score, 0) / npsResponses.length).toFixed(1)
+  }
 
   // Checklist onboarding
   const onboardingSteps = [
@@ -128,6 +141,48 @@ export default async function DashboardPage() {
           </Link>
         ))}
       </div>
+
+      {/* NPS widget — solo PRO */}
+      {isProPlan && npsResponses !== null && (
+        <div style={{ marginBottom: '1.5rem' }}>
+          {npsResponses.length === 0 ? (
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.2rem 1.5rem', display: 'flex', alignItems: 'center', gap: '1rem' }}>
+              <span style={{ fontSize: '1.4rem' }}>⭐</span>
+              <div>
+                <div style={{ fontWeight: '700', fontSize: '0.9rem' }}>Soddisfazione clienti</div>
+                <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.8rem' }}>Nessuna risposta NPS ancora — i clienti vengono sondati al check-in</div>
+              </div>
+            </div>
+          ) : (
+            <div style={{ background: 'rgba(255,255,255,0.03)', border: '1px solid rgba(255,255,255,0.08)', borderRadius: '16px', padding: '1.2rem 1.5rem', display: 'flex', alignItems: 'center', gap: '2rem', flexWrap: 'wrap' }}>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+                <span style={{ fontSize: '1.4rem' }}>⭐</span>
+                <div>
+                  <div style={{ fontWeight: '700', fontSize: '0.9rem', marginBottom: '0.1rem' }}>Soddisfazione clienti</div>
+                  <div style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.75rem' }}>{npsResponses.length} risposte raccolte</div>
+                </div>
+              </div>
+              <div style={{ display: 'flex', gap: '2rem', flexWrap: 'wrap' }}>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>NPS Score</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: '800', color: npsScore! >= 50 ? '#10B981' : npsScore! >= 0 ? '#F59E0B' : '#EF4444', lineHeight: 1 }}>
+                    {npsScore! > 0 ? '+' : ''}{npsScore}
+                  </div>
+                </div>
+                <div style={{ textAlign: 'center' }}>
+                  <div style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)', marginBottom: '0.2rem', textTransform: 'uppercase', letterSpacing: '0.05em' }}>Media voto</div>
+                  <div style={{ fontSize: '1.6rem', fontWeight: '800', color: npsAvg! >= 8 ? '#10B981' : npsAvg! >= 6 ? '#F59E0B' : '#EF4444', lineHeight: 1 }}>
+                    {npsAvg}<span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.3)' }}>/10</span>
+                  </div>
+                </div>
+              </div>
+              <Link href="/dashboard/automations" style={{ marginLeft: 'auto', fontSize: '0.8rem', color: '#A78BFA', fontWeight: '700', textDecoration: 'none', whiteSpace: 'nowrap' }}>
+                Vedi dettagli →
+              </Link>
+            </div>
+          )}
+        </div>
+      )}
 
       {/* Alert clienti a rischio */}
       {atRisk > 0 && (
