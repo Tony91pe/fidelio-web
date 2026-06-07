@@ -71,11 +71,12 @@ export default function AdminDashboard() {
     setTimeout(() => setCopied(null), 1500)
   }, [])
 
-  const mrr = data?.shops?.reduce((acc: number, s: any) => {
+  // ARR: prezzi annuali (STARTER 39€/anno, GROWTH 79€/anno)
+  const arr = data?.shops?.reduce((acc: number, s: any) => {
     if (!isUnpaid(s)) {
-      if (s.plan === 'STARTER') return acc + 19
-      if (s.plan === 'GROWTH') return acc + 39
-      if (s.plan === 'PRO') return acc + 79
+      if (s.plan === 'STARTER') return acc + 39
+      if (s.plan === 'GROWTH') return acc + 79
+      if (s.plan === 'PRO') return acc + 99
     }
     return acc
   }, 0) ?? 0
@@ -83,7 +84,7 @@ export default function AdminDashboard() {
   const unpaidShops: any[] = data?.shops?.filter(isUnpaid) ?? []
 
   const stats = [
-    { label: 'MRR Reale', value: `€${mrr}`, icon: '💰', color: '#10b981' },
+    { label: 'ARR Reale', value: `€${arr}`, icon: '💰', color: '#10b981' },
     { label: 'Negozi totali', value: data?.shops?.length ?? '...', icon: '🏪', color: '#7c3aed' },
     { label: 'Abbonati attivi', value: data?.shops?.filter((s: any) => !isUnpaid(s) && s.plan !== 'STARTER').length ?? '...', icon: '⚡', color: '#f97316' },
     { label: 'In attesa approv.', value: data?.shops?.filter((s: any) => !s.approved).length ?? '...', icon: '⏳', color: '#f59e0b' },
