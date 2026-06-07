@@ -16,6 +16,7 @@ const menuItems = [
   { href: '/admin/map', label: 'Mappa', icon: '🗺️' },
   { href: '/admin/logs', label: 'Logs', icon: '📋' },
   { href: '/admin/security', label: 'Sicurezza', icon: '🔒' },
+  { href: '/admin/password-management', label: 'Reset Password', icon: '🔑' },
   { href: '/admin/legal', label: 'Legale', icon: '⚖️' },
   { href: '/admin/testimonials', label: 'Recensioni', icon: '⭐' },
   { href: '/admin/blog', label: 'Blog', icon: '📝' },
