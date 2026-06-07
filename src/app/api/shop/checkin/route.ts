@@ -79,6 +79,7 @@ export async function POST(req: Request) {
           data: {
             email: customer.email,
             name: customer.name,
+            birthday: customer.birthday ?? undefined,
             shopId: shop.id,
             points,
             totalVisits: 1,

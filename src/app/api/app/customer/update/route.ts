@@ -22,13 +22,23 @@ export async function POST(req: Request) {
     const payload = jwt.verify(auth, JWT_SECRET) as { customerId: string }
     const { name, birthday } = await req.json()
 
+    const updateData = {
+      ...(name && { name }),
+      ...(birthday && { birthday: new Date(birthday) }),
+    }
+
     const customer = await db.customer.update({
       where: { id: payload.customerId },
-      data: {
-        ...(name && { name }),
-        ...(birthday && { birthday: new Date(birthday) }),
-      }
+      data: updateData,
     })
+
+    // Propaga nome e birthday a tutti i record per-negozio dello stesso cliente
+    if (Object.keys(updateData).length > 0) {
+      await db.customer.updateMany({
+        where: { email: customer.email, shopId: { not: null } },
+        data: updateData,
+      })
+    }
 
     return NextResponse.json({ ok: true, customer }, { headers: corsHeaders })
   } catch {
