@@ -1,14 +1,8 @@
 import { NextResponse } from 'next/server'
-import { db } from '@/lib/db'
 import crypto from 'crypto'
-import { getCustomerFromToken } from '@/lib/customerAuth'
+import { db } from '@/lib/db'
+import { getCustomerFromRequest, corsHeaders } from '@/lib/customerAuth'
 import { logEvent } from '@/lib/logging'
-
-const corsHeaders = {
-  'Access-Control-Allow-Origin': '*',
-  'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
-  'Access-Control-Allow-Headers': 'Content-Type, Authorization',
-}
 
 async function hashPassword(password: string): Promise<string> {
   const salt = crypto.randomBytes(16).toString('hex')
@@ -25,10 +19,8 @@ export async function OPTIONS() {
 }
 
 export async function POST(req: Request) {
-  const payload = getCustomerFromToken(req)
-  if (!payload) {
-    return NextResponse.json({ error: 'Non autorizzato' }, { status: 401, headers: corsHeaders })
-  }
+  const result = await getCustomerFromRequest(req)
+  if (result.error) return result.error
 
   const body = await req.json().catch(() => null)
   if (!body?.password || typeof body.password !== 'string' || body.password.length < 8) {
@@ -37,16 +29,16 @@ export async function POST(req: Request) {
 
   const passwordHash = await hashPassword(body.password)
 
-  await db.customer.updateMany({
-    where: { email: payload.email },
+  await db.customer.update({
+    where: { id: result.customer.id },
     data: { passwordHash },
   })
 
   await logEvent({
     eventType: 'CUSTOMER_SET_PASSWORD',
-    customerId: payload.customerId,
-    action: `Password impostata per ${payload.email}`,
-    metadata: { email: payload.email },
+    customerId: result.customer.id,
+    action: `Password impostata per ${result.customer.email}`,
+    metadata: { email: result.customer.email },
   })
 
   return NextResponse.json({ success: true }, { headers: corsHeaders })
