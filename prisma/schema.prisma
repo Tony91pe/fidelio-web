@@ -84,6 +84,7 @@ model Customer {
   points       Int       @default(0)
   totalVisits  Int       @default(0)
   lastVisitAt  DateTime?
+  passwordHash String?
   unsubscribed Boolean   @default(false)
   pointsExpiresAt DateTime?
   referralCode String?   @unique
