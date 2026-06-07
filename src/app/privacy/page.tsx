@@ -26,7 +26,7 @@ export default function PrivacyPage() {
         <ul style={{ color: 'rgba(255,255,255,0.6)', lineHeight: '1.9', fontSize: '0.9rem', paddingLeft: '1.25rem' }}>
           <li>Nome, cognome e indirizzo e-mail (registrazione e autenticazione)</li>
           <li>Nome del negozio, indirizzo, settore merceologico</li>
-          <li>Dati di fatturazione gestiti da <strong>Paddle</strong> (Merchant of Record) — Fidelio non vede né memorizza dati di carta di credito</li>
+          <li>Dati di fatturazione gestiti da <strong>Lemon Squeezy</strong> (Merchant of Record) — Fidelio non vede né memorizza dati di carta di credito</li>
           <li>Log di accesso e dati tecnici (IP, browser, ora) per sicurezza e prevenzione frodi</li>
         </ul>
         <P>Basi giuridiche: <strong>esecuzione del contratto</strong> (art. 6.1.b GDPR) per fornire il servizio; <strong>legittimo interesse</strong> (art. 6.1.f GDPR) per sicurezza e prevenzione frodi; <strong>obbligo legale</strong> (art. 6.1.c GDPR) per conservazione fiscale.</P>
@@ -57,7 +57,7 @@ export default function PrivacyPage() {
               ['Neon Inc.', 'Database PostgreSQL', 'USA (SCC)'],
               ['Vercel Inc.', 'Hosting e CDN', 'USA (SCC)'],
               ['Resend Inc.', 'Invio e-mail transazionali', 'USA (SCC)'],
-              ['Paddle.com Market Ltd.', 'Pagamenti (Merchant of Record)', 'UK'],
+              ['Lemon Squeezy Inc.', 'Pagamenti (Merchant of Record)', 'USA (SCC)'],
               ['Sentry (Functional Software)', 'Monitoraggio errori', 'USA (SCC)'],
               ['Crisp IM SARL', 'Chat di supporto', 'Francia (UE)'],
               ['Google LLC', 'Analytics (solo con consenso)', 'USA (SCC)'],
@@ -109,7 +109,7 @@ export default function PrivacyPage() {
       </Section>
 
       <Section title="7. Sicurezza">
-        <P>Adottiamo misure tecniche e organizzative adeguate per proteggere i tuoi dati: connessioni cifrate (HTTPS/TLS), autenticazione sicura, accesso ai dati limitato al personale autorizzato, monitoraggio delle anomalie tramite Sentry. I pagamenti sono gestiti interamente da Paddle (PCI DSS Level 1) — Fidelio non vede né memorizza dati di carte di pagamento.</P>
+        <P>Adottiamo misure tecniche e organizzative adeguate per proteggere i tuoi dati: connessioni cifrate (HTTPS/TLS), autenticazione sicura, accesso ai dati limitato al personale autorizzato, monitoraggio delle anomalie tramite Sentry. I pagamenti sono gestiti interamente da Lemon Squeezy (Merchant of Record, PCI DSS Level 1) — Fidelio non vede né memorizza dati di carte di pagamento.</P>
       </Section>
 
       <Section title="8. Modifiche all'informativa">

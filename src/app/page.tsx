@@ -170,7 +170,11 @@ export default async function LandingPage() {
               )}
               <div style={{ fontWeight: '700', fontSize: '1.1rem', marginBottom: '0.3rem' }}>{p.name}</div>
               <div style={{ fontSize: '2.5rem', fontWeight: '800', marginBottom: '1.2rem' }}>
-                {p.price}<span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)' }}> euro/{p.period}</span>
+                {p.price !== null ? (
+                  <>{p.price}<span style={{ fontSize: '0.9rem', color: 'rgba(255,255,255,0.4)' }}> euro/{p.period} + IVA</span></>
+                ) : (
+                  <span style={{ fontSize: '1.8rem' }}>Su misura</span>
+                )}
               </div>
               <ul style={{ listStyle: 'none', padding: 0, marginBottom: '1.5rem' }}>
                 {p.features.map(f => (
@@ -179,9 +183,15 @@ export default async function LandingPage() {
                   </li>
                 ))}
               </ul>
-              <Link href="/register" style={{ display: 'block', background: '#6C3DF4', color: 'white', padding: '0.75rem', borderRadius: '10px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem', animation: 'ctaPulse 2s ease-in-out infinite' }}>
-                {p.cta}
-              </Link>
+              {p.price !== null ? (
+                <Link href="/register" style={{ display: 'block', background: '#6C3DF4', color: 'white', padding: '0.75rem', borderRadius: '10px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem', animation: 'ctaPulse 2s ease-in-out infinite' }}>
+                  {p.cta}
+                </Link>
+              ) : (
+                <a href="mailto:info@getfidelio.app?subject=Richiesta piano Pro" style={{ display: 'block', background: 'rgba(249,115,22,0.15)', border: '1px solid rgba(249,115,22,0.4)', color: '#F97316', padding: '0.75rem', borderRadius: '10px', textAlign: 'center', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem' }}>
+                  {p.cta}
+                </a>
+              )}
             </div>
           ))}
         </div>

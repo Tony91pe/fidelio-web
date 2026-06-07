@@ -6,8 +6,8 @@ export function generateTemporaryPassword(): string {
   return crypto.randomBytes(12).toString('hex')
 }
 
-export async function invalidateSessions(userId: string) {
-  console.log(`Invalidating sessions for user: ${userId}`)
+export async function invalidateSessions(_userId: string) {
+  // Clerk gestisce l'invalidazione sessioni lato server — placeholder per future implementazioni
 }
 
 export async function resetPassword(userId: string, adminUserId: string) {

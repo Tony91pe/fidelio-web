@@ -5,13 +5,19 @@ import Link from 'next/link'
 import VisitsChart from './VisitsChart'
 import AIInsights from './AIInsights'
 import { NotificationBell } from '@/components/dashboard/NotificationBell'
+import { ConversionTracker } from './ConversionTracker'
 
 const EMOJI: Record<string, string> = {
   bar: '☕', restaurant: '🍕', hair: '✂️', beauty: '💅',
   gym: '💪', bakery: '🍰', clothing: '👗', bio: '🌿', other: '🏪',
 }
 
-export default async function DashboardPage() {
+export default async function DashboardPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ upgraded?: string }>
+}) {
+  const { upgraded } = await searchParams
   const { userId } = await auth()
   if (!userId) redirect('/login')
   if (userId === process.env.ADMIN_USER_ID) redirect('/admin')
@@ -75,6 +81,7 @@ export default async function DashboardPage() {
 
   return (
     <div>
+      {upgraded && <ConversionTracker plan={shop.plan} />}
       {/* Header */}
       <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '1.5rem' }}>
         <div>

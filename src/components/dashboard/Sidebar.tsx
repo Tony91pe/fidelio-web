@@ -13,6 +13,7 @@ const navItems: NavItem[] = [
   { href: '/dashboard/scanner', icon: '📷', label: 'Timbra Cliente' },
   { href: '/dashboard/qr', icon: '📱', label: 'QR Code' },
   { href: '/dashboard/analytics', icon: '📈', label: 'Analytics', minPlan: 'GROWTH' },
+  { href: '/dashboard/nps', icon: '⭐', label: 'NPS & Feedback', minPlan: 'GROWTH' },
   { href: '/dashboard/giftcards', icon: '🎀', label: 'Carte Regalo', minPlan: 'GROWTH' },
   { href: '/dashboard/offers', icon: '🔥', label: 'Offerte', minPlan: 'GROWTH' },
   { href: '/dashboard/staff', icon: '👤', label: 'Staff', minPlan: 'GROWTH' },
@@ -36,6 +37,7 @@ const mobileMain: NavItem[] = [
 const mobileExtra: NavItem[] = [
   { href: '/dashboard/rewards', icon: '🎁', label: 'Premi' },
   { href: '/dashboard/qr', icon: '📱', label: 'QR Code' },
+  { href: '/dashboard/nps', icon: '⭐', label: 'NPS & Feedback', minPlan: 'GROWTH' },
   { href: '/dashboard/giftcards', icon: '🎀', label: 'Gift Card', minPlan: 'GROWTH' },
   { href: '/dashboard/offers', icon: '🔥', label: 'Offerte', minPlan: 'GROWTH' },
   { href: '/dashboard/staff', icon: '👤', label: 'Staff', minPlan: 'GROWTH' },

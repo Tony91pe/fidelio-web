@@ -43,13 +43,8 @@ export default function CheckinForm({ shopId, shopName, defaultRef }: { shopId:s
         setCustomerId(data.customerId ?? '')
         setMyReferralCode(data.referralCode ?? '')
         setIsNew(data.isNew)
-        // Se Google Reviews è abilitato → mostra NPS prima
-        if (data.googleReviewUrl) {
-          setGoogleReviewUrl(data.googleReviewUrl)
-          setStep('nps')
-        } else {
-          setStep('success')
-        }
+        setGoogleReviewUrl(data.googleReviewUrl ?? null)
+        setStep('nps')
       }
     } finally { setLoading(false) }
   }

@@ -148,7 +148,6 @@ test.describe('3 — Pricing', () => {
 
   test('3.2 prezzi corretti visualizzati', async ({ page }) => {
     await page.goto('/pricing')
-    await expect(page.getByText('19').first()).toBeVisible()
     await expect(page.getByText('39').first()).toBeVisible()
     await expect(page.getByText('79').first()).toBeVisible()
   })
@@ -222,7 +221,7 @@ test.describe('5 — Pagine legali', () => {
   test('5.2 termini di servizio in italiano', async ({ page }) => {
     await page.goto('/termini')
     await expect(page.getByRole('heading', { name: /termini di servizio/i })).toBeVisible()
-    await expect(page.getByText(/Paddle/i).first()).toBeVisible()
+    await expect(page.getByText(/Lemon Squeezy/i).first()).toBeVisible()
     await expect(page.getByText(/Pescara/i).first()).toBeVisible()
   })
 
@@ -235,7 +234,7 @@ test.describe('5 — Pagine legali', () => {
   test('5.4 rimborsi con garanzia 14 giorni', async ({ page }) => {
     await page.goto('/rimborsi')
     await expect(page.getByText(/14 giorni/i).first()).toBeVisible()
-    await expect(page.getByText(/Paddle/i).first()).toBeVisible()
+    await expect(page.getByText(/Lemon Squeezy/i).first()).toBeVisible()
   })
 })
 
@@ -435,8 +434,8 @@ test.describe('12 — Rate limiting', () => {
     expect(res.status()).toBe(429)
   })
 
-  test('12.2 Paddle webhook senza firma → 400/401', async ({ page }) => {
-    const res = await page.request.post('/api/paddle/webhook', {
+  test('12.2 LemonSqueezy webhook senza firma → 400/401', async ({ page }) => {
+    const res = await page.request.post('/api/lemonsqueezy/webhook', {
       data: { test: true }, headers: { 'Content-Type': 'application/json' }
     })
     expect([400, 401, 404]).toContain(res.status())
@@ -591,5 +590,44 @@ test.describe('16 — Errori e casi limite', () => {
     })
     const headers = res.headers()
     expect(headers['access-control-allow-origin']).toBeTruthy()
+  })
+})
+
+// ═══════════════════════════════════════════════════════════════════════════════
+// 17. GDPR E NUOVE FUNZIONALITÀ
+// ═══════════════════════════════════════════════════════════════════════════════
+
+test.describe('17 — GDPR e nuove funzionalità', () => {
+  test('17.1 DELETE /api/app/customer/me senza token → 401', async ({ page }) => {
+    const res = await page.request.delete('/api/app/customer/me')
+    expect(res.status()).toBe(401)
+  })
+
+  test('17.2 DELETE /api/app/customer/me con token falso → 401', async ({ page }) => {
+    const res = await page.request.delete('/api/app/customer/me', {
+      headers: { 'Authorization': 'Bearer token.falso.xyz' }
+    })
+    expect(res.status()).toBe(401)
+  })
+
+  test('17.3 GET /api/app/customer/me senza token → 401', async ({ page }) => {
+    const res = await page.request.get('/api/app/customer/me')
+    expect(res.status()).toBe(401)
+  })
+
+  test('17.4 dashboard/nps senza auth → redirect login', async ({ page }) => {
+    await page.goto('/dashboard/nps')
+    await expect(page).toHaveURL(/login|sign-in/i)
+  })
+
+  test('17.5 OPTIONS /api/app/customer/me → 200 (CORS preflight)', async ({ page }) => {
+    const res = await page.request.fetch('/api/app/customer/me', {
+      method: 'OPTIONS',
+      headers: {
+        'Origin': 'https://app.getfidelio.app',
+        'Access-Control-Request-Method': 'DELETE',
+      }
+    })
+    expect([200, 204]).toContain(res.status())
   })
 })

@@ -16,7 +16,7 @@ export default function TerminiPage() {
 
       <Section title="1. Accettazione dei termini">
         <P>Accedendo o utilizzando il servizio Fidelio («Servizio»), disponibile all'indirizzo <strong>getfidelio.app</strong>, dichiari di aver letto, compreso e accettato i presenti Termini di Servizio («Termini»). Se non accetti i Termini, non utilizzare il Servizio.</P>
-        <P>Il Servizio è fornito da <strong>Antonio Piersante</strong>, Via R. Rossetti, Pescara (PE), Italia («Fidelio», «noi»). I pagamenti e le fatture sono gestiti da <strong>Paddle.com Market Ltd.</strong> in qualità di Merchant of Record.</P>
+        <P>Il Servizio è fornito da <strong>Antonio Piersante</strong>, Via R. Rossetti, Pescara (PE), Italia («Fidelio», «noi»). I pagamenti e le fatture sono gestiti da <strong>Lemon Squeezy Inc.</strong> in qualità di Merchant of Record.</P>
       </Section>
 
       <Section title="2. Descrizione del servizio">
@@ -40,7 +40,7 @@ export default function TerminiPage() {
 
       <Section title="5. Piani, prezzi e pagamenti">
         <P>Il Servizio è disponibile nei piani <strong>STARTER</strong> (€39/anno + IVA), <strong>GROWTH</strong> (€79/anno + IVA) e <strong>PRO</strong> (prezzo su richiesta), con garanzia rimborso di 14 giorni.</P>
-        <P>I pagamenti sono elaborati da <strong>Paddle</strong>, che emette le fatture e gestisce l'IVA per conto di Fidelio. I prezzi includono IVA dove applicabile.</P>
+        <P>I pagamenti sono elaborati da <strong>Lemon Squeezy</strong>, che emette le fatture e gestisce l'IVA per conto di Fidelio. I prezzi sono indicati al netto di IVA dove applicabile.</P>
         <P>Gli abbonamenti si rinnovano automaticamente alla scadenza. Puoi disdire in qualsiasi momento dalla dashboard del tuo account o contattando il supporto.</P>
       </Section>
 

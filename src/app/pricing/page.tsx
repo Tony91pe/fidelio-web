@@ -171,7 +171,7 @@ export default function PricingPage() {
           { q: 'C\'è una prova gratuita?', a: 'Non abbiamo un piano gratuito, ma offriamo una garanzia rimborso di 14 giorni. Se non sei soddisfatto restituiamo tutto, senza domande.' },
           { q: 'Posso cambiare piano in qualsiasi momento?', a: 'Sì, puoi passare a un piano superiore o inferiore in qualsiasi momento dalla dashboard. Il credito del piano precedente viene scalato proporzionalmente.' },
           { q: 'I miei clienti devono scaricare un\'app?', a: 'No. I clienti inquadrano il QR con la fotocamera del telefono e si registrano in 10 secondi dal browser. Nessuna app da installare.' },
-          { q: 'Come vengono gestiti i pagamenti?', a: 'I pagamenti sono gestiti da Paddle, che si occupa di IVA, fatturazione e sicurezza. Accettiamo tutte le carte di credito principali.' },
+          { q: 'Come vengono gestiti i pagamenti?', a: 'I pagamenti sono gestiti da Lemon Squeezy (Merchant of Record), che si occupa di IVA, fatturazione e sicurezza. Accettiamo tutte le carte di credito principali.' },
           { q: 'Posso disdire quando voglio?', a: 'Sì. Nessun contratto, nessuna penale. Disdici dalla dashboard e il piano rimane attivo fino alla fine del periodo già pagato.' },
           { q: 'Quanti negozi posso gestire?', a: 'Starter e Growth gestiscono un singolo negozio. Con Pro puoi gestire più punti vendita da un\'unica dashboard centralizzata.' },
         ].map(item => (
