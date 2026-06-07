@@ -19,19 +19,19 @@ export const metadata: Metadata = {
 
 const plans = [
   {
-    name: 'STARTER', price: '19', period: 'mese',
+    name: 'STARTER', price: '39', period: 'anno',
     features: ['1 negozio', 'QR statico', 'Raccolta punti base', '1 premio attivo', 'Email automatiche base (benvenuto + punti)', 'Dashboard semplice', 'Storico clienti', 'Profilo negozio base', 'Branding Fidelio obbligatorio', 'Supporto via email'],
     cta: 'Abbonati', featured: false,
   },
   {
-    name: 'GROWTH', price: '39', period: 'mese',
+    name: 'GROWTH', price: '79', period: 'anno',
     features: ['Tutto di STARTER', 'QR dinamico', 'Anti-frode', 'Premi illimitati', 'Gift card', 'Email automatiche avanzate (compleanno, winback)', 'Statistiche giornaliere', 'Dashboard completa', 'Ruoli: commesso, manager, owner', 'Branding personalizzato (logo + colori)', 'Notifiche push Android', 'Segmentazione clienti base', 'Supporto prioritario'],
     cta: 'Abbonati', featured: true,
   },
   {
-    name: 'PRO', price: '79', period: 'mese',
+    name: 'PRO', price: null, period: null,
     features: ['Tutto di GROWTH', 'Multi-sede (multi-store)', 'Dashboard centralizzata', 'Ruoli avanzati e permessi granulari', 'Automazioni avanzate (trigger complessi)', 'API access', 'Reportistica avanzata', 'Supporto dedicato', 'Onboarding assistito'],
-    cta: 'Abbonati', featured: false,
+    cta: 'Richiedi', featured: false,
   },
 ]
 
@@ -44,9 +44,9 @@ const jsonLd = {
   url: 'https://www.getfidelio.app',
   description: 'Programma fedeltà digitale per negozi italiani con punti, QR code, email automatiche e AI.',
   offers: [
-    { '@type': 'Offer', name: 'STARTER', price: '19', priceCurrency: 'EUR', billingPeriod: 'P1M' },
-    { '@type': 'Offer', name: 'GROWTH', price: '39', priceCurrency: 'EUR', billingPeriod: 'P1M' },
-    { '@type': 'Offer', name: 'PRO', price: '79', priceCurrency: 'EUR', billingPeriod: 'P1M' },
+    { '@type': 'Offer', name: 'STARTER', price: '39', priceCurrency: 'EUR', billingPeriod: 'P1Y' },
+    { '@type': 'Offer', name: 'GROWTH', price: '79', priceCurrency: 'EUR', billingPeriod: 'P1Y' },
+    { '@type': 'Offer', name: 'PRO', price: '0', priceCurrency: 'EUR', billingPeriod: 'P1Y' },
   ],
   publisher: { '@type': 'Organization', name: 'Fidelio', url: 'https://www.getfidelio.app' },
 }

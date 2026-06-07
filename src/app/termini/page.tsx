@@ -39,7 +39,7 @@ export default function TerminiPage() {
       </Section>
 
       <Section title="5. Piani, prezzi e pagamenti">
-        <P>Il Servizio è disponibile nei piani <strong>STARTER</strong> (€19/mese), <strong>GROWTH</strong> (€39/mese) e <strong>PRO</strong> (€79/mese), con eventuale periodo di prova gratuita di 14 giorni.</P>
+        <P>Il Servizio è disponibile nei piani <strong>STARTER</strong> (€39/anno + IVA), <strong>GROWTH</strong> (€79/anno + IVA) e <strong>PRO</strong> (prezzo su richiesta), con garanzia rimborso di 14 giorni.</P>
         <P>I pagamenti sono elaborati da <strong>Paddle</strong>, che emette le fatture e gestisce l'IVA per conto di Fidelio. I prezzi includono IVA dove applicabile.</P>
         <P>Gli abbonamenti si rinnovano automaticamente alla scadenza. Puoi disdire in qualsiasi momento dalla dashboard del tuo account o contattando il supporto.</P>
       </Section>

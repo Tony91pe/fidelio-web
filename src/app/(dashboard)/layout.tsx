@@ -60,13 +60,13 @@ function UnpaidGate({ plan }: { plan: string }) {
         <div style={{ background: 'rgba(108,61,244,0.1)', border: '1px solid rgba(108,61,244,0.3)', borderRadius: '16px', padding: '1.5rem', marginBottom: '2rem' }}>
           <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             {[
-              { name: 'STARTER', price: '19', desc: 'QR statico, punti base, 1 premio' },
-              { name: 'GROWTH', price: '39', desc: 'QR dinamico, gift card, automazioni', featured: true },
-              { name: 'PRO', price: '79', desc: 'Multi-sede, API, reportistica avanzata' },
+              { name: 'STARTER', price: '39/anno', desc: 'QR statico, punti base, 1 premio' },
+              { name: 'GROWTH', price: '79/anno', desc: 'QR dinamico, gift card, automazioni', featured: true },
+              { name: 'PRO', price: 'Su misura', desc: 'Multi-sede, API, reportistica avanzata' },
             ].map(p => (
               <div key={p.name} style={{ flex: 1, minWidth: '140px', background: p.featured ? 'rgba(108,61,244,0.2)' : 'rgba(255,255,255,0.04)', border: `1px solid ${p.featured ? 'rgba(108,61,244,0.5)' : 'rgba(255,255,255,0.08)'}`, borderRadius: '12px', padding: '1rem', textAlign: 'center' }}>
                 <div style={{ fontWeight: '800', marginBottom: '0.25rem' }}>{p.name}</div>
-                <div style={{ fontSize: '1.5rem', fontWeight: '800', color: p.featured ? '#A78BFA' : 'white' }}>€{p.price}<span style={{ fontSize: '0.7rem', color: 'rgba(255,255,255,0.4)' }}>/mese</span></div>
+                <div style={{ fontSize: '1.5rem', fontWeight: '800', color: p.featured ? '#A78BFA' : 'white' }}>€{p.price}</div>
                 <div style={{ fontSize: '0.75rem', color: 'rgba(255,255,255,0.5)', marginTop: '0.5rem' }}>{p.desc}</div>
               </div>
             ))}

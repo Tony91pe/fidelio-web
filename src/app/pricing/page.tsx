@@ -3,24 +3,24 @@ import Link from 'next/link'
 
 export const metadata: Metadata = {
   title: 'Prezzi — Fidelio',
-  description: 'Piani Fidelio da €19/mese. Starter, Growth e Pro per negozi di ogni dimensione. Nessun costo nascosto, garanzia rimborso 14 giorni.',
+  description: 'Piani Fidelio da €39/anno. Starter, Growth e Pro per negozi di ogni dimensione. Nessun costo nascosto, garanzia rimborso 14 giorni.',
   alternates: { canonical: 'https://www.getfidelio.app/pricing' },
 }
 
 const plans = [
   {
-    name: 'Starter', price: '19', color: '#6b7280', featured: false,
-    cta: 'Inizia con Starter',
+    name: 'Starter', price: '39', period: 'anno', color: '#6b7280', featured: false,
+    cta: 'Inizia con Starter', ctaHref: '/register',
     features: ['1 negozio', 'QR code statico', 'Raccolta punti base', '1 premio attivo', 'Email di benvenuto', 'Dashboard base', 'Storico clienti', 'Supporto via email'],
   },
   {
-    name: 'Growth', price: '39', color: '#7C3AED', featured: true,
-    cta: 'Inizia con Growth',
+    name: 'Growth', price: '79', period: 'anno', color: '#7C3AED', featured: true,
+    cta: 'Inizia con Growth', ctaHref: '/register',
     features: ['Tutto di Starter', 'QR dinamico anti-frode', 'Premi illimitati', 'Gift card digitali', 'Email automatiche (compleanno, winback)', 'Notifiche push clienti', 'Statistiche avanzate', 'Segmentazione clienti', 'Offerte speciali', 'Ruoli staff', 'Branding personalizzato', 'Supporto prioritario'],
   },
   {
-    name: 'Pro', price: '79', color: '#f97316', featured: false,
-    cta: 'Inizia con Pro',
+    name: 'Pro', price: null, period: null, color: '#f97316', featured: false,
+    cta: 'Richiedi informazioni', ctaHref: 'mailto:info@getfidelio.app',
     features: ['Tutto di Growth', 'Multi-negozio', 'Campagne marketing SMS', 'AI Insights predittivi', 'NPS Analytics (soddisfazione clienti)', 'Export dati GDPR', 'Accesso API', 'Report settimanali automatici', 'Automazioni avanzate', 'Supporto dedicato', 'Onboarding assistito'],
   },
 ]
@@ -69,8 +69,8 @@ export default function PricingPage() {
           Nessun costo nascosto. Disdici quando vuoi.
         </p>
         <div style={{ display: 'flex', gap: '1.5rem', justifyContent: 'center', flexWrap: 'wrap', fontSize: '0.82rem', color: 'rgba(255,255,255,0.35)', marginTop: '0.5rem' }}>
-          <span>✓ IVA inclusa</span>
-          <span>✓ Pagamento mensile</span>
+          <span>✓ + IVA</span>
+          <span>✓ Pagamento annuale</span>
           <span>✓ Garanzia rimborso 14 giorni</span>
           <span>✓ Nessun contratto</span>
         </div>
@@ -95,8 +95,14 @@ export default function PricingPage() {
               <span style={{ fontWeight: '800', fontSize: '1.1rem' }}>{plan.name}</span>
             </div>
             <div style={{ marginBottom: '1.5rem' }}>
-              <span style={{ fontSize: '3rem', fontWeight: '800' }}>€{plan.price}</span>
-              <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>/mese</span>
+              {plan.price ? (
+                <>
+                  <span style={{ fontSize: '3rem', fontWeight: '800' }}>€{plan.price}</span>
+                  <span style={{ color: 'rgba(255,255,255,0.4)', fontSize: '0.9rem' }}>/{plan.period}</span>
+                </>
+              ) : (
+                <span style={{ fontSize: '2rem', fontWeight: '800', color: '#f97316' }}>Su misura</span>
+              )}
             </div>
             <ul style={{ listStyle: 'none', padding: 0, marginBottom: '1.75rem', display: 'flex', flexDirection: 'column', gap: '0.45rem' }}>
               {plan.features.map(f => (
@@ -105,7 +111,7 @@ export default function PricingPage() {
                 </li>
               ))}
             </ul>
-            <Link href="/register" style={{ display: 'block', textAlign: 'center', padding: '0.8rem', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem', background: plan.featured ? '#7C3AED' : 'transparent', color: 'white', border: plan.featured ? 'none' : '1px solid rgba(255,255,255,0.2)' }}>
+            <Link href={plan.ctaHref} style={{ display: 'block', textAlign: 'center', padding: '0.8rem', borderRadius: '12px', textDecoration: 'none', fontWeight: '700', fontSize: '0.9rem', background: plan.featured ? '#7C3AED' : plan.price === null ? 'rgba(249,115,22,0.15)' : 'transparent', color: plan.price === null ? '#f97316' : 'white', border: plan.featured ? 'none' : plan.price === null ? '1px solid rgba(249,115,22,0.4)' : '1px solid rgba(255,255,255,0.2)' }}>
               {plan.cta}
             </Link>
           </div>

@@ -6,7 +6,8 @@ const PLANS = [
     id: 'starter',
     dbId: 'STARTER',
     name: 'Starter',
-    price: '19',
+    price: '39',
+    period: 'anno',
     color: '#6B7280',
     gradient: 'linear-gradient(135deg, #374151, #1F2937)',
     features: [
@@ -26,7 +27,8 @@ const PLANS = [
     id: 'growth',
     dbId: 'GROWTH',
     name: 'Growth',
-    price: '39',
+    price: '79',
+    period: 'anno',
     color: '#7C3AED',
     gradient: 'linear-gradient(135deg, #5B21B6, #2D1B69)',
     popular: true,
@@ -47,7 +49,8 @@ const PLANS = [
     id: 'pro',
     dbId: 'PRO',
     name: 'Pro',
-    price: '79',
+    price: null,
+    period: null,
     color: '#F97316',
     gradient: 'linear-gradient(135deg, #C2410C, #7C2D12)',
     features: [
@@ -156,10 +159,18 @@ export default function UpgradePage() {
                     {plan.name}
                   </p>
                   <div style={{ display: 'flex', alignItems: 'baseline', gap: 4 }}>
-                    <span style={{ fontSize: '2.25rem', fontWeight: 900, color: isCurrent ? 'white' : plan.color }}>
-                      €{plan.price}
-                    </span>
-                    <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>/mese</span>
+                    {plan.price ? (
+                      <>
+                        <span style={{ fontSize: '2.25rem', fontWeight: 900, color: isCurrent ? 'white' : plan.color }}>
+                          €{plan.price}
+                        </span>
+                        <span style={{ fontSize: '0.85rem', color: 'rgba(255,255,255,0.35)' }}>/{plan.period}</span>
+                      </>
+                    ) : (
+                      <span style={{ fontSize: '1.5rem', fontWeight: 900, color: isCurrent ? 'white' : plan.color }}>
+                        Su misura
+                      </span>
+                    )}
                     {isCurrent && (
                       <span style={{ marginLeft: 'auto', background: 'rgba(255,255,255,0.15)', color: 'white', padding: '4px 10px', borderRadius: 10, fontSize: '0.72rem', fontWeight: 700 }}>
                         ✓ Attivo
@@ -212,6 +223,18 @@ export default function UpgradePage() {
                   >
                     {loading === plan.id ? 'Reindirizzamento...' : `Passa a ${plan.name}`}
                   </button>
+                ) : plan.price === null ? (
+                  <a
+                    href="mailto:info@getfidelio.app?subject=Richiesta piano Pro"
+                    style={{
+                      display: 'block', width: '100%', padding: '13px', borderRadius: 12,
+                      fontSize: '0.875rem', fontWeight: 700, color: plan.color, textAlign: 'center',
+                      textDecoration: 'none', boxSizing: 'border-box',
+                      background: `${plan.color}18`, border: `1px solid ${plan.color}44`,
+                    }}
+                  >
+                    Richiedi informazioni →
+                  </a>
                 ) : (
                   <button
                     onClick={() => handleUpgrade(plan.id)}
